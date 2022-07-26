@@ -115,11 +115,13 @@ namespace W
                 }
             }
             else {
-                seed = H.Hash(previousSeed, (uint)index);
+                seed = H.Hash(previousSeed, index);
                 mapDef = previousMap.Def;
             }
-
+            mapDefID = mapDef.id;
             InitializeSize();
+
+            UnityEngine.Debug.Log($"init {seed} {previousSeed}");
 
             MapUI.I.TryConstructInitials(this);
         }

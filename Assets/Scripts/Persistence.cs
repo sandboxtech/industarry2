@@ -50,7 +50,6 @@ namespace W
             CreateDirectory(dir);
             string path = Combine(dir, file);
             Write(path, contents);
-            UnityEngine.Debug.Log($"saved to {path}");
         }
         public static void Load(string directory, string file, out string contents) {
             string dir = DirOf(directory);

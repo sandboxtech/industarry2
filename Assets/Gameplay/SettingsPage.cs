@@ -40,6 +40,7 @@ namespace W
             });
             UI.Button("删档", () => {
                 Persistence.ClearSaves();
+                GameLoop.Quit();
             });
             UI.Button("退出", () => {
                 GameLoop.Quit();

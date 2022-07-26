@@ -59,6 +59,8 @@ namespace W
         public const uint SpaceShipIndex = uint.MaxValue;
         public const uint PlanetMapIndex = uint.MinValue;
         public Map LoadOrCreateMap(uint index) {
+            SaveGame();
+
             Map previousMap = planetMap;
             Map map;
             if (previousMap == null) {
@@ -85,6 +87,7 @@ namespace W
 
         public void Load() {
             config.Load();
+            MapUI.EnterMap();
         }
 
 
@@ -166,8 +169,18 @@ namespace W
         [OnSerializing]
         private void OnSerializingMethod(StreamingContext context) {
             // 序列化之前，保存Map
-            GameLoop.Save(MapsFolder, FilenameOf(planetMap.PreviousSeed), planetMap);
+            SaveMaps();
+        }
+        private void SaveMaps() {
             GameLoop.Save(null, SpaceshipMapFilename, spaceshipMap);
+            GameLoop.Save(MapsFolder, FilenameOf(planetMap.PreviousSeed), planetMap);
+        }
+
+        public void SaveGame() {
+            if (planetMap == null || spaceshipMap == null) {
+                return;
+            }
+            GameLoop.SaveGame();
         }
 
         [OnSerialized]
