@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
+  m_Name: PlankWorkshop
+  m_EditorClassIdentifier: 
+  cn: "\u6728\u677F\u5DE5\u574A"
+  sprite: {fileID: 21300000, guid: 3cc21d6cc21f7d3499fb47385562d0a6, type: 3}
+  glow: {fileID: 21300000, guid: 298e43e9611512142b1fa0b8d392a432, type: 3}
+  colorType: 2
+  construction:
+  - {fileID: 11400000, guid: 89c8e2c6239360b45acb81c9ff2db48d, type: 2}
+  destruction: []
+  inc:
+  - {fileID: 11400000, guid: c120f6342e4267d4589e188befad89c9, type: 2}
+  - {fileID: 11400000, guid: 050cde63be94e734ca5de6ff2a18d2ac, type: 2}
+  - {fileID: 11400000, guid: 02f228bd2be7c87439650ffdd4cb1dc5, type: 2}
+  max:
+  - {fileID: 11400000, guid: 95b753b31be33004a9e39d50a97e3671, type: 2}
+  bonusAnim: {fileID: 0}
+  bonus: []
+  conditions:
+  - {fileID: 11400000, guid: 487d3de525133a944a06a29b9bb40516, type: 2}
+  repels: []
+  techs:
+  - {fileID: 11400000, guid: abc3467f20c1e1449b346a252d9f5aec, type: 2}

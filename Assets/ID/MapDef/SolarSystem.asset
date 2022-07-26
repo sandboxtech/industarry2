@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88b6299e903388242a394574c70cb2f1, type: 3}
+  m_Name: SolarSystem
+  m_EditorClassIdentifier: 
+  cn: "\u7C7B\u5730\u661F\u7403"
+  sprite: {fileID: 0}
+  glow: {fileID: 0}
+  colorType: 0
+  mapThemeDef: {fileID: 11400000, guid: 4b127e4f6994504498c75331b3d711e6, type: 2}
+  width: 31
+  height: 31
+  edge: 0
+  initialRandomStructures:
+  - {fileID: 11400000, guid: 486354c908dbf1c43a18114d33d9cde2, type: 2}
+  - {fileID: 11400000, guid: 7e3a8e57cb0a862468509e72df10e35b, type: 2}
+  constructables:
+  - {fileID: 11400000, guid: a10021eb8dad755439bf17cdafa4f13c, type: 2}

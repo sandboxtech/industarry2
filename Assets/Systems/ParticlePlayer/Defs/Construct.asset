@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 125cb8797ee4bd84d813939be6017eab, type: 3}
+  m_Name: Construct
+  m_EditorClassIdentifier: 
+  duration: 0.375
+  Frames:
+  - {fileID: 161895697, guid: 60232e1b24c2c5143993d155dc5e5382, type: 3}
+  - {fileID: -1789197108, guid: 60232e1b24c2c5143993d155dc5e5382, type: 3}
+  - {fileID: 1031356834, guid: 60232e1b24c2c5143993d155dc5e5382, type: 3}
+  - {fileID: -1037953154, guid: 60232e1b24c2c5143993d155dc5e5382, type: 3}
+  - {fileID: 2063402511, guid: 60232e1b24c2c5143993d155dc5e5382, type: 3}
+  - {fileID: 115327574, guid: 60232e1b24c2c5143993d155dc5e5382, type: 3}
+  - {fileID: 996756557, guid: 60232e1b24c2c5143993d155dc5e5382, type: 3}
+  - {fileID: -1620397868, guid: 60232e1b24c2c5143993d155dc5e5382, type: 3}

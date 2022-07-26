@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
+  m_Name: Quarry
+  m_EditorClassIdentifier: 
+  cn: "\u77F3\u573A"
+  sprite: {fileID: 21300000, guid: 4364847d6f3c9294c90d212e03b02614, type: 3}
+  glow: {fileID: 0}
+  colorType: 3
+  construction: []
+  destruction: []
+  inc:
+  - {fileID: 11400000, guid: c120f6342e4267d4589e188befad89c9, type: 2}
+  - {fileID: 11400000, guid: b1a2ab5c509b8ad49bd2dee7eb793638, type: 2}
+  max:
+  - {fileID: 11400000, guid: b902e15738c6168489103793154fbfed, type: 2}
+  bonusAnim: {fileID: 11400000, guid: 690190ea61698c549832323df2925979, type: 2}
+  bonus:
+  - {fileID: 11400000, guid: a822dabf2cfaf584098498f213818df1, type: 2}
+  conditions: []
+  repels: []
+  techs:
+  - {fileID: 11400000, guid: abc3467f20c1e1449b346a252d9f5aec, type: 2}

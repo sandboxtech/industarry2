@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
+  m_Name: ToolWorkshop
+  m_EditorClassIdentifier: 
+  cn: "\u77F3\u7816\u5DE5\u574A"
+  sprite: {fileID: 21300000, guid: 3cc21d6cc21f7d3499fb47385562d0a6, type: 3}
+  glow: {fileID: 21300000, guid: 298e43e9611512142b1fa0b8d392a432, type: 3}
+  colorType: 2
+  construction:
+  - {fileID: 11400000, guid: f1e4af93bc9981f40a1b87857c4bb1fa, type: 2}
+  destruction: []
+  inc:
+  - {fileID: 11400000, guid: c120f6342e4267d4589e188befad89c9, type: 2}
+  - {fileID: 11400000, guid: fdefb159a10e08b4d9776d0aceb337b5, type: 2}
+  - {fileID: 11400000, guid: f879274c661b45d468979c2630a587bd, type: 2}
+  - {fileID: 11400000, guid: 1448d6247fa3119498573cff67d08e82, type: 2}
+  max:
+  - {fileID: 11400000, guid: 31a31c90c26afad48846529c1d1b69bf, type: 2}
+  bonusAnim: {fileID: 0}
+  bonus:
+  - {fileID: 11400000}
+  conditions:
+  - {fileID: 11400000, guid: 554ff96a966fc31449677382e10e8017, type: 2}
+  - {fileID: 11400000, guid: 00405a45b0283004d92b76705da71291, type: 2}
+  repels: []
+  techs:
+  - {fileID: 11400000, guid: abc3467f20c1e1449b346a252d9f5aec, type: 2}
