@@ -24,44 +24,7 @@ namespace W
         private GameConfig config;
         public GameConfig Config => config;
 
-        public void OnCreate() {
-            config = Persistence.Create<GameConfig>();
-            config.Load();
-
-            settings = Persistence.Create<Settings>();
-            techs = new Dictionary<uint, int>();
-
-            on_ship = false;
-            planetMap = CreateMap(Seed2MapDefName(planetMap_seed), planetMap_seed);
-            spaceshipMap = CreateMap(SpaceshipConfigName, int.MaxValue);
-
-            MapUI.I.TryConstructInitials(planetMap);
-            MapUI.I.TryConstructInitials(spaceshipMap);
-
-            CameraControl.I.Position = new Vector2(planetMap.Width / 2, planetMap.Height / 2);
-
-            UI.Prepare();
-            UI.Text("挂机工厂2");
-            CheckVersion();
-            UI.Show();
-        }
-        private Map CreateMap(string mapConfigfile, int seed) {
-            Map map = Persistence.Create<Map>();
-            MapDef mapDef = config.Name2Obj[mapConfigfile] as MapDef;
-            if (mapDef == null) {
-                A.Error($"找不到地图配置: {mapConfigfile}");
-            }
-            map.Init(mapDef, seed);
-            return map;
-        }
-
-        private string Seed2MapDefName(int seed) => "Continental";
-
-        public void Load() {
-            config.Load();
-        }
-
-        private const long VERSION = 2;
+        private const long VERSION = 3;
         [JsonProperty]
         private long version = VERSION;
         private void CheckVersion() {
@@ -71,6 +34,60 @@ namespace W
                 Persistence.ClearSaves();
             }
         }
+
+        public void OnCreate() {
+            config = Persistence.Create<GameConfig>();
+            config.Load();
+
+            CheckVersion();
+
+            settings = Persistence.Create<Settings>();
+            techs = new Dictionary<uint, int>();
+
+            on_ship = false;
+
+            LoadOrCreateMap(SpaceShipIndex);
+            LoadOrCreateMap(PlanetMapIndex);
+
+            planetMapPreviousSeed = planetMap.PreviousSeed;
+
+            CameraControl.I.Position = new Vector2(planetMap.Width / 2, planetMap.Height / 2);
+
+            MapUI.EnterMap();
+        }
+
+        public const uint SpaceShipIndex = uint.MaxValue;
+        public const uint PlanetMapIndex = uint.MinValue;
+        public Map LoadOrCreateMap(uint index) {
+            Map previousMap = planetMap;
+            Map map;
+            if (previousMap == null) {
+                if (index == SpaceShipIndex) {
+                    map = spaceshipMap = Persistence.Create<Map>();
+                }
+                else if (index == PlanetMapIndex) {
+                    map = planetMap = Persistence.Create<Map>();
+                }
+                else {
+                    throw new System.Exception();
+                }
+            } else {
+                GameLoop.Load(MapsFolder, FilenameOf(previousMap.Seed), out map);
+                planetMap = map;
+            }
+            if (map.NotInitialized) {
+                (map as IMap)._Init(previousMap, index);
+            }
+            planetMapPreviousSeed = map.PreviousSeed;
+            return map;
+        }
+
+
+        public void Load() {
+            config.Load();
+        }
+
+
 
 
         [JsonProperty]
@@ -101,11 +118,11 @@ namespace W
         public bool IsOnSpaceship {
             get => on_ship;
             set {
+                A.Assert(on_ship != value);
                 if (on_ship) {
                     planetMap.SaveCameraPosition();
                     spaceshipMap.LoadCameraPosition();
-                }
-                else {
+                } else {
                     spaceshipMap.SaveCameraPosition();
                     planetMap.LoadCameraPosition();
                 }
@@ -114,8 +131,11 @@ namespace W
             }
         }
 
+
         [JsonIgnore]
         private Map planetMap;
+        [JsonProperty]
+        private uint planetMapPreviousSeed;
         [JsonIgnore]
         private Map spaceshipMap;
 
@@ -130,25 +150,23 @@ namespace W
             // 反序列化之后，什么都不做
         }
 
-        [JsonProperty]
-        private int planetMap_seed = 0;
 
-        private const string SpaceshipConfigName = "Spaceship";
-        private const string MapsFolder = "maps";
         private const string SpaceshipMapFilename = "spaceship.json";
-        private static string Seed2Filename(int seed) => $"{seed}.json";
+
+        private const string MapsFolder = "maps";
+        private static string FilenameOf(uint seed) => $"{seed}.json";
 
         [OnDeserialized]
         private void OnDeserializedMethod(StreamingContext context) {
             // 反序列化之后，恢复Map
-            GameLoop.Load(MapsFolder, Seed2Filename(planetMap_seed), out planetMap);
+            GameLoop.Load(MapsFolder, FilenameOf(planetMapPreviousSeed), out planetMap);
             GameLoop.Load(null, SpaceshipMapFilename, out spaceshipMap);
         }
 
         [OnSerializing]
         private void OnSerializingMethod(StreamingContext context) {
             // 序列化之前，保存Map
-            GameLoop.Save(MapsFolder, Seed2Filename(planetMap.Seed), planetMap);
+            GameLoop.Save(MapsFolder, FilenameOf(planetMap.PreviousSeed), planetMap);
             GameLoop.Save(null, SpaceshipMapFilename, spaceshipMap);
         }
 

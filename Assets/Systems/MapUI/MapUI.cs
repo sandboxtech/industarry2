@@ -8,7 +8,6 @@ namespace W
     /// <summary>
     /// 代码大混合
     /// </summary>
-    [ExecuteAfter(typeof(GameEntry))]
     public class MapUI : MonoBehaviour
     {
         public static MapUI I => i;
@@ -19,19 +18,35 @@ namespace W
             MapTapping.I.OnTap = OnTap;
         }
 
-        private void Start() {
-            EnterMap();
+
+
+        private void Update() {
+            if (Input.GetKeyDown(KeyCode.Z)) {
+                Map.DoChange(GameConfig.I.Name2Obj["Population_1"] as IDValue, 1, IdleReference.Inc);
+            }
+            if (Input.GetKeyDown(KeyCode.X)) {
+                Map.DoChange(GameConfig.I.Name2Obj["Population_N1"] as IDValue, 1, IdleReference.Inc);
+            }
+            if (Input.GetKeyDown(KeyCode.Space)) {
+                Game.I.LoadOrCreateMap(0);
+                EnterMap();
+            }
         }
 
 
         public static void EnterMap() {
-            Map map = Game.I.Map;
+            map = Game.I.Map;
 
             A.Assert(map != null);
 
             CameraControl.I.Area = new Rect(0, 0, map.Width, map.Height);
             MapView.I.EnterMap(map.Def);
 
+            UI.Prepare();
+            UI.Text("进入地图");
+            UI.Text($"seed {map.Seed}");
+            UI.Text($"type {map.Def.CN}");
+            UI.Show();
 
             if (map.Def.IsPlanet) {
                 for (int i = -1; i <= map.Width; i++) {
@@ -102,18 +117,9 @@ namespace W
 
 
 
-        private void Update() {
-            if (Input.GetKeyDown(KeyCode.Z)) {
-                Map.DoChange(GameConfig.I.Name2Obj["Population_1"] as IDValue, 1, IdleReference.Inc);
-            }
-            if (Input.GetKeyDown(KeyCode.X)) {
-                Map.DoChange(GameConfig.I.Name2Obj["Population_N1"] as IDValue, 1, IdleReference.Inc);
-            }
-        }
 
 
-
-
+        private static Map map;
 
         /// <summary>
         /// 是否启用UI
@@ -174,7 +180,6 @@ namespace W
             x = MapTapping.I.X;
             y = MapTapping.I.Y;
 
-            Map map = Game.I.Map;
 
             enableUI = true;
 
@@ -449,7 +454,7 @@ namespace W
             UI.Prepare();
 
             // UI.Text($"坐标 {x} {y}");
-            UI.IconText(Game.I.Map.Def.CN, GameConfig.I.Name2Obj[Sprites.MapDef].Icon);
+            UI.IconText(map.Def.CN, GameConfig.I.Name2Obj[Sprites.MapDef].Icon);
             UI.Space();
 
             var unlockeds = AddUnlockeds();
@@ -495,7 +500,7 @@ namespace W
             AddUnlocked(+1, 0);
             AddUnlocked(-1, 0);
             if (constructables.Count == 0) {
-                foreach (TileDef unlocked in Game.I.Map.Def.Constructables) {
+                foreach (TileDef unlocked in map.Def.Constructables) {
                     if (!constructables.Contains(unlocked)) {
                         constructables.Add(unlocked);
                     }
@@ -504,7 +509,7 @@ namespace W
             return constructables;
         }
         private void AddUnlocked(int dx, int dy) {
-            uint neighborID = Game.I.Map.ID_Safe(x + dx, y + dy);
+            uint neighborID = map.ID_Safe(x + dx, y + dy);
             if (ID.IsInvalid(neighborID)) return;
             TileDef neighbor = GameConfig.I.ID2Obj[neighborID] as TileDef;
             foreach (TileDef unlocked in neighbor.BonusReverse) {
@@ -530,7 +535,7 @@ namespace W
         }
 
         private static int AddBonus(int dx, int dy, TileDef tileDef) {
-            uint bonusID = Game.I.Map.ID_Safe(dx, dy);
+            uint bonusID = map.ID_Safe(dx, dy);
             if (ID.IsInvalid(bonusID)) return 0;
             TileDef neighbor = GameConfig.I.ID2Obj[bonusID] as TileDef;
             A.Assert(neighbor != null);
@@ -626,6 +631,7 @@ namespace W
             if (!CanConstructByNeighbor(-1, 0)) return false;
             return true;
         }
+
         private bool CanConstructByNeighbor(int dx, int dy) {
             TileDef neighbor = NeighborOf(dx, dy);
             if (neighbor == null) return true;
@@ -638,7 +644,7 @@ namespace W
             return true;
         }
         private TileDef NeighborOf(int dx, int dy) {
-            uint neighborID = Game.I.Map.ID_Safe(x + dx, y + dy);
+            uint neighborID = map.ID_Safe(x + dx, y + dy);
             if (ID.IsInvalid(neighborID)) return null;
             TileDef neighbor = GameConfig.I.ID2Obj[neighborID] as TileDef;
             return neighbor;
@@ -651,8 +657,8 @@ namespace W
             }
 
             SucceedConstruct();
-            Game.I.Map.ID(x, y, replacement.id);
-            Game.I.Map.Level(x, y, replacementLevel);
+            map.ID(x, y, replacement.id);
+            map.Level(x, y, replacementLevel);
             if (enableUI) ShowTile(x, y, replacement, replacementLevel, true);
 
             foreach (IDValue idValue in replacement.Construction) {
@@ -848,8 +854,8 @@ namespace W
             }
 
             SucceedDestruct();
-            Game.I.Map.ID(x, y, ID.Empty);
-            Game.I.Map.Level(x, y, 0);
+            map.ID(x, y, ID.Empty);
+            map.Level(x, y, 0);
             if (enableUI) ShowTile(x, y, null, 0, true);
 
             foreach (IDValue idValue in existing.Inc) {
@@ -996,7 +1002,7 @@ namespace W
         /// 计算相邻物品
         /// </summary>
         private static void RuleTiles5(int x, int y) {
-
+            // TODO
         }
 
 
@@ -1013,7 +1019,6 @@ namespace W
         }
 
         private static void TranslateTiles(int x, int y) {
-            Map map = Game.I.Map;
             uint id = map.ID_Safe(x, y);
             if (ID.IsInvalid(id)) return;
             TileDef tile = GameConfig.I.ID2Obj[id] as TileDef;
@@ -1026,7 +1031,7 @@ namespace W
         }
 
         private static void TranslateTile(int x, int y, int dx, int dy, MapView.Dir dir, TileDef self) {
-            uint id = Game.I.Map.ID_Safe(dx, dy);
+            uint id = map.ID_Safe(dx, dy);
             if (ID.IsInvalid(id)) return;
             TileDef neighbor = GameConfig.I.ID2Obj[id] as TileDef;
             foreach (TileDef bonus in self.Bonus) {
@@ -1068,7 +1073,8 @@ namespace W
         }
 
         public void TryConstructInitials(Map map) {
-            map.RandomGenerator = new System.Random(map.Seed);
+            MapUI.map = map;
+            map.RandomGenerator = new System.Random((int)map.Seed);
             TryConstructCellularAutomaton(map);
             TryConstructInitialStructures(map);
         }

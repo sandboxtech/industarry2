@@ -17,7 +17,7 @@ namespace W
             if (!assertion) throw new System.Exception(messageGetter.Invoke());
         }
 
-        public static void Error(string message) {
+        public static void Error(string message = null) {
             throw new System.Exception(message);
         }
 

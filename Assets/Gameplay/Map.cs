@@ -5,11 +5,21 @@ using System.Runtime.Serialization;
 
 namespace W
 {
+    public abstract class MapLike : IPersistent
+    {
+        public abstract void OnCreate();
+    }
+
+
+    public interface IMap
+    {
+        public void _Init(Map previousMap, uint index);
+    }
     /// <summary>
     /// 地图文件
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class Map : IPersistent
+    public class Map : MapLike, IMap
     {
 
 
@@ -40,9 +50,10 @@ namespace W
         public Dictionary<uint, Idle> Resources => resources;
 
 
-        public void OnCreate() {
+        public override void OnCreate() {
             resources = new Dictionary<uint, Idle>();
         }
+
 
 
         [JsonProperty]
@@ -59,13 +70,16 @@ namespace W
 
 
         [JsonProperty]
-        private uint id;
+        private uint mapDefID = W.ID.Empty;
         [JsonIgnore]
         private MapDef mapDef;
+
+        public bool NotInitialized => mapDefID == W.ID.Empty;
+
         public MapDef Def {
             get {
                 if (mapDef == null) {
-                    mapDef = GameConfig.I.ID2Obj[id] as MapDef;
+                    mapDef = GameConfig.I.ID2Obj[mapDefID] as MapDef;
                     A.Assert(mapDef != null);
                 }
                 return mapDef;
@@ -73,19 +87,50 @@ namespace W
         }
 
         [JsonProperty]
-        private int seed = 0;
-        public int Seed => seed;
+        private uint previousSeed;
+        public uint PreviousSeed => previousSeed;
 
-        public void Init(MapDef mapDef, int seed) {
-            id = mapDef.id;
-            this.mapDef = mapDef;
-            this.seed = seed;
+        [JsonProperty]
+        private uint seed;
+        public uint Seed => seed;
+
+
+
+        private const string InitialPlanetMapDefConfigName = "Continental";
+        private const string SpaceshipConfigName = "Spaceship";
+
+        void IMap._Init(Map previousMap, uint index) {
+            previousSeed = previousMap == null ? 0 : previousMap.seed;
+            if (previousMap == null) {
+                if (index == Game.SpaceShipIndex) {
+                    seed = Game.SpaceShipIndex;
+                    mapDef = GameConfig.I.Name2Obj[SpaceshipConfigName] as MapDef;
+                }
+                else if (index == Game.PlanetMapIndex) {
+                    seed = Game.PlanetMapIndex;
+                    mapDef = GameConfig.I.Name2Obj[InitialPlanetMapDefConfigName] as MapDef;
+                }
+                else {
+                    A.Error();
+                }
+            }
+            else {
+                seed = H.Hash(previousSeed, (uint)index);
+                mapDef = previousMap.Def;
+            }
+
             InitializeSize();
+
+            MapUI.I.TryConstructInitials(this);
         }
+
 
         private void InitializeSize() {
             Width = mapDef.Width;
             Height = mapDef.Height;
+            CameraX = (float)Width / 2;
+            CameraY = (float)Height / 2;
+
             A.Assert(Width > 0 && Width < 0b1111111111);
             A.Assert(Height > 0 && Height < 0b1111111111);
             int squareSize = Size;
