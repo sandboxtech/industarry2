@@ -42,7 +42,6 @@ namespace W
         private void __AutoWriteIDValue() {
             foreach (ID id in ids) {
                 if (id is IDValue idValue) {
-
                     if (idValue.name.StartsWith(idValue.Key.name)) {
                         string[] pair = idValue.name.Split('_');
 

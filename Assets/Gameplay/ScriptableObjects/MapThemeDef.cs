@@ -5,17 +5,6 @@ using UnityEngine;
 namespace W
 {
 
-    public enum ColorType
-    {
-        None,
-        Wood,
-        Stone,
-        Metal,
-        Dirt,
-        Flora,
-        Water,
-    }
-
 
     [CreateAssetMenu(fileName = "__MapDefTheme__", menuName = "创建 MapDefTheme 地图样式定义", order = 1)]
     public class MapThemeDef : ID
@@ -66,60 +55,35 @@ namespace W
         public Material GroundMaterial => groundMaterial;
 
 
-        [Space]
-        [Space]
 
+        //[Header("木制颜色")]
+        //[SerializeField]
+        //private Color wood;
+        //public Color Wood => wood;
 
-        [Header("木制颜色")]
-        [SerializeField]
-        private Color wood;
-        public Color Wood => wood;
+        //[Header("石制颜色")]
+        //[SerializeField]
+        //private Color stone;
+        //public Color Stone => stone;
 
-        [Header("石制颜色")]
-        [SerializeField]
-        private Color stone;
-        public Color Stone => stone;
+        //[Header("金属颜色")]
+        //[SerializeField]
+        //private Color metal;
+        //public Color Metal => metal;
 
-        [Header("金属颜色")]
-        [SerializeField]
-        private Color metal;
-        public Color Metal => metal;
+        //[Header("土地颜色")]
+        //[SerializeField]
+        //private Color dirt;
+        //public Color Dirt => dirt;
 
-        [Header("土地颜色")]
-        [SerializeField]
-        private Color dirt;
-        public Color Dirt => dirt;
+        //[Header("树叶颜色")]
+        //[SerializeField]
+        //private Color flora;
+        //public Color Flora => flora;
 
-        [Header("树叶颜色")]
-        [SerializeField]
-        private Color flora;
-        public Color Flora => flora;
-
-        [Header("水体颜色")]
-        [SerializeField]
-        private Color water;
-        public Color Water => water;
-
-
-        public Color ColorOfID(ID id) {
-            switch (id.ColorType) {
-                case ColorType.None:
-                default:
-                    return Color.white;
-
-                case ColorType.Wood:
-                    return Wood;
-                case ColorType.Stone:
-                    return Stone;
-                case ColorType.Metal:
-                    return Metal;
-                case ColorType.Dirt:
-                    return Dirt;
-                case ColorType.Flora:
-                    return Flora;
-                case ColorType.Water:
-                    return Water;
-            }
-        }
+        //[Header("水体颜色")]
+        //[SerializeField]
+        //private Color water;
+        //public Color Water => water;
     }
 }

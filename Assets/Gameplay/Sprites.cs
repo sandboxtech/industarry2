@@ -8,15 +8,15 @@ namespace W
     {
         public static void IconText(string name) {
             ID id = GameConfig.I.Name2Obj[name];
-            UI.IconText(id.CN, id.Icon, Game.Color(id));
+            UI.IconText(id.CN, id.Icon, id.Color);
         }
         public static void IconButton(string name, Action action) {
             ID id = GameConfig.I.Name2Obj[name];
-            UI.IconButton(id.CN, id.Icon, Game.Color(id), action);
+            UI.IconButton(id.CN, id.Icon, id.Color, action);
         }
         public static void IconButton(string name, Color color, Action action) {
             ID id = GameConfig.I.Name2Obj[name];
-            UI.IconButton(id.CN, color, id.Icon, Game.Color(id), action);
+            UI.IconButton(id.CN, color, id.Icon, id.Color, action);
         }
 
         public static Sprite IconOf(string name) => GameConfig.I.Name2Obj[name].Icon;

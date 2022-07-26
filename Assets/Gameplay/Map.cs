@@ -5,11 +5,6 @@ using System.Runtime.Serialization;
 
 namespace W
 {
-    public abstract class MapLike : IPersistent
-    {
-        public abstract void OnCreate();
-    }
-
 
     public interface IMap
     {
@@ -19,7 +14,7 @@ namespace W
     /// 地图文件
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class Map : MapLike, IMap
+    public class Map : IPersistent, IMap
     {
 
 
@@ -50,7 +45,7 @@ namespace W
         public Dictionary<uint, Idle> Resources => resources;
 
 
-        public override void OnCreate() {
+        public void OnCreate() {
             resources = new Dictionary<uint, Idle>();
         }
 
@@ -64,9 +59,7 @@ namespace W
         private int Size => Width * Height;
 
         [JsonIgnore]
-        public System.Random RandomGenerator { get; set; }
-        [JsonIgnore]
-        public (bool[,], bool[,]) Buffer { get; set; }
+        public System.Random TemporaryRandomGenerator { get; set; }
 
 
         [JsonProperty]
@@ -120,8 +113,6 @@ namespace W
             }
             mapDefID = mapDef.id;
             InitializeSize();
-
-            UnityEngine.Debug.Log($"init {seed} {previousSeed}");
 
             MapUI.I.TryConstructInitials(this);
         }
@@ -250,7 +241,7 @@ namespace W
                     continue;
                 }
                 UI.Space();
-                UI.IconText(key.CN, key.Icon, Game.Color(key));
+                UI.IconText(key.CN, key.Icon, key.Color);
                 UI.Progress(() => $"{idle.Value}/{idle.Max}  +{idle.Inc}/{idle.DelSecond}s", () => idle.Progress);
             }
 

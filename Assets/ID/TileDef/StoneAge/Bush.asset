@@ -17,7 +17,7 @@ MonoBehaviour:
   sprites: []
   spritesDuration: 1
   glow: {fileID: 0}
-  colorType: 5
+  color: {r: 0.49019608, g: 0.85882354, b: 0.42745098, a: 1}
   construction: []
   destruction: []
   inc:

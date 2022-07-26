@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cn: 
   sprite: {fileID: 0}
-  colorType: 0
+  sprites: []
+  spritesDuration: 1
+  glow: {fileID: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  generateTerrain: 1
   tileset:
   - {fileID: -1970171789, guid: 3bc83f185624ca545be1db7b13ad4359, type: 3}
   - {fileID: -771452698, guid: 3bc83f185624ca545be1db7b13ad4359, type: 3}
@@ -70,9 +74,3 @@ MonoBehaviour:
   ground: {fileID: 21300000, guid: 0d894e19eb119d74d9a94b53c57ffa23, type: 3}
   groundColor: {r: 0.42745098, g: 0.34901962, b: 0.33333334, a: 1}
   groundMaterial: {fileID: 2100000, guid: 0ff3c412ac79b704288c921ddd3059b6, type: 2}
-  wood: {r: 0.83137256, g: 0.43898317, b: 0.43529412, a: 1}
-  stone: {r: 0.85882354, g: 0.75217545, b: 0.70980394, a: 1}
-  metal: {r: 0.8396226, g: 0.67724276, b: 0.70455927, a: 1}
-  dirt: {r: 0.42745098, g: 0.34901962, b: 0.33333334, a: 1}
-  flora: {r: 0.65894365, g: 0.8, b: 0.4745098, a: 1}
-  water: {r: 0.58431375, g: 0.6392157, b: 0.81960785, a: 1}

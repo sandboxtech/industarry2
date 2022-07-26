@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88b6299e903388242a394574c70cb2f1, type: 3}
-  m_Name: Continental
+  m_Name: StarSystem
   m_EditorClassIdentifier: 
-  cn: "\u7C7B\u5730\u661F\u7403"
+  cn: "\u6052\u661F\u7CFB"
   sprite: {fileID: 0}
   sprites: []
   spritesDuration: 1
   glow: {fileID: 0}
   colorType: 0
-  isPlanet: 1
-  mapThemeDef: {fileID: 11400000, guid: fdcffa8d419e7184594b526c1873ecd5, type: 2}
-  width: 16
-  height: 16
+  mapType: 0
+  mapThemeDef: {fileID: 11400000, guid: 4b127e4f6994504498c75331b3d711e6, type: 2}
+  width: 31
+  height: 31
   edge: 0
   initialRandomStructures:
   - {fileID: 11400000, guid: 486354c908dbf1c43a18114d33d9cde2, type: 2}

@@ -50,15 +50,10 @@ namespace W
         private Sprite glow;
         public Sprite Glow => glow;
 
-        [Header("颜色类型")]
+        [Header("颜色")]
         [SerializeField]
-        private ColorType colorType;
-        public ColorType ColorType => colorType;
+        private Color color = Color.white;
+        public Color Color => color;
 
-
-        //[Header("标签")]
-        //[SerializeField]
-        //private List<ID> tags; // val
-        //public IReadOnlyList<ID> Tags => tags;
     }
 }

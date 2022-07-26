@@ -25,7 +25,7 @@ namespace W
             return (source, buffer);
         }
 
-        public static (bool[,], bool[,]) GameOfTerrain_IterateBackAndForth((bool[,], bool[,]) pair, Func<bool, int, bool> f, int times = 1) {
+        public static (bool[,], bool[,]) GameCustomized((bool[,], bool[,]) pair, Func<bool, int, bool> f, int times = 1) {
             bool[,] source = pair.Item1;
             bool[,] buffer = pair.Item2;
             int width = source.GetLength(0);

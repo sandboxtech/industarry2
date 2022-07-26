@@ -143,8 +143,6 @@ namespace W
         private Map spaceshipMap;
 
         public Map Map => on_ship ? spaceshipMap : planetMap;
-        public static Color Color(ID id) => I.Map.Def.Theme.ColorOfID(id);
-
 
 
 

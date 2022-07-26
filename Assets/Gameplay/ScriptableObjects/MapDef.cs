@@ -4,14 +4,50 @@ using UnityEngine;
 
 namespace W
 {
+    //public enum StarType
+    //{
+    //    None,
+    //}
+    //public enum MapType
+    //{
+    //    None, 
+
+    //    Galaxy,
+    //    Sector,
+    //    StarSystem,
+
+    //    Continental,
+
+    //    Asteroid,
+
+    //    Wet,
+    //    Dry,
+    //    Cold,
+
+
+    //    Gaia,
+    //    Tomb,
+
+    //    Molten,
+    //    Barren,
+    //    Frozen,
+
+    //    Artificial,
+    //    RingWorld,
+
+    //    SpaceShip,
+    //    SpaceStation,
+
+    //    GasGaint,
+    //    Star,
+    //    NeutronStar,
+    //    BlackHole,
+    //}
+
     [CreateAssetMenu(fileName = "__MapDef__", menuName = "创建 MapDef 地图定义", order = 1)]
     public class MapDef : ID
     {
-        [Header("是否是星球")]
-        [SerializeField]
-        private bool isPlanet;
-        public bool IsPlanet => isPlanet;
-
+        
         [Header("地图样式")]
         [SerializeField]
         private MapThemeDef mapThemeDef;
@@ -47,6 +83,10 @@ namespace W
         [SerializeField]
         private List<TileDef> constructables;
         public IReadOnlyList<TileDef> Constructables => constructables;
+
+        public virtual void ProcessMap(Map map) {
+
+        }
 
     }
 }

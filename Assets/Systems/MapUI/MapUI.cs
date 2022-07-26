@@ -48,7 +48,8 @@ namespace W
             UI.Text($"type {map.Def.CN}");
             UI.Show();
 
-            if (map.Def.IsPlanet) {
+            if (map.Def.Theme.Tileset != null && map.Def.Theme.Tileset.Length != 0) {
+                A.Assert(map.Def.Theme.Tileset.Length == TileUtility.Size8x6);
                 for (int i = -1; i <= map.Width; i++) {
                     for (int j = -1; j <= map.Height; j++) {
                         int index = TileUtility.Index_8x6((Vec2 delta) => {
@@ -85,11 +86,11 @@ namespace W
 
 
 
-        private static void IconText(ID cn) => UI.IconText(cn.CN, cn.Icon, Game.Color(cn));
+        private static void IconText(ID cn) => UI.IconText(cn.CN, cn.Icon, cn.Color);
 
-        private static void IconTextWithLevel(ID cn, int level) => UI.IconText(NameAndLevel(cn, level), cn.Icon, Game.Color(cn));
+        private static void IconTextWithLevel(ID cn, int level) => UI.IconText(NameAndLevel(cn, level), cn.Icon, cn.Color);
         private static void IconButtonWithLevel(ID cn, int level, Color textColor, Action action)
-            => UI.IconButton(NameAndLevel(cn, level), textColor, cn.Icon, Game.Color(cn), action);
+            => UI.IconButton(NameAndLevel(cn, level), textColor, cn.Icon, cn.Color, action);
         private static string NameAndLevel(ID cn, int level) => level <= 1 ? cn.CN : $"{cn.CN} * {level}";
 
 
@@ -98,7 +99,7 @@ namespace W
             bool positive = v > 0;
             UI.IconText($"{idValue.Key.CN} {(positive ? "+" : "-")}{(positive ? v : -v)}{(multiplier == 1 ? "" : ($"*{multiplier}"))}",
                 !canChange ? ColorWarning : positive ? ColorPositive : ColorNegative,
-                idValue.Key.Icon, Game.Color(idValue.Key));
+                idValue.Key.Icon, idValue.Key.Color);
         }
 
         private void CanChangeText(IDValue idValue, long level, IdleReference i) {
@@ -329,7 +330,7 @@ namespace W
                 long cost = CostOf(idValue.Value, techDef.Multiplier, techLevel);
                 bool canChange = Map.CanChange(idValue, -cost, IdleReference.Val);
                 UI.IconText($"{idValue.Key.CN} {cost}", canChange ? ColorNormal : ColorWarning,
-                    idValue.Key.Icon, Game.Color(idValue.Key));
+                    idValue.Key.Icon, idValue.Key.Color);
             }
         }
 
@@ -984,10 +985,10 @@ namespace W
                 MapView.I.ClearFrontSpriteAt(x, y);
             }
             else if (id.Sprite != null) {
-                MapView.I.SetFrontSpriteAt(x, y, id.Sprite, Game.Color(id));
+                MapView.I.SetFrontSpriteAt(x, y, id.Sprite, id.Color);
             }
             else if (id.Sprites != null && id.Sprites.Length > 0) {
-                MapView.I.SetFrontSpritesAt(x, y, id.Sprites, id.SpritesDuration, Game.Color(id));
+                MapView.I.SetFrontSpritesAt(x, y, id.Sprites, id.SpritesDuration, id.Color);
             }
             else {
                 MapView.I.ClearFrontSpriteAt(x, y);
@@ -1036,13 +1037,13 @@ namespace W
             TileDef neighbor = GameConfig.I.ID2Obj[id] as TileDef;
             foreach (TileDef bonus in self.Bonus) {
                 if (bonus == neighbor) {
-                    MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, Game.Color(self), dir);
+                    MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, self.Color, dir);
                     return;
                 }
             }
             foreach (TileDef bonus in self.Conditions) {
                 if (bonus == neighbor) {
-                    MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, Game.Color(self), dir);
+                    MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, self.Color, dir);
                     return;
                 }
             }
@@ -1074,53 +1075,9 @@ namespace W
 
         public void TryConstructInitials(Map map) {
             MapUI.map = map;
-            map.RandomGenerator = new System.Random((int)map.Seed);
-            TryConstructCellularAutomaton(map);
+            map.TemporaryRandomGenerator = new System.Random((int)map.Seed);
+            map.Def.ProcessMap(map);
             TryConstructInitialStructures(map);
-        }
-
-        public void TryConstructCellularAutomaton(Map map) {
-
-            if (!map.Def.IsPlanet) return;
-
-            int width = map.Width;
-            int height = map.Height;
-
-            map.Buffer = CellularAutomataUtility.GetArray(width, height);
-
-            float distMax = (width + height) / 2;
-            for (int i = 0; i < width; i++) {
-                float distX = M.Abs((width - 1) / 2f - i);
-                for (int j = 0; j < height; j++) {
-                    float distY = M.Abs((height - 1) / 2f - j);
-                    float t = (distX + distY) / distMax;
-
-                    bool isEmpty = t < map.RandomGenerator.NextDouble();
-                    map.Buffer.Item1[i, j] = isEmpty;
-                }
-            }
-
-            map.Buffer = CellularAutomataUtility.GameOfTerrain_IterateBackAndForth(map.Buffer, (bool source, int count) => {
-                if (count > 5) {
-                    return true;
-                } else {
-                    return source;
-                }
-            }, 2);
-
-            map.Buffer = CellularAutomataUtility.GameOfTerrain_IterateBackAndForth(map.Buffer, (bool source, int count) => {
-                if (count > 6) {
-                    return true;
-                } else {
-                    return source;
-                }
-            }, 2);
-
-            for (int i = 0; i < width; i++) {
-                for (int j = 0; j < height; j++) {
-                    map.ID(i, j, map.Buffer.Item1[i, j] ? ID.Empty : ID.Invalid);
-                }
-            }
         }
 
         public void TryConstructInitialStructures(Map map) {
@@ -1142,8 +1099,8 @@ namespace W
                     long times_success = 0;
 
                     while (times_success < idValue.Value && times < square) {
-                        x = map.RandomGenerator.Next(width);
-                        y = map.RandomGenerator.Next(height);
+                        x = map.TemporaryRandomGenerator.Next(width);
+                        y = map.TemporaryRandomGenerator.Next(height);
 
                         uint id = map.ID(x, y);
                         if (id == ID.Empty) {
