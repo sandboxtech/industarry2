@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace W
 {
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class Settings : IPersistent
+    public class Settings
     {
 
         [OnSerializing]
@@ -22,9 +22,6 @@ namespace W
 
         [OnDeserialized]
         internal void OnDeserializedMethod(StreamingContext context) {
-        }
-
-        public void OnCreate() {
         }
 
         public bool SkipConfirmation = true;

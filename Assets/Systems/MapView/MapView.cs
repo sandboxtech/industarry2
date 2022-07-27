@@ -196,6 +196,10 @@ namespace W
             }
         }
 
+        public void ScaleTileAt(int x, int y) {
+            StartCoroutine(ScaleTileCoroutine(Front, x, y, G.now));
+        }
+
 
         private long TileScaleDuration = Constants.Second / 4;
         private IEnumerator ScaleTileCoroutine(Tilemap tilemap, int x, int y, long start) {
@@ -319,5 +323,8 @@ namespace W
         private Transform Background;
         [SerializeField]
         private SpriteRenderer BackgroundSprite;
+
+
+
     }
 }

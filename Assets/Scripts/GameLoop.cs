@@ -6,7 +6,9 @@ namespace W
 
     /// <summary>
     /// 依赖：Persistence Serialization
-    /// 依赖回调：GameEntry
+    /// 被依赖：目前 GameEntry
+    /// 用于游戏循环回调：开始，保存
+    /// 用于创建保存物品路由，存档位置控制
     /// </summary>
     public static class GameLoop
     {
@@ -14,32 +16,22 @@ namespace W
 
         }
 
-        private static string gameFile = "game.json";
         public static void Start() {
-            if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.WindowsEditor) {
-                LoadGame();
-            } else {
-                try {
-                    LoadGame();
-                } catch (System.Exception e) {
+            try {
+                Game.Load(out Game _);
+            } catch (System.Exception e) {
+                if (UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WindowsEditor) {
                     UI.Prepare();
                     UI.Text(e.Message);
+                    UI.Text(new System.Diagnostics.StackTrace().ToString());
                     UI.Show();
-                    throw e; // rethrow
                 }
+                throw e;
             }
         }
 
-        private static void LoadGame() {
-            Load(null, gameFile, out Game _);
-            Game.I.Load();
-        }
 
-        public static void SaveGame() {
-            Save(null, gameFile, Game.I);
-        }
-
-        public static void Load<T>(string directory, string filename, out T t) where T : class, IPersistent, new() {
+        public static void Load<T>(string directory, string filename, out T t) where T : class, new() {
             A.Assert(filename != null);
             Persistence.Load(directory, filename, out string contents);
             t = Persistence.Create<T>(contents);

@@ -5,8 +5,19 @@ namespace W
 {
     public interface IPersistent
     {
-        public void OnCreate();
+        void OnConstruct();
+        void OnCreate();
+        void OnLoad();
+        void AfterConstruct();
     }
+
+    //public abstract class APersistent : IPersistent
+    //{
+    //    void IPersistent.AfterConstruct() { }
+    //    void IPersistent.OnConstruct() { }
+    //    void IPersistent.OnCreate() { }
+    //    void IPersistent.OnLoad() { }
+    //}
 
     /// <summary>
     /// 包装System.IO里的一些方法
@@ -14,28 +25,38 @@ namespace W
     /// </summary>
     public static class Persistence
     {
-        public static T Create<T>(string contents = null) where T : class, IPersistent, new() {
+        public static T Create<T>(string contents = null) where T : class, new() {
             T t;
+            IPersistent persistent;
             if (contents == null) {
                 t = new T();
-                t.OnCreate();
+                persistent = t as IPersistent;
+                persistent?.OnConstruct();
+                persistent?.OnCreate();
             } else {
                 if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.WindowsEditor) {
                     t = Serialization.Deserialize(contents) as T;
-                }
-                else {
+                    persistent = t as IPersistent;
+                    persistent?.OnConstruct();
+                    persistent?.OnLoad();
+                } else {
                     try {
                         t = Serialization.Deserialize(contents) as T;
+                        persistent = t as IPersistent;
+                        persistent?.OnConstruct();
+                        persistent?.OnLoad();
                     } catch {
                         t = null;
                         return t;
                     }
                 }
             }
+            persistent?.AfterConstruct();
             return t;
         }
 
-        public static string Path {
+
+        public static string Saves {
             get {
                 if (saves == null) {
                     saves = Combine(UnityEngine.Application.persistentDataPath, "saves/");
@@ -56,7 +77,7 @@ namespace W
             CreateDirectory(dir);
             contents = Read(Combine(dir, file));
         }
-        private static string DirOf(string directory) => directory == null ? Path : Combine(Path, directory);
+        private static string DirOf(string directory) => directory == null ? Saves : Combine(Saves, directory);
 
         public static string Combine(string path, string file) => System.IO.Path.Combine(path, file);
 
@@ -64,7 +85,7 @@ namespace W
 
 
         public static void ClearSaves() {
-            Clear(Path);
+            Clear(Saves);
         }
         private static void Clear(string directory) {
             DirectoryInfo dir = new DirectoryInfo(directory);

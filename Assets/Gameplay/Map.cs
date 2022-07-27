@@ -10,22 +10,55 @@ namespace W
     {
         public void _Init(Map previousMap, uint index);
     }
+
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+    public class MapBody
+    {
+        [JsonProperty]
+        private uint[] ids;
+        public uint[] IDs => ids; // 对应位置的建筑类型
+
+        [JsonProperty]
+        private int[] levels;
+        public int[] Levels => levels; // 此建筑的等级。受到相邻和科技影响
+
+        public void Init(int width, int height) {
+            A.Assert(ids == null && levels == null);
+            int size = width * height;
+            ids = new uint[size];
+            levels = new int[size];
+        }
+    }
+
     /// <summary>
     /// 地图文件
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class Map : IPersistent, IMap
+    public class Map : IMap
     {
 
-
         public bool HasPosition(int x, int y) => x >= 0 && x < Width && y >= 0 && y < Height;
-
         private int IndexOf(int x, int y) => x * Height + y;
 
-        [JsonProperty]
-        private uint[] ids; // 对应位置的建筑类型
-        public uint ID(int x, int y) => ids[IndexOf(x, y)];
-        public void ID(int x, int y, uint value) => ids[IndexOf(x, y)] = value;
+
+        [JsonIgnore]
+        private MapBody body;
+        public MapBody Body => body;
+
+        public void Enter() {
+            if (body == null) {
+                body = Persistence.Create<MapBody>();
+                body.Init(Width, Height);
+                MapUI.I.TryConstructInitials(this);
+            }
+            MapUI.EnterMap(this);
+        }
+
+        //[JsonProperty]
+        //private uint[] ids; // 对应位置的建筑类型
+        public uint ID(int x, int y) => body.IDs[IndexOf(x, y)];
+        public void ID(int x, int y, uint value) => body.IDs[IndexOf(x, y)] = value;
+
         public uint ID_Safe(int x, int y) {
             if (!HasPosition(x, y)) {
                 return W.ID.Invalid;
@@ -33,10 +66,11 @@ namespace W
             return ID(x, y);
         }
 
-        [JsonProperty]
-        private int[] levels; // 此建筑的等级。受到相邻和科技影响
-        public int Level(int x, int y) => levels[IndexOf(x, y)];
-        public void Level(int x, int y, int value) => levels[IndexOf(x, y)] = value;
+        //[JsonProperty]
+        //private int[] levels; // 此建筑的等级。受到相邻和科技影响
+        public int Level(int x, int y) => body.Levels[IndexOf(x, y)];
+        public void Level(int x, int y, int value) => body.Levels[IndexOf(x, y)] = value;
+
 
 
 
@@ -45,29 +79,20 @@ namespace W
         public Dictionary<uint, Idle> Resources => resources;
 
 
-        public void OnCreate() {
-            resources = new Dictionary<uint, Idle>();
-        }
-
-
-
         [JsonProperty]
         public int Width;
         [JsonProperty]
         public int Height;
-        [JsonIgnore]
-        private int Size => Width * Height;
+
 
         [JsonIgnore]
         public System.Random TemporaryRandomGenerator { get; set; }
-
 
         [JsonProperty]
         private uint mapDefID = W.ID.Empty;
         [JsonIgnore]
         private MapDef mapDef;
 
-        public bool NotInitialized => mapDefID == W.ID.Empty;
 
         public MapDef Def {
             get {
@@ -80,6 +105,10 @@ namespace W
         }
 
         [JsonProperty]
+        private int mapLevel = 0;
+        public int MapLevel => mapLevel;
+
+        [JsonProperty]
         private uint previousSeed;
         public uint PreviousSeed => previousSeed;
 
@@ -87,36 +116,36 @@ namespace W
         private uint seed;
         public uint Seed => seed;
 
+        public string Key => $"{PreviousSeed}_{MapLevel}";
+        private string KeyOfBody => $"{Key}_body";
 
 
-        private const string InitialPlanetMapDefConfigName = "Continental";
+        private const string InitialPlanetMapDefConfigName = "Dry";
         private const string SpaceshipConfigName = "Spaceship";
 
+        public const uint InitialSeed = 0;
         void IMap._Init(Map previousMap, uint index) {
-            previousSeed = previousMap == null ? 0 : previousMap.seed;
+            if (mapDefID != W.ID.Empty) return;
+
+            A.Assert(resources == null);
+            resources = new Dictionary<uint, Idle>();
+
+            previousSeed = previousMap == null ? InitialSeed : previousMap.seed;
+            seed = H.Hash(previousSeed, index);
+
             if (previousMap == null) {
-                if (index == Game.SpaceShipIndex) {
-                    seed = Game.SpaceShipIndex;
-                    mapDef = GameConfig.I.Name2Obj[SpaceshipConfigName] as MapDef;
-                }
-                else if (index == Game.PlanetMapIndex) {
-                    seed = Game.PlanetMapIndex;
-                    mapDef = GameConfig.I.Name2Obj[InitialPlanetMapDefConfigName] as MapDef;
-                }
-                else {
-                    A.Error();
-                }
-            }
-            else {
-                seed = H.Hash(previousSeed, index);
+                mapLevel = -1;
+                mapDef = mapDef = GameConfig.I.Name2Obj[SpaceshipConfigName] as MapDef;
+            } else if (previousMap.previousSeed == InitialSeed) {
+                mapLevel = 0;
+                mapDef = mapDef = GameConfig.I.Name2Obj[InitialPlanetMapDefConfigName] as MapDef;
+            } else {
+                mapLevel = index == 0 ? previousMap.mapLevel + 1 : previousMap.mapLevel - 1;
                 mapDef = previousMap.Def;
             }
             mapDefID = mapDef.id;
             InitializeSize();
-
-            MapUI.I.TryConstructInitials(this);
         }
-
 
         private void InitializeSize() {
             Width = mapDef.Width;
@@ -126,9 +155,24 @@ namespace W
 
             A.Assert(Width > 0 && Width < 0b1111111111);
             A.Assert(Height > 0 && Height < 0b1111111111);
-            int squareSize = Size;
-            ids = new uint[squareSize];
-            levels = new int[squareSize];
+        }
+
+
+        public const string MapsFolder = "maps";
+
+        public string Save(out string key) {
+            key = Key;
+            GameLoop.Save(MapsFolder, key, this);
+            if (body != null) SaveBody();
+            return key;
+        }
+        private void SaveBody() {
+            GameLoop.Save(MapsFolder, KeyOfBody, body);
+        }
+
+        public static Map Load(string key, out Map map) {
+            GameLoop.Load(MapsFolder, key, out map);
+            return map;
         }
 
 
@@ -144,6 +188,7 @@ namespace W
             LoadCameraPosition();
             CameraControl.I.Zoom = CameraZoom;
         }
+
         [OnSerializing]
         private void OnSerializingMethod(StreamingContext context) {
             SaveCameraPosition();

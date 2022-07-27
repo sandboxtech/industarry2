@@ -36,7 +36,7 @@ namespace W
             UI.Prepare();
 
             UI.Button("保存", () => {
-                GameLoop.SaveGame();
+                Game.I.Save(out string _);
             });
             UI.Button("删档", () => {
                 Persistence.ClearSaves();

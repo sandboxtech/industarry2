@@ -27,15 +27,14 @@ namespace W
             if (Input.GetKeyDown(KeyCode.X)) {
                 Map.DoChange(GameConfig.I.Name2Obj["Population_N1"] as IDValue, 1, IdleReference.Inc);
             }
-            if (Input.GetKeyDown(KeyCode.Space)) {
-                Game.I.LoadOrCreateMap(0);
-                EnterMap();
-            }
+            //if (Input.GetKeyDown(KeyCode.Space)) {
+            //    Game.I.LoadOrCreateMap(Game);
+            //    EnterMap();
+            //}
         }
 
 
-        public static void EnterMap() {
-            map = Game.I.Map;
+        public static void EnterMap(Map map) {
 
             A.Assert(map != null);
 
@@ -96,8 +95,9 @@ namespace W
 
         private static void IconTextWithValueAndColor(IDValue idValue, long multiplier, bool canChange) {
             long v = idValue.Value;
-            bool positive = v > 0;
-            UI.IconText($"{idValue.Key.CN} {(positive ? "+" : "-")}{(positive ? v : -v)}{(multiplier == 1 ? "" : ($"*{multiplier}"))}",
+            long product = v * multiplier;
+            bool positive = product > 0;
+            UI.IconText($"{idValue.Key.CN} {(positive ? "+" : "-")}{(v > 0 ? v : -v)}{(multiplier == 1 ? "" : $"*{(multiplier > 0 ?  multiplier : -multiplier)}")}",
                 !canChange ? ColorWarning : positive ? ColorPositive : ColorNegative,
                 idValue.Key.Icon, idValue.Key.Color);
         }
@@ -120,7 +120,7 @@ namespace W
 
 
 
-        private static Map map;
+        private static Map map; // todo to refactor
 
         /// <summary>
         /// 是否启用UI
@@ -160,17 +160,16 @@ namespace W
         /// 格子按下时的行为
         /// </summary>
         private void OnTap() {
-            if (Application.platform == RuntimePlatform.WindowsEditor) {
-                OnTap_();
-                return;
-            }
             try {
                 OnTap_();
             } catch (Exception e) {
-                UI.Prepare();
-                UI.Text(e.Message);
-                UI.Text(new System.Diagnostics.StackTrace().ToString());
-                UI.Show();
+                if (Application.platform != RuntimePlatform.WindowsEditor) {
+                    UI.Prepare();
+                    UI.Text(e.Message);
+                    UI.Text(new System.Diagnostics.StackTrace().ToString());
+                    UI.Show();
+                }
+                throw e;
             }
         }
 
@@ -181,6 +180,7 @@ namespace W
             x = MapTapping.I.X;
             y = MapTapping.I.Y;
 
+            map = Game.I.Map;
 
             enableUI = true;
 
@@ -212,12 +212,15 @@ namespace W
 
             if (existingID == ID.Empty) {
                 TapEmpty();
+                ParticlePlayer.I.FrameAnimation(ParticlePlayer.I.Destruct, x, y);
             } else {
+                MapView.I.ScaleTileAt(x, y);
                 TapExisting();
             }
         }
 
         private void TapNothing() {
+            ParticlePlayer.I.FrameAnimation(ParticlePlayer.I.Construct, x, y);
             SettingsPage.Show();
             MapTapping.I.HideIndicator();
         }
@@ -1019,11 +1022,10 @@ namespace W
             TranslateTiles(x - 1, y);
         }
 
-        private static void TranslateTiles(int x, int y) {
+        public static void TranslateTiles(int x, int y) {
             uint id = map.ID_Safe(x, y);
-            if (ID.IsInvalid(id)) return;
-            TileDef tile = GameConfig.I.ID2Obj[id] as TileDef;
-            if (tile.BonusAnim == null) return;
+            TileDef tile = ID.IsInvalid(id) ? null : GameConfig.I.ID2Obj[id] as TileDef;
+            if (tile != null && tile.BonusAnim == null) return;
 
             TranslateTile(x, y, x, y + 1, MapView.Dir.Up, tile);
             TranslateTile(x, y, x, y - 1, MapView.Dir.Down, tile);
@@ -1031,7 +1033,12 @@ namespace W
             TranslateTile(x, y, x - 1, y, MapView.Dir.Left, tile);
         }
 
-        private static void TranslateTile(int x, int y, int dx, int dy, MapView.Dir dir, TileDef self) {
+        public static void TranslateTile(int x, int y, int dx, int dy, MapView.Dir dir, TileDef self) {
+            if (self == null) {
+                MapView.I.SetAnimSpriteAt(x, y, null, Color.white, dir);
+                return;
+            }
+
             uint id = map.ID_Safe(dx, dy);
             if (ID.IsInvalid(id)) return;
             TileDef neighbor = GameConfig.I.ID2Obj[id] as TileDef;

@@ -8,6 +8,8 @@ namespace W
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class GameConfig : IPersistent
     {
+
+
         public static GameConfig I => Game.I.Config;
         /// <summary>
         /// 每次读取
@@ -71,9 +73,10 @@ namespace W
         }
 
 
-
-
-        public void OnCreate() {
+        void IPersistent.AfterConstruct() { }
+        void IPersistent.OnConstruct() { }
+        void IPersistent.OnLoad() { }
+        void IPersistent.OnCreate() {
             id2name = new Dictionary<uint, string>();
 
             uint i = 1;
@@ -83,10 +86,8 @@ namespace W
             }
         }
 
-        private bool loaded = false;
         public void Load() {
-            if (loaded) return;
-            loaded = true;
+            A.Assert(id2obj == null);
 
             id2obj = new Dictionary<uint, ID>();
             foreach (var pair in id2name) {
