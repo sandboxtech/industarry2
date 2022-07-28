@@ -8,7 +8,7 @@ namespace W
 
     public interface IMap
     {
-        public void _Init(Map previousMap, uint index);
+        public void Init(Map previousMap, uint index);
     }
 
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
@@ -47,7 +47,7 @@ namespace W
 
         public void Enter() {
             if (body == null) {
-                body = Persistence.Create<MapBody>();
+                body = new MapBody();
                 body.Init(Width, Height);
                 MapUI.I.TryConstructInitials(this);
             }
@@ -124,7 +124,7 @@ namespace W
         private const string SpaceshipConfigName = "Spaceship";
 
         public const uint InitialSeed = 0;
-        void IMap._Init(Map previousMap, uint index) {
+        void IMap.Init(Map previousMap, uint index) {
             if (mapDefID != W.ID.Empty) return;
 
             A.Assert(resources == null);

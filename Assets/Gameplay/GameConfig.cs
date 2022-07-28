@@ -5,17 +5,20 @@ using System.Collections.Generic;
 
 namespace W
 {
-    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class GameConfig : IPersistent
+    public interface IGameConfig
     {
-
+        void Init();
+    }
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+    public class GameConfig : IGameConfig
+    {
 
         public static GameConfig I => Game.I.Config;
         /// <summary>
         /// 每次读取
         /// </summary>
         [JsonIgnore]
-        private Dictionary<string, ID> name2obj;
+        private readonly Dictionary<string, ID> name2obj;
         public IReadOnlyDictionary<string, ID> Name2Obj => name2obj;
 
         /// <summary>
@@ -73,17 +76,14 @@ namespace W
         }
 
 
-        void IPersistent.AfterConstruct() { }
-        void IPersistent.OnConstruct() { }
-        void IPersistent.OnLoad() { }
-        void IPersistent.OnCreate() {
+        void IGameConfig.Init() {
             id2name = new Dictionary<uint, string>();
-
             uint i = 1;
             foreach (var pair in name2obj) {
                 id2name.Add(i, pair.Key);
                 i++;
             }
+            Load();
         }
 
         public void Load() {

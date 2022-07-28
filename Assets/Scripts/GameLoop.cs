@@ -12,21 +12,22 @@ namespace W
     /// </summary>
     public static class GameLoop
     {
-        public static void Awake() {
-
-        }
-
         public static void Start() {
-            try {
-                Game.Load(out Game _);
-            } catch (System.Exception e) {
-                if (UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WindowsEditor) {
+            if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.WindowsEditor) {
+                Game.Load(out Game game);
+                (game as IGame).Start();
+            }
+            else {
+                try {
+                    Game.Load(out Game game);
+                    (game as IGame).Start();
+                } catch (System.Exception e) {
                     UI.Prepare();
                     UI.Text(e.Message);
                     UI.Text(new System.Diagnostics.StackTrace().ToString());
                     UI.Show();
+                    throw e;
                 }
-                throw e;
             }
         }
 
@@ -34,7 +35,7 @@ namespace W
         public static void Load<T>(string directory, string filename, out T t) where T : class, new() {
             A.Assert(filename != null);
             Persistence.Load(directory, filename, out string contents);
-            t = Persistence.Create<T>(contents);
+            t = Persistence.Deserialize<T>(contents);
         }
 
         /// <summary>
@@ -43,7 +44,6 @@ namespace W
         public static void Save(string directory, string filename, object obj) {
             A.Assert(filename != null, () => filename);
             string json = Serialization.Serialize(obj);
-            // Persistence.Save(directory, filename, json);
             saves.Add((directory, filename, json));
         }
         private static HashSet<(string, string, string)> saves = new HashSet<(string, string, string)>();

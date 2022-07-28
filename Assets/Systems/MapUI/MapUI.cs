@@ -160,16 +160,19 @@ namespace W
         /// 格子按下时的行为
         /// </summary>
         private void OnTap() {
-            try {
+            if (Application.platform == RuntimePlatform.WindowsEditor) {
                 OnTap_();
-            } catch (Exception e) {
-                if (Application.platform != RuntimePlatform.WindowsEditor) {
+            }
+            else {
+                try {
+                    OnTap_();
+                } catch (Exception e) {
                     UI.Prepare();
                     UI.Text(e.Message);
                     UI.Text(new System.Diagnostics.StackTrace().ToString());
                     UI.Show();
+                    throw e;
                 }
-                throw e;
             }
         }
 

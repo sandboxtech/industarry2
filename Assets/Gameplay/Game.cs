@@ -6,10 +6,14 @@ using UnityEngine;
 
 namespace W
 {
+    public interface IGame
+    {
+        void Start();
+    }
 
     [ExecuteAfter(typeof(GameConfigReference))]
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class Game : IPersistent
+    public class Game : IPersistent, IGame
     {
         public static Game I => i;
         private static Game i;
@@ -19,12 +23,44 @@ namespace W
         }
 
 
+        [JsonIgnore]
+        private bool created = false;
 
+        [JsonProperty]
+        private GameConfig config;
+        public GameConfig Config => config;
+
+        void IPersistent.OnCreate() {
+            // create
+            created = true;
+
+            if (config == null) {
+                config = new GameConfig();
+                (config as IGameConfig).Init();
+            }
+
+            settings = new Settings();
+            techs = new Dictionary<uint, int>();
+
+            on_ship = false;
+            spaceshipMap = new Map();
+            thisMap = new Map();
+            superMap = new Map();
+
+            (spaceshipMap as IMap).Init(null, 0);
+            (thisMap as IMap).Init(spaceshipMap, 0);
+            (superMap as IMap).Init(thisMap, 0);
+
+
+            thisMapKey = thisMap.Key;
+
+            CameraControl.I.Position = new Vector2(thisMap.Width / 2, thisMap.Height / 2);
+        }
 
 
         private const long VERSION = 3;
         [JsonProperty]
-        private long version = VERSION;
+        private readonly long version = VERSION;
         private void CheckVersion() {
             if (version != VERSION) {
                 UI.Text("存档版本不兼容");
@@ -32,43 +68,11 @@ namespace W
                 Persistence.ClearSaves();
             }
         }
-
-
-        [JsonProperty]
-        private GameConfig config;
-        public GameConfig Config => config;
-        void IPersistent.OnConstruct() {
-            if (config == null) {
-                config = Persistence.Create<GameConfig>();
-            }
-            config.Load();
+        void IGame.Start() {
             CheckVersion();
-        }
-
-
-        void IPersistent.OnCreate() {
-            // create
-
-            settings = Persistence.Create<Settings>();
-            techs = new Dictionary<uint, int>();
-
-            spaceshipMap = Persistence.Create<Map>();
-            thisMap = Persistence.Create<Map>();
-            superMap = Persistence.Create<Map>();
-
-            (spaceshipMap as IMap)._Init(null, 0);
-            (thisMap as IMap)._Init(spaceshipMap, 0);
-            (superMap as IMap)._Init(thisMap, 0);
-
-            on_ship = false;
-
-            thisMapKey = thisMap.Key;
-
-            CameraControl.I.Position = new Vector2(thisMap.Width / 2, thisMap.Height / 2);
-        }
-        void IPersistent.OnLoad() {
-        }
-        void IPersistent.AfterConstruct() {
+            if (!created) {
+                config.Load();
+            }
             thisMap.Enter();
         }
 
@@ -137,10 +141,9 @@ namespace W
 
 
         private const string GameFilename = "game.json";
-        public string Save(out string key) {
-            key = GameFilename;
+        public void Save() {
+            string key = GameFilename;
             GameLoop.Save(null, key, this);
-            return key;
         }
         public static Game Load(out Game game) {
             GameLoop.Load(null, GameFilename, out game);
@@ -154,9 +157,6 @@ namespace W
             Map.Load(spaceshipMapKey, out spaceshipMap);
             Map.Load(thisMapKey, out thisMap);
             Map.Load(superMapKey, out superMap);
-            //GameLoop.Load(MapsFolder, thisMapKey, out thisMap);
-            //GameLoop.Load(MapsFolder, superMapKey, out superMap);
-            //GameLoop.Load(null, SpaceshipMapKey, out spaceshipMap);
         }
 
         [OnSerializing]
@@ -168,9 +168,6 @@ namespace W
             thisMap.Save(out thisMapKey);
             superMap.Save(out superMapKey);
             spaceshipMap.Save(out spaceshipMapKey);
-            //GameLoop.Save(MapsFolder, thisMap.Key, thisMap);
-            //GameLoop.Save(MapsFolder, superMap.Key, superMap);
-            //GameLoop.Save(null, SpaceshipMapKey, spaceshipMap);
         }
 
         [OnDeserializing]

@@ -5,19 +5,8 @@ namespace W
 {
     public interface IPersistent
     {
-        void OnConstruct();
         void OnCreate();
-        void OnLoad();
-        void AfterConstruct();
     }
-
-    //public abstract class APersistent : IPersistent
-    //{
-    //    void IPersistent.AfterConstruct() { }
-    //    void IPersistent.OnConstruct() { }
-    //    void IPersistent.OnCreate() { }
-    //    void IPersistent.OnLoad() { }
-    //}
 
     /// <summary>
     /// 包装System.IO里的一些方法
@@ -25,33 +14,23 @@ namespace W
     /// </summary>
     public static class Persistence
     {
-        public static T Create<T>(string contents = null) where T : class, new() {
+        public static T Deserialize<T>(string contents = null) where T : class, new() {
             T t;
-            IPersistent persistent;
             if (contents == null) {
                 t = new T();
-                persistent = t as IPersistent;
-                persistent?.OnConstruct();
-                persistent?.OnCreate();
+                (t as IPersistent)?.OnCreate();
             } else {
                 if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.WindowsEditor) {
                     t = Serialization.Deserialize(contents) as T;
-                    persistent = t as IPersistent;
-                    persistent?.OnConstruct();
-                    persistent?.OnLoad();
                 } else {
                     try {
                         t = Serialization.Deserialize(contents) as T;
-                        persistent = t as IPersistent;
-                        persistent?.OnConstruct();
-                        persistent?.OnLoad();
                     } catch {
                         t = null;
                         return t;
                     }
                 }
             }
-            persistent?.AfterConstruct();
             return t;
         }
 

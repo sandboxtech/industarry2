@@ -7,9 +7,6 @@ namespace W
     [ExecuteAfter(typeof(UI))]
     public class GameEntry : MonoBehaviour
     {
-        private void Awake() {
-            GameLoop.Awake();
-        }
 
         private void Start() {
             GameLoop.Start();
