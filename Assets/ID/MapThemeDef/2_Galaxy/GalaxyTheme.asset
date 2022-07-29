@@ -19,9 +19,9 @@ MonoBehaviour:
   glow: {fileID: 0}
   color: {r: 1, g: 1, b: 1, a: 1}
   tileset: []
+  backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   background: {fileID: 21300000, guid: 1799ccd856b9da54381483d957d74980, type: 3}
-  backgroundColor: {r: 0.05428977, g: 0.08574263, b: 0.18867922, a: 1}
   backgroundMaterial: {fileID: 2100000, guid: 01f5cf399a606f2419e9875f85d7741e, type: 2}
-  ground: {fileID: 21300000, guid: b054acfaea3958845b5499f6dbe98d31, type: 3}
   groundColor: {r: 1, g: 1, b: 1, a: 1}
+  ground: {fileID: 21300000, guid: b054acfaea3958845b5499f6dbe98d31, type: 3}
   groundMaterial: {fileID: 2100000, guid: 8916929682fcd9d4781c01be6ae76881, type: 2}

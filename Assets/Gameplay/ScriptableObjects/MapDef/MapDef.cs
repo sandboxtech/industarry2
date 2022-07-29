@@ -66,13 +66,6 @@ namespace W
         private static int Validate(int size) => size <= 0 ? 16 : size >= 1024 ? 1024 : size;
 
 
-        [Header("破碎海岸")]
-        [SerializeField]
-        private int edge;
-        public int Edge => edge == 0 ? (M.Min(Width, Height) / 4) : edge;
-
-
-
 
         [Header("初始随机建筑")]
         [SerializeField]

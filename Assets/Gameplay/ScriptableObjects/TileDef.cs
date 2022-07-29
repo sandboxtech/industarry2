@@ -5,6 +5,14 @@ using UnityEngine;
 namespace W
 {
 
+    [System.Serializable]
+    public struct Pair
+    {
+        public ID ID;
+        public long value;
+    }
+
+
     [CreateAssetMenu(fileName = "__TileDef__", menuName = "创建 TileDef 建筑定义", order = 1)]
     public class TileDef : ID
     {

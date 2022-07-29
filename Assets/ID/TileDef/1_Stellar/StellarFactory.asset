@@ -9,19 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88b6299e903388242a394574c70cb2f1, type: 3}
-  m_Name: Universe
+  m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
+  m_Name: StellarFactory
   m_EditorClassIdentifier: 
-  cn: "\u5B87\u5B99"
-  sprite: {fileID: 0}
+  cn: "\u5C0F\u884C\u661F\u77FF\u7AD9"
+  sprite: {fileID: 21300000, guid: 495c734118d458945a2f32b2c207dbf7, type: 3}
   sprites: []
   spritesDuration: 1
   glow: {fileID: 0}
   color: {r: 1, g: 1, b: 1, a: 1}
-  mapThemeDef: {fileID: 11400000, guid: 8cf75a4dc75205347a7e48620ea3bf16, type: 2}
-  width: 91
-  height: 91
-  edge: 0
-  initialRandomStructures: []
-  constructables:
-  - {fileID: 11400000, guid: a10021eb8dad755439bf17cdafa4f13c, type: 2}
+  construction: []
+  destruction: []
+  inc: []
+  max: []
+  bonusAnim: {fileID: 11400000}
+  bonus:
+  - {fileID: 11400000}
+  conditions: []
+  repels: []
+  techs: []

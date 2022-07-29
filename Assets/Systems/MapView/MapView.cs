@@ -99,12 +99,12 @@ namespace W
             if (Game.I.Map.Def.Theme is PlanetMapThemeDef theme && theme.ActivateLight) {
                 lightEnabled = true;
 
-                float day = (Time.time / theme.DayDuration) % 1;
-                light2D.color = theme.DefaultDaylightGradient.Evaluate(day);
+                float day = Time.time / theme.DayDuration;
+                light2D.color = theme.DefaultDaylightGradient.Evaluate(day % 1);
 
                 const float minIntensity = 0.375f;
 
-                float sin = (M.Sin(2 * M.PI * day) * 1.5f + 1) / 2f;
+                float sin = (M.Sin(2 * M.PI * day / theme.DayDuration) * 1.5f + 1) / 2f;
                 sin = M.Clamp01(sin);
 
                 float intensity = M.Lerp(minIntensity, 1f, sin);
@@ -117,7 +117,7 @@ namespace W
                 glow = M.Clamp(0, 1, glow);
                 if (glow > 0) {
                     Glow.enabled = true;
-                    tr.sharedMaterial.SetFloat("_GlowIntensity", glow * 3);
+                    tr.sharedMaterial.SetFloat("_GlowIntensity", glow * 4);
                     Glow.color = new Color(1, 1, 1, glow);
 
                     BackgroundSprite.sharedMaterial.SetFloat("_Lerp", glow);

@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8be4a172c490f0a4b88537c33a872ada, type: 3}
-  m_Name: Food
+  m_Name: MetalProduct
   m_EditorClassIdentifier: 
-  cn: "\u98DF\u7269"
-  sprite: {fileID: 21300000, guid: b4c55187ca2a6084a98d3338ef427b26, type: 3}
+  cn: "\u77F3\u6750"
+  sprite: {fileID: 21300000, guid: 42826933df2b9284ba022e0a63ba77a3, type: 3}
   sprites: []
   spritesDuration: 1
   glow: {fileID: 0}
-  color: {r: 1, g: 1, b: 1, a: 1}
-  Del: {fileID: 11400000, guid: 359f89c616d78c848967192349d57e45, type: 2}
+  color: {r: 0.7490196, g: 0.7490196, b: 0.7490196, a: 1}
+  Del: {fileID: 11400000, guid: 1b22f30e2ccc7f84da9963c729b9e166, type: 2}

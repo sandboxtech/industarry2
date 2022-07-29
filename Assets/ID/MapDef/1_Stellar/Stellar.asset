@@ -19,8 +19,8 @@ MonoBehaviour:
   glow: {fileID: 0}
   color: {r: 1, g: 1, b: 1, a: 1}
   mapThemeDef: {fileID: 11400000, guid: 4b127e4f6994504498c75331b3d711e6, type: 2}
-  width: 15
-  height: 15
+  width: 31
+  height: 31
   edge: 0
   initialRandomStructures: []
   constructables:
