@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 593de590dd11db945a0b1354ada379f3, type: 3}
+  m_Name: GalaxyTheme
+  m_EditorClassIdentifier: 
+  cn: 
+  sprite: {fileID: 0}
+  sprites: []
+  spritesDuration: 1
+  glow: {fileID: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  tileset: []
+  background: {fileID: 21300000, guid: 1799ccd856b9da54381483d957d74980, type: 3}
+  backgroundColor: {r: 0.05428977, g: 0.08574263, b: 0.18867922, a: 1}
+  backgroundMaterial: {fileID: 2100000, guid: 01f5cf399a606f2419e9875f85d7741e, type: 2}
+  ground: {fileID: 21300000, guid: b054acfaea3958845b5499f6dbe98d31, type: 3}
+  groundColor: {r: 1, g: 1, b: 1, a: 1}
+  groundMaterial: {fileID: 2100000, guid: 8916929682fcd9d4781c01be6ae76881, type: 2}

@@ -6,11 +6,6 @@ using System.Runtime.Serialization;
 namespace W
 {
 
-    public interface IMap
-    {
-        public void Init(Map previousMap, uint index);
-    }
-
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class MapBody
     {
@@ -34,7 +29,7 @@ namespace W
     /// 地图文件
     /// </summary>
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class Map : IMap
+    public class Map
     {
 
         public bool HasPosition(int x, int y) => x >= 0 && x < Width && y >= 0 && y < Height;
@@ -45,13 +40,16 @@ namespace W
         private MapBody body;
         public MapBody Body => body;
 
-        public void Enter() {
+        public void OnEnter() {
+            if (body == null) {
+                LoadBody();
+            }
             if (body == null) {
                 body = new MapBody();
                 body.Init(Width, Height);
                 MapUI.I.TryConstructInitials(this);
             }
-            MapUI.EnterMap(this);
+            MapDataView.EnterMap(this);
         }
 
         //[JsonProperty]
@@ -109,43 +107,64 @@ namespace W
         public int MapLevel => mapLevel;
 
         [JsonProperty]
-        private uint previousSeed;
-        public uint PreviousSeed => previousSeed;
+        private int previousMapLevel = 0;
+        public int PreviousMapLevel => previousMapLevel;
+
 
         [JsonProperty]
         private uint seed;
         public uint Seed => seed;
 
-        public string Key => $"{PreviousSeed}_{MapLevel}";
-        private string KeyOfBody => $"{Key}_body";
+        [JsonProperty]
+        private uint previousSeed;
+        public uint PreviousSeed => previousSeed;
 
 
-        private const string InitialPlanetMapDefConfigName = "Dry";
-        private const string SpaceshipConfigName = "Spaceship";
 
-        public const uint InitialSeed = 0;
-        void IMap.Init(Map previousMap, uint index) {
-            if (mapDefID != W.ID.Empty) return;
 
+        public string Key => KeyOf(Seed, MapLevel);
+        public static string KeyOf(uint seed, int mapLevel) => $"{seed}_{mapLevel}";
+
+        public const uint SuperMapIndex = uint.MaxValue;
+
+        public void LoadNext(uint index, out Map nextMap) {
+            uint seed = Seed;
+            uint nextSeed = H.Hash(seed);
+            int nextLevel = index == SuperMapIndex ? mapLevel + 1 : mapLevel - 1;
+            if (nextLevel >= MapDefName.MaxMapLevel) {
+                nextLevel = MapDefName.MaxMapLevel;
+            }
+
+            string key = KeyOf(nextSeed, nextLevel);
+            Load(key, out nextMap);
+            if (nextMap == null) {
+                nextMap = new Map();
+                nextMap.seed = nextSeed;
+                nextMap.mapLevel = nextLevel;
+                nextMap.previousSeed = seed;
+                nextMap.previousMapLevel = mapLevel;
+
+                nextMap.Init();
+            }
+        }
+
+        public void LoadWithLevel(int mapLevel) {
+            A.Assert(seed == 0 && mapDefID == 0);
+            this.mapLevel = mapLevel;
+
+            Init();
+        }
+
+        private void Init() {
             A.Assert(resources == null);
             resources = new Dictionary<uint, Idle>();
 
-            previousSeed = previousMap == null ? InitialSeed : previousMap.seed;
-            seed = H.Hash(previousSeed, index);
-
-            if (previousMap == null) {
-                mapLevel = -1;
-                mapDef = mapDef = GameConfig.I.Name2Obj[SpaceshipConfigName] as MapDef;
-            } else if (previousMap.previousSeed == InitialSeed) {
-                mapLevel = 0;
-                mapDef = mapDef = GameConfig.I.Name2Obj[InitialPlanetMapDefConfigName] as MapDef;
-            } else {
-                mapLevel = index == 0 ? previousMap.mapLevel + 1 : previousMap.mapLevel - 1;
-                mapDef = previousMap.Def;
-            }
+            mapDef = MapDefName.CalcMapDef(seed, mapLevel);
             mapDefID = mapDef.id;
             InitializeSize();
         }
+
+
 
         private void InitializeSize() {
             Width = mapDef.Width;
@@ -158,21 +177,21 @@ namespace W
         }
 
 
-        public const string MapsFolder = "maps";
 
-        public string Save(out string key) {
+        public void Save(out string key) {
             key = Key;
-            GameLoop.Save(MapsFolder, key, this);
-            if (body != null) SaveBody();
-            return key;
+            GameLoop.Save(key, this);
         }
-        private void SaveBody() {
-            GameLoop.Save(MapsFolder, KeyOfBody, body);
+        public void SaveBody() {
+            GameLoop.Save(Key, body);
         }
 
-        public static Map Load(string key, out Map map) {
-            GameLoop.Load(MapsFolder, key, out map);
-            return map;
+        public static void Load(string key, out Map map) {
+            GameLoop.Load(key, out map);
+        }
+        public void LoadBody() {
+            A.Assert(body == null);
+            GameLoop.Load(Key, out body);
         }
 
 

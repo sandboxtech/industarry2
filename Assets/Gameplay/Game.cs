@@ -8,35 +8,35 @@ namespace W
 {
     public interface IGame
     {
+        void Init();
         void Start();
     }
 
     [ExecuteAfter(typeof(GameConfigReference))]
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    public class Game : IPersistent, IGame
+    public class Game : IGame
     {
         public static Game I => i;
         private static Game i;
 
+        /// <summary>
+        /// 最开始被触发，无论读取还是创建
+        /// </summary>
         public Game() {
             A.Singleton(ref i, this);
         }
 
-
         [JsonIgnore]
         private bool created = false;
-
-        [JsonProperty]
-        private GameConfig config;
-        public GameConfig Config => config;
-
-        void IPersistent.OnCreate() {
+        void IGame.Init() {
             // create
             created = true;
 
             if (config == null) {
                 config = new GameConfig();
                 (config as IGameConfig).Init();
+                // gameConfig 的 Prepare 需要在创建地图前执行，并且在读取后执行
+                config.Prepare();
             }
 
             settings = new Settings();
@@ -47,16 +47,30 @@ namespace W
             thisMap = new Map();
             superMap = new Map();
 
-            (spaceshipMap as IMap).Init(null, 0);
-            (thisMap as IMap).Init(spaceshipMap, 0);
-            (superMap as IMap).Init(thisMap, 0);
+            spaceshipMap.LoadWithLevel(MapDefName.SpaceshipLevel);
+            thisMap.LoadWithLevel(MapDefName.PlanetLevel);
+            thisMap.LoadNext(Map.SuperMapIndex, out superMap);
 
+            //(spaceshipMap as IMap).Init(null, uint.MaxValue);
+            //(thisMap as IMap).Init(spaceshipMap, uint.MaxValue);
+            //(superMap as IMap).Init(thisMap, uint.MaxValue);
 
             thisMapKey = thisMap.Key;
+            superMapKey = superMap.Key;
 
             CameraControl.I.Position = new Vector2(thisMap.Width / 2, thisMap.Height / 2);
         }
 
+        [JsonProperty]
+        private GameConfig config;
+        public GameConfig Config => config;
+        void IGame.Start() {
+            CheckVersion();
+            if (!created) {
+                config.Prepare();
+            }
+            Map.OnEnter();
+        }
 
         private const long VERSION = 3;
         [JsonProperty]
@@ -68,12 +82,15 @@ namespace W
                 Persistence.ClearSaves();
             }
         }
-        void IGame.Start() {
-            CheckVersion();
-            if (!created) {
-                config.Load();
-            }
-            thisMap.Enter();
+
+        private const string GameFilename = "game.json";
+        public void Save() {
+            string key = GameFilename;
+            GameLoop.Save(key, this);
+        }
+        public static Game TryLoad(out Game game) {
+            GameLoop.Load(GameFilename, out game);
+            return game;
         }
 
 
@@ -81,8 +98,6 @@ namespace W
         [JsonProperty]
         private Settings settings;
         public Settings Settings => settings;
-
-
         [JsonProperty]
         private Dictionary<uint, int> techs;
         // public Dictionary<uint, int> Techs => techs;
@@ -101,23 +116,6 @@ namespace W
 
 
 
-        [JsonProperty]
-        private bool on_ship = false;
-        public bool IsOnSpaceship {
-            get => on_ship;
-            set {
-                A.Assert(on_ship != value);
-                if (on_ship) {
-                    thisMap.SaveCameraPosition();
-                    spaceshipMap.LoadCameraPosition();
-                } else {
-                    spaceshipMap.SaveCameraPosition();
-                    thisMap.LoadCameraPosition();
-                }
-                on_ship = value;
-                Map.Enter();
-            }
-        }
 
 
         [JsonIgnore]
@@ -135,19 +133,40 @@ namespace W
         [JsonProperty]
         private string spaceshipMapKey;
 
-
         public Map Map => on_ship ? spaceshipMap : thisMap;
+        [JsonProperty]
+        private bool on_ship = false;
+        public bool IsOnSpaceship {
+            get => on_ship;
+            set {
+                A.Assert(on_ship != value);
+                if (on_ship) {
+                    thisMap.SaveCameraPosition();
+                    spaceshipMap.LoadCameraPosition();
+                } else {
+                    spaceshipMap.SaveCameraPosition();
+                    thisMap.LoadCameraPosition();
+                }
+                on_ship = value;
 
-
-
-        private const string GameFilename = "game.json";
-        public void Save() {
-            string key = GameFilename;
-            GameLoop.Save(null, key, this);
+                Map.OnEnter();
+            }
         }
-        public static Game Load(out Game game) {
-            GameLoop.Load(null, GameFilename, out game);
-            return game;
+
+
+        /// <summary>
+        /// todo
+        /// </summary>
+        /// <param name="index"></param>
+        public void EnterMap(uint index) {
+            if (index == Map.SuperMapIndex) {
+                thisMap = superMap;
+                thisMap.LoadNext(index, out superMap);
+            } else {
+                superMap = thisMap;
+                superMap.LoadNext(index, out thisMap);
+            }
+            Map.OnEnter();
         }
 
 
@@ -157,6 +176,8 @@ namespace W
             Map.Load(spaceshipMapKey, out spaceshipMap);
             Map.Load(thisMapKey, out thisMap);
             Map.Load(superMapKey, out superMap);
+
+            Map.LoadBody();
         }
 
         [OnSerializing]
@@ -168,6 +189,8 @@ namespace W
             thisMap.Save(out thisMapKey);
             superMap.Save(out superMapKey);
             spaceshipMap.Save(out spaceshipMapKey);
+
+            Map.SaveBody();
         }
 
         [OnDeserializing]
@@ -178,7 +201,6 @@ namespace W
         private void OnSerializedMethod(StreamingContext context) {
             // 序列化之前，什么都不做
         }
-
     }
 }
 

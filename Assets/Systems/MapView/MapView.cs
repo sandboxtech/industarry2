@@ -38,7 +38,7 @@ namespace W
         [SerializeField]
         private Tilemap Glow;
         private TilemapRenderer tr;
-        private Material mat;
+        private Material glowMat;
         [SerializeField]
         private Tilemap Front;
         [SerializeField]
@@ -63,8 +63,7 @@ namespace W
             rightTrans = Right.transform;
 
             tr = Glow.GetComponent<TilemapRenderer>();
-            mat = tr.material; // instantiated
-            tr.material = mat; // yes
+            tr.material = tr.material; // yes
         }
 
         private const long deltaT = 2 * Constants.Second;
@@ -72,6 +71,10 @@ namespace W
         private const float fadeT = 0.0625f;
 
         private void Update() {
+            UpdateTranslates();
+            UpdateLightAndGlow();
+        }
+        private void UpdateTranslates() {
             float t = (float)(G.now % deltaT) / deltaT;
             t = SmoothT(t);
 
@@ -87,28 +90,52 @@ namespace W
             Down.color = color;
             Left.color = color;
             Right.color = color;
-
-            UpdateLightAndGlow();
         }
 
-        [SerializeField]
-        private Gradient defaultDaylightGradient;
-        [SerializeField]
-        private AnimationCurve intensityCurve;
-        [SerializeField]
-        private AnimationCurve glowCurve;
 
-        private const float DayDuration = 60f;
+        private bool lightEnabled = false;
         private void UpdateLightAndGlow() {
 
-            float day = (Time.time / DayDuration) % 1;
+            if (Game.I.Map.Def.Theme is PlanetMapThemeDef theme && theme.ActivateLight) {
+                lightEnabled = true;
 
-            light2D.intensity = M.Lerp(0.375f, 1f, intensityCurve.Evaluate(day));
-            light2D.color = defaultDaylightGradient.Evaluate(day);
+                float day = (Time.time / theme.DayDuration) % 1;
+                light2D.color = theme.DefaultDaylightGradient.Evaluate(day);
 
-            float glow = glowCurve.Evaluate(day);
-            mat.SetFloat("_GlowIntensity", glow * 3);
-            Glow.color = new Color(1, 1, 1, glow);
+                const float minIntensity = 0.375f;
+
+                float sin = (M.Sin(2 * M.PI * day) * 1.5f + 1) / 2f;
+                sin = M.Clamp01(sin);
+
+                float intensity = M.Lerp(minIntensity, 1f, sin);
+
+                intensity = M.Clamp01(intensity);
+                light2D.intensity = intensity;
+
+
+                float glow = M.InverseLerp(0.5f, minIntensity, intensity);
+                glow = M.Clamp(0, 1, glow);
+                if (glow > 0) {
+                    Glow.enabled = true;
+                    tr.sharedMaterial.SetFloat("_GlowIntensity", glow * 3);
+                    Glow.color = new Color(1, 1, 1, glow);
+
+                    BackgroundSprite.sharedMaterial.SetFloat("_Lerp", glow);
+                } else {
+                    Glow.enabled = false;
+                }
+
+            }
+            else {
+                if (lightEnabled) {
+                    lightEnabled = false;
+
+                    light2D.intensity = 1;
+                    light2D.color = Color.white;
+
+                    tr.sharedMaterial.SetFloat("_GlowIntensity", 3);
+                }
+            }
         }
 
         public float Lightness {
@@ -175,7 +202,7 @@ namespace W
             A.Assert(sprite != null);
             Front.SetTile(pos, TileOf(sprite, color));
             if (PlayParticleEffect) {
-                StartCoroutine(ScaleTileCoroutine(Front, x, y, G.now));
+                StartCoroutine(ScaleTileCoroutine(x, y, G.now));
                 ParticlePlayer.I.FrameAnimation(ParticlePlayer.I.Construct, x, y);
             }
         }
@@ -184,7 +211,7 @@ namespace W
             A.Assert(sprites != null && sprites.Length > 0);
             Front.SetTile(pos, TileOf(sprites, duration * sprites.Length, color));
             if (PlayParticleEffect) {
-                StartCoroutine(ScaleTileCoroutine(Front, x, y, G.now));
+                StartCoroutine(ScaleTileCoroutine(x, y, G.now));
                 ParticlePlayer.I.FrameAnimation(ParticlePlayer.I.Construct, x, y);
             }
         }
@@ -197,21 +224,21 @@ namespace W
         }
 
         public void ScaleTileAt(int x, int y) {
-            StartCoroutine(ScaleTileCoroutine(Front, x, y, G.now));
+            StartCoroutine(ScaleTileCoroutine(x, y, G.now));
         }
 
 
         private long TileScaleDuration = Constants.Second / 4;
-        private IEnumerator ScaleTileCoroutine(Tilemap tilemap, int x, int y, long start) {
+        private IEnumerator ScaleTileCoroutine(int x, int y, long start) {
             long now = G.now;
             while (now - start < TileScaleDuration) {
                 float scale = (float)(now - start) / TileScaleDuration;
-                ScaleTile(tilemap, x, y, SmoothScale(scale));
+                ScaleTile(x, y, SmoothScale(scale));
                 yield return null;
                 now = G.now;
             }
-            ScaleTile(tilemap, x, y, 1);
-            ScaleTileEnd(tilemap, x, y);
+            ScaleTile(x, y, 1);
+            ScaleTileEnd(x, y);
         }
         private static float SmoothScale(float t) {
             const float c1 = 6f;
@@ -219,14 +246,17 @@ namespace W
             float tm = t - 1;
             return 1 + c3 * tm * tm * tm + c1 * tm * tm;
         }
-        private void ScaleTile(Tilemap tilemap, int x, int y, float scale) {
+        private void ScaleTile(int x, int y, float scale) {
             Vector3Int pos = new Vector3Int(x, y, 0);
-            tilemap.SetTileFlags(pos, TileFlags.None);
-            tilemap.SetTransformMatrix(pos, Matrix4x4.TRS(0.5f * (1 - scale) * Vector3.one, Quaternion.identity, Vector3.one * scale));
+            Front.SetTileFlags(pos, TileFlags.None);
+            Front.SetTransformMatrix(pos, Matrix4x4.TRS(0.5f * (1 - scale) * Vector3.one, Quaternion.identity, Vector3.one * scale));
+            Glow.SetTileFlags(pos, TileFlags.None);
+            Glow.SetTransformMatrix(pos, Matrix4x4.TRS(0.5f * (1 - scale) * Vector3.one, Quaternion.identity, Vector3.one * scale));
         }
-        private void ScaleTileEnd(Tilemap tilemap, int x, int y) {
+        private void ScaleTileEnd(int x, int y) {
             Vector3Int pos = new Vector3Int(x, y, 0);
-            tilemap.SetTransformMatrix(pos, Matrix4x4.identity);
+            Front.SetTransformMatrix(pos, Matrix4x4.identity);
+            Glow.SetTransformMatrix(pos, Matrix4x4.identity);
         }
 
 
@@ -290,6 +320,12 @@ namespace W
             Back.ClearAllTiles();
             Front.ClearAllTiles();
 
+            Glow.ClearAllTiles();
+            Up.ClearAllTiles();
+            Down.ClearAllTiles();
+            Left.ClearAllTiles();
+            Right.ClearAllTiles();
+
             int width = mapDef.Width;
             int height = mapDef.Height;
 
@@ -301,14 +337,23 @@ namespace W
             BackgroundSprite.sprite = mapDef.Theme.Background;
             BackgroundSprite.color = mapDef.Theme.BackgroundColor;
             BackgroundSprite.material = mapDef.Theme.BackgroundMaterial;
-
+            BackgroundSprite.material = BackgroundSprite.material; // copy
 
             if (mapDef.Theme.Tileset == null || mapDef.Theme.Tileset.Length == 0) {
-                Ground.localScale = new Vector3(width, height, 0);
 
-                GroundSprite.sprite = mapDef.Theme.Ground;
-                GroundSprite.color = mapDef.Theme.GroundColor;
-                GroundSprite.material = mapDef.Theme.GroundMaterial;
+                if (mapDef.Theme.Ground == null) {
+                    GroundSprite.enabled = false;
+                }
+                else {
+                    GroundSprite.enabled = true;
+
+                    Ground.localScale = new Vector3(width, height, 0);
+
+                    GroundSprite.sprite = mapDef.Theme.Ground;
+                    GroundSprite.color = mapDef.Theme.GroundColor;
+                    GroundSprite.material = mapDef.Theme.GroundMaterial;
+                    GroundSprite.material = GroundSprite.material; // copy
+                }
             }
         }
 

@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b4324ac985b94b4494f5c06b31a6f77, type: 3}
+  m_Name: DryPlanetTheme
+  m_EditorClassIdentifier: 
+  cn: 
+  sprite: {fileID: 0}
+  sprites: []
+  spritesDuration: 1
+  glow: {fileID: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  tileset:
+  - {fileID: -33917687, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 682002360, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -1940143773, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -121545917, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -1577677310, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 681053570, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -1558961597, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -966491238, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 847033407, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -1341284213, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 1777236564, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 2025861509, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 150933299, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -1292036286, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 1616276429, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -384035063, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 1082679107, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -94189552, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -908722172, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -1365650243, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -960537404, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 1661482496, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 1669714910, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -49451295, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 128945047, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 1272995233, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 2025335176, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -439532386, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -524795943, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 502882554, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -1689791526, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 125264812, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -1026827878, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 1591795526, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 1255541002, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -1540910356, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 598999618, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 1994971831, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -1536839991, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -1771382083, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 90025602, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 1078699811, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 36502079, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 199105876, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 1565268961, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: -911347382, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 651762064, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  - {fileID: 433828860, guid: de9b5a2620ba6f64d80927f4f59b457a, type: 3}
+  backgroundColor: {r: 0.23921569, g: 0.30980393, b: 0.3529412, a: 1}
+  background: {fileID: 21300000, guid: 86a36a135ff31bf408020d4366875c42, type: 3}
+  backgroundMaterial: {fileID: 2100000, guid: 84a5d9f5a1e07254c8c440abffb787ec, type: 2}
+  groundColor: {r: 0.42745098, g: 0.34901962, b: 0.33333334, a: 1}
+  ground: {fileID: 21300000, guid: dadde0b211c638d41b49f9451e5ca0ae, type: 3}
+  groundMaterial: {fileID: 2100000, guid: 9812c81238a29514794f1715654912ed, type: 2}
+  dayDuration: 12
+  activateLight: 1
+  defaultDaylightGradient:
+    serializedVersion: 2
+    key0: {r: 1, g: 0.85490197, b: 0.72156864, a: 1}
+    key1: {r: 1, g: 0.85490197, b: 0.72156864, a: 1}
+    key2: {r: 1, g: 0.91888124, b: 0.8443396, a: 0}
+    key3: {r: 1, g: 0.95821154, b: 0.9198113, a: 0}
+    key4: {r: 1, g: 0.8552734, b: 0.7216981, a: 0}
+    key5: {r: 1, g: 0.85490197, b: 0.72156864, a: 0}
+    key6: {r: 0.5424528, g: 0.73168504, b: 1, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 16577
+    ctime2: 21395
+    ctime3: 41056
+    ctime4: 45875
+    ctime5: 65535
+    ctime6: 65535
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 6
+    m_NumAlphaKeys: 2

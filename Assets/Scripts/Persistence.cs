@@ -3,11 +3,6 @@ using System.IO;
 
 namespace W
 {
-    public interface IPersistent
-    {
-        void OnCreate();
-    }
-
     /// <summary>
     /// 包装System.IO里的一些方法
     /// 用于文件和文件夹增删改查
@@ -18,7 +13,6 @@ namespace W
             T t;
             if (contents == null) {
                 t = new T();
-                (t as IPersistent)?.OnCreate();
             } else {
                 if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.WindowsEditor) {
                     t = Serialization.Deserialize(contents) as T;

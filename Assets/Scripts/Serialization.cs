@@ -8,7 +8,7 @@ namespace W
     /// 利用Newtonsoft.Json
     /// 进行序列化、反序列化
     /// </summary>
-    public class Serialization
+    public static class Serialization
     {
         private static JsonSerializerSettings Settings { get; } = new JsonSerializerSettings {
 

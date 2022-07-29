@@ -21,6 +21,8 @@ namespace W
 
             UI.Button("设置", Settings);
 
+            UI.Button("上天", () => Game.I.EnterMap(Map.SuperMapIndex));
+
             UI.Space();
 
             //foreach (var pair in Game.I.Map.Resources) {

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 593de590dd11db945a0b1354ada379f3, type: 3}
+  m_Name: UniverseTheme
+  m_EditorClassIdentifier: 
+  cn: 
+  sprite: {fileID: 0}
+  sprites: []
+  spritesDuration: 1
+  glow: {fileID: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  tileset: []
+  background: {fileID: 21300000, guid: f96752e7cc391bc4da97437398868367, type: 3}
+  backgroundColor: {r: 0.19811319, g: 0.21462262, b: 0.26415092, a: 1}
+  backgroundMaterial: {fileID: 2100000, guid: a44e45d7dd560854695e0ac7921e621a, type: 2}
+  ground: {fileID: 21300000, guid: b0ff78f063c159e4b9430a0d3f6a4cfc, type: 3}
+  groundColor: {r: 1, g: 1, b: 1, a: 1}
+  groundMaterial: {fileID: 2100000, guid: 55ef438546423fd4fb0ddacfc72f7e91, type: 2}

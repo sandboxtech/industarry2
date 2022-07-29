@@ -421,10 +421,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4217389532128275495, guid: 5b22a062b93ec904f92efa1b3e05f41f, type: 3}
-      propertyPath: m_NormalizedViewPortRect.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4217389532128275499, guid: 5b22a062b93ec904f92efa1b3e05f41f, type: 3}
       propertyPath: m_Name
       value: CameraControl

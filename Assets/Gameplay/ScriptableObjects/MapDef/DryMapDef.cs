@@ -4,7 +4,7 @@ using UnityEngine;
 namespace W
 {
     [CreateAssetMenu(fileName = "__DryMapDef__", menuName = "MapDef/创建 DryMapDef 地图定义", order = 1)]
-    public class DryMapDef : MapDef
+    public class DryMapDef : PlanetMapDef
     {
         public override void ProcessMap(Map map) {
 

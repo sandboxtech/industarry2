@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 593de590dd11db945a0b1354ada379f3, type: 3}
+  m_Name: ClusterTheme
+  m_EditorClassIdentifier: 
+  cn: 
+  sprite: {fileID: 0}
+  sprites: []
+  spritesDuration: 1
+  glow: {fileID: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  tileset: []
+  background: {fileID: 21300000, guid: ea74f7d91fd518b4ba97816026871344, type: 3}
+  backgroundColor: {r: 1, g: 1, b: 1, a: 1}
+  backgroundMaterial: {fileID: 2100000, guid: 54f779727a536cb44a26e0c340c6f695, type: 2}
+  ground: {fileID: 21300000, guid: fb89cafaf7754e440a668e5decf1610f, type: 3}
+  groundColor: {r: 1, g: 1, b: 1, a: 1}
+  groundMaterial: {fileID: 2100000, guid: 90ace25e8411dcb4d90af2e8b07b5941, type: 2}

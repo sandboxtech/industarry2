@@ -14,13 +14,11 @@ namespace W
     {
         public static void Start() {
             if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.WindowsEditor) {
-                Game.Load(out Game game);
-                (game as IGame).Start();
+                LoadGame();
             }
             else {
                 try {
-                    Game.Load(out Game game);
-                    (game as IGame).Start();
+                    LoadGame();
                 } catch (System.Exception e) {
                     UI.Prepare();
                     UI.Text(e.Message);
@@ -30,21 +28,29 @@ namespace W
                 }
             }
         }
+        private static void LoadGame() {
+            Game.TryLoad(out Game game);
+            if (game == null) {
+                game = new Game();
+                (game as IGame).Init();
+            }
+            (game as IGame).Start();
+        }
 
 
-        public static void Load<T>(string directory, string filename, out T t) where T : class, new() {
+        public static void Load<T>(string filename, out T t) where T : class, new () {
             A.Assert(filename != null);
-            Persistence.Load(directory, filename, out string contents);
-            t = Persistence.Deserialize<T>(contents);
+            Persistence.Load(typeof(T).FullName, filename, out string contents);
+            t = contents == null ? null : Persistence.Deserialize<T>(contents);
         }
 
         /// <summary>
         /// 序列化后延迟保存，保证存档统一性
         /// </summary>
-        public static void Save(string directory, string filename, object obj) {
+        public static void Save(string filename, object obj) {
             A.Assert(filename != null, () => filename);
             string json = Serialization.Serialize(obj);
-            saves.Add((directory, filename, json));
+            saves.Add((obj.GetType().FullName, filename, json));
         }
         private static HashSet<(string, string, string)> saves = new HashSet<(string, string, string)>();
         private static void SaveDelayed() {

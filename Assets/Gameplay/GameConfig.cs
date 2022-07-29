@@ -83,10 +83,9 @@ namespace W
                 id2name.Add(i, pair.Key);
                 i++;
             }
-            Load();
         }
 
-        public void Load() {
+        public void Prepare() {
             A.Assert(id2obj == null);
 
             id2obj = new Dictionary<uint, ID>();
