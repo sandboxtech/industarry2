@@ -18,6 +18,11 @@ MonoBehaviour:
   spritesDuration: 1
   glow: {fileID: 0}
   color: {r: 1, g: 1, b: 1, a: 1}
+  pairs:
+  - ID: {fileID: 0}
+    value: 0
+  - ID: {fileID: 0}
+    value: 0
   construction: []
   destruction: []
   inc: []

@@ -10,21 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
-  m_Name: HousePlank
+  m_Name: MineStone
   m_EditorClassIdentifier: 
-  cn: "\u6728\u732B\u5C4B"
-  sprite: {fileID: 21300000, guid: 17650919b7ad1a04683459f1bd51860b, type: 3}
+  cn: "\u77F3\u573A"
+  sprite: {fileID: 21300000, guid: 4364847d6f3c9294c90d212e03b02614, type: 3}
   sprites: []
   spritesDuration: 1
-  glow: {fileID: 21300000, guid: 2bc9b9a141a1c264c8e3f2e766801d31, type: 3}
+  glow: {fileID: 0}
   color: {r: 1, g: 1, b: 1, a: 1}
   construction: []
   destruction: []
   inc: []
   max: []
-  bonusAnim: {fileID: 0}
-  bonus: []
+  bonusAnim: {fileID: 11400000, guid: 690190ea61698c549832323df2925979, type: 2}
+  bonus:
+  - {fileID: 11400000, guid: a822dabf2cfaf584098498f213818df1, type: 2}
   conditions: []
   repels: []
   techs:
-  - {fileID: 11400000, guid: 830b133c4c2930943b07beab3268727c, type: 2}
+  - {fileID: 11400000, guid: abc3467f20c1e1449b346a252d9f5aec, type: 2}

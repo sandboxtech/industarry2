@@ -8,8 +8,8 @@ namespace W
         public void SetValue(long value);
     }
 
-    [CreateAssetMenu(fileName = "__IDValue__", menuName = "创建 IDValue 数值", order = 1)]
-    public class IDValue : ID, _IDValue
+    [System.Serializable]
+    public class IDValue : _IDValue
     {
         // [UnityEngine.Serialization.FormerlySerializedAs("ResDef")]
         [Header("数值")]

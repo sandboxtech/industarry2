@@ -38,33 +38,33 @@ namespace W
 
 #if UNITY_EDITOR
 
-        [ContextMenu("根据名字，自动生成 IDValue 数值")]
-        private void __AutoWriteIDValue() {
-            foreach (ID id in ids) {
-                if (id is IDValue idValue) {
-                    if (idValue.name.StartsWith(idValue.Key.name)) {
-                        string[] pair = idValue.name.Split('_');
+        //[ContextMenu("根据名字，自动生成 IDValue 数值")]
+        //private void __AutoWriteIDValue() {
+        //    foreach (ID id in ids) {
+        //        if (id is IDValue idValue) {
+        //            if (idValue.name.StartsWith(idValue.Key.name)) {
+        //                string[] pair = idValue.name.Split('_');
 
-                        if (pair.Length != 2) continue;
+        //                if (pair.Length != 2) continue;
 
-                        string number = pair[1];
-                        int value;
-                        if (number.StartsWith('N')) {
-                            value = -int.Parse(number.Substring(1));
+        //                string number = pair[1];
+        //                int value;
+        //                if (number.StartsWith('N')) {
+        //                    value = -int.Parse(number.Substring(1));
 
-                        } else {
-                            value = int.Parse(number);
-                        }
-                        if (value != idValue.Value) {
-                            (idValue as _IDValue).SetValue(value);
-                            EditorUtility.SetDirty(id);
-                            AssetDatabase.SaveAssetIfDirty(id);
-                            // AssetDatabase.SaveAssets();
-                        }
-                    }
-                }
-            }
-        }
+        //                } else {
+        //                    value = int.Parse(number);
+        //                }
+        //                if (value != idValue.Value) {
+        //                    (idValue as _IDValue).SetValue(value);
+        //                    EditorUtility.SetDirty(id);
+        //                    AssetDatabase.SaveAssetIfDirty(id);
+        //                    // AssetDatabase.SaveAssets();
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
 
         [SerializeField]

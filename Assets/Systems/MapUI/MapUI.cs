@@ -950,8 +950,6 @@ namespace W
 
                         times++;
                     }
-                } else {
-                    A.Error($"{idValue.CN} 不是建筑");
                 }
             }
         }

@@ -14,16 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cn: "\u77F3\u732B\u5C4B"
   sprite: {fileID: 21300000, guid: 17650919b7ad1a04683459f1bd51860b, type: 3}
+  sprites: []
+  spritesDuration: 1
   glow: {fileID: 21300000, guid: 2bc9b9a141a1c264c8e3f2e766801d31, type: 3}
-  colorType: 2
-  construction:
-  - {fileID: 11400000, guid: cf4ba2d9e2c4b4b4d8f26fa7ab9db4c2, type: 2}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  construction: []
   destruction: []
-  inc:
-  - {fileID: 11400000, guid: 209c409051518d8409ab4abb9ee5b3e4, type: 2}
-  - {fileID: 11400000, guid: 04d1b02a811856c4b98e4f4fa168709a, type: 2}
-  max:
-  - {fileID: 11400000, guid: 04d1b02a811856c4b98e4f4fa168709a, type: 2}
+  inc: []
+  max: []
   bonusAnim: {fileID: 0}
   bonus: []
   conditions: []

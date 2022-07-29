@@ -290,12 +290,12 @@ namespace W
         public static void AddRelatedResDefValue(TileDef tileDef) {
             existingRes.Clear();
             foreach (IDValue idValue in tileDef.Inc) {
-                if (!existingRes.Contains(idValue)) {
+                if (!existingRes.Contains(idValue.Key)) {
                     existingRes.Add(idValue.Key);
                 }
             }
             foreach (IDValue idValue in tileDef.Max) {
-                if (!existingRes.Contains(idValue)) {
+                if (!existingRes.Contains(idValue.Key)) {
                     existingRes.Add(idValue.Key);
                 }
             }

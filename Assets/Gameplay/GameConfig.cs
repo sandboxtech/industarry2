@@ -39,21 +39,21 @@ namespace W
 
         public GameConfig() {
             name2obj = GameConfigReference.I.__Name2Config();
-            CheckIDValue();
+            //CheckIDValue();
             BindBonusAndConditions();
         }
 
-        private void CheckIDValue() {
-            if (UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WindowsEditor) {
-                return;
-            }
-            foreach (var pair in name2obj) {
-                if (pair.Value is IDValue idValue) {
-                    A.Assert(idValue.Key != null, () => $"未配key {idValue.CN}");
-                    A.Assert(idValue.Value != 0, () => $"未配value {idValue.CN}");
-                }
-            }
-        }
+        //private void CheckIDValue() {
+        //    if (UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WindowsEditor) {
+        //        return;
+        //    }
+        //    foreach (var pair in name2obj) {
+        //        if (pair.Value is IDValue idValue) {
+        //            A.Assert(idValue.Key != null, () => $"未配key {idValue.CN}");
+        //            A.Assert(idValue.Value != 0, () => $"未配value {idValue.CN}");
+        //        }
+        //    }
+        //}
 
         private void BindBonusAndConditions() {
             // unlockRelation = new Dictionary<TileDef, HashSet<TileDef>>();

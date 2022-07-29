@@ -11,7 +11,7 @@ namespace W
 
         [Header("生产间隔")]
         public IDValue Del;
-        public long DeltaSecond => Del == null ? 10 : Del.Value;
+        public long DeltaSecond => Del.Value == 0 ? 10 : Del.Value;
         public long DeltaTicks => DeltaSecond * Constants.Second;
     }
 }
