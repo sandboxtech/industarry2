@@ -23,6 +23,7 @@ namespace W
             ids = new uint[size];
             levels = new int[size];
         }
+
     }
 
     /// <summary>
@@ -51,6 +52,10 @@ namespace W
             }
             MapDataView.EnterMap(this);
         }
+        private void ConstructInitials() {
+
+        }
+
 
         //[JsonProperty]
         //private uint[] ids; // 对应位置的建筑类型
@@ -127,14 +132,27 @@ namespace W
 
         public const uint SuperMapIndex = uint.MaxValue;
 
+        public const uint NULLPreviousMap = 0;
+        public bool NoPreviousMap => previousSeed == NULLPreviousMap;
+        public void LoadPrevious(out Map map) {
+            if (NoPreviousMap) {
+                map = null;
+                return;
+            }
+
+            LoadWithSeedAndLevel(previousSeed, previousMapLevel, out map);
+        }
+
         public void LoadNext(uint index, out Map nextMap) {
             uint seed = Seed;
-            uint nextSeed = H.Hash(seed);
             int nextLevel = index == SuperMapIndex ? mapLevel + 1 : mapLevel - 1;
             if (nextLevel >= MapDefName.MaxMapLevel) {
                 nextLevel = MapDefName.MaxMapLevel;
             }
-
+            uint nextSeed = H.Hash(seed);
+            LoadWithSeedAndLevel(nextSeed, nextLevel, out nextMap);
+        }
+        private void LoadWithSeedAndLevel(uint nextSeed, int nextLevel, out Map nextMap) {
             string key = KeyOf(nextSeed, nextLevel);
             Load(key, out nextMap);
             if (nextMap == null) {

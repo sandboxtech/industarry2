@@ -38,7 +38,6 @@ namespace W
         [SerializeField]
         private Tilemap Glow;
         private TilemapRenderer tr;
-        private Material glowMat;
         [SerializeField]
         private Tilemap Front;
         [SerializeField]
@@ -104,7 +103,8 @@ namespace W
 
                 const float minIntensity = 0.375f;
 
-                float sin = (M.Sin(2 * M.PI * day / theme.DayDuration) * 1.5f + 1) / 2f;
+                float sin = (M.Cos(2 * M.PI * day) + 1) / 2f;
+
                 sin = M.Clamp01(sin);
 
                 float intensity = M.Lerp(minIntensity, 1f, sin);
@@ -123,6 +123,7 @@ namespace W
                     BackgroundSprite.sharedMaterial.SetFloat("_Lerp", glow);
                 } else {
                     Glow.enabled = false;
+                    BackgroundSprite.sharedMaterial.SetFloat("_Lerp", 0);
                 }
 
             }
@@ -354,6 +355,9 @@ namespace W
                     GroundSprite.material = mapDef.Theme.GroundMaterial;
                     GroundSprite.material = GroundSprite.material; // copy
                 }
+            }
+            else {
+                GroundSprite.enabled = false;
             }
         }
 

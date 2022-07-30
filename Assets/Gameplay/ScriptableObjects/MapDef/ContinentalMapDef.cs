@@ -6,7 +6,7 @@ namespace W
     [CreateAssetMenu(fileName = "__ContinentalMapDef__", menuName = "MapDef/创建 ContinentalMapDef 地图定义", order = 1)]
     public class ContinentalMapDef : PlanetMapDef
     {
-        public override void ProcessMap(Map map) {
+        public override void ProcessMapTerrain(Map map) {
 
             int width = map.Width;
             int height = map.Height;

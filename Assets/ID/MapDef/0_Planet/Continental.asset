@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2cae38220bdc8645a723b313e7eb019, type: 3}
   m_Name: Continental
   m_EditorClassIdentifier: 
-  cn: 
+  cn: "\u7C7B\u5730\u661F\u7403"
   sprite: {fileID: 0}
   sprites: []
   spritesDuration: 1

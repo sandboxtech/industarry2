@@ -10,22 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
-  m_Name: DepositMetalOre
+  m_Name: ResidenceWoodProduct
   m_EditorClassIdentifier: 
-  cn: "\u5C71\u5730"
-  sprite: {fileID: 21300000, guid: 84ef146a4c66f1d4a9432c07029dbbbd, type: 3}
+  cn: "\u6728\u732B\u5C4B"
+  sprite: {fileID: 21300000, guid: 17650919b7ad1a04683459f1bd51860b, type: 3}
   sprites: []
   spritesDuration: 1
-  glow: {fileID: 0}
+  glow: {fileID: 21300000, guid: 2bc9b9a141a1c264c8e3f2e766801d31, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
   construction: []
-  destruction:
-  - key: {fileID: 0}
-    value: 0
+  destruction: []
   inc: []
   max: []
   bonusAnim: {fileID: 0}
   bonus: []
   conditions: []
   repels: []
-  techs: []
+  techs:
+  - {fileID: 11400000, guid: 830b133c4c2930943b07beab3268727c, type: 2}

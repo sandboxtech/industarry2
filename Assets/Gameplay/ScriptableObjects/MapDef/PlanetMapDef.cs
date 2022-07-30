@@ -6,6 +6,5 @@ namespace W
     public class PlanetMapDef : MapDef
     {
 
-
     }
 }

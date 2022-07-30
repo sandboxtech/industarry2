@@ -5,6 +5,16 @@ using UnityEngine;
 
 namespace W
 {
+
+    public class MapTileInfo
+    {
+        public int X;
+        public int Y;
+        public Map Map;
+        public TileDef TileDef;
+        public int Level;
+    }
+
     /// <summary>
     /// 代码大混合
     /// </summary>
@@ -26,6 +36,9 @@ namespace W
             }
             if (Input.GetKeyDown(KeyCode.X)) {
                 // Map.DoChange(GameConfig.I.Name2Obj["Population_N1"] as IDValue, 1, IdleReference.Inc);
+            }
+            if (Input.GetKeyDown(KeyCode.Space)) {
+                Game.I.EnterPreviousMap();
             }
         }
 
@@ -125,6 +138,10 @@ namespace W
         private void OnTap_() {
 
             Audio.I.Clip = Audio.I.DefaultSound;
+
+            MapTileInfo info = new MapTileInfo();
+            info.X = MapTapping.I.X;
+            info.Y = MapTapping.I.Y;
 
             x = MapTapping.I.X;
             y = MapTapping.I.Y;
@@ -477,7 +494,7 @@ namespace W
             }
         }
 
-        private int CalcBonus(int x, int y, TileDef tileDef) {
+        private static int CalcBonus(int x, int y, TileDef tileDef) {
             int bonus = 0;
             bonus += AddBonus(x, y + 1, tileDef);
             bonus += AddBonus(x, y - 1, tileDef);
@@ -914,9 +931,11 @@ namespace W
         public void TryConstructInitials(Map map) {
             MapUI.map = map;
             map.TemporaryRandomGenerator = new System.Random((int)map.Seed);
-            map.Def.ProcessMap(map);
+            map.Def.ProcessMapTerrain(map);
             TryConstructInitialStructures(map);
         }
+
+        
 
         public void TryConstructInitialStructures(Map map) {
             MapDef mapDef = map.Def;

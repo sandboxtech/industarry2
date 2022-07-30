@@ -13,15 +13,25 @@ namespace W
             UI.Text($"挂机工厂2");
 
 
-            UI.Button($"前往{(Game.I.IsOnSpaceship ? "地面" : "飞船")}", () => {
-                Game.I.IsOnSpaceship = !Game.I.IsOnSpaceship;
+            UI.Button($"前往{(Game.I.OnShip ? "地面" : "飞船")}", () => {
+                Game.I.OnShip = !Game.I.OnShip;
             });
+
+            if (Game.I.OnShip) {
+
+            }
+            else {
+                UI.Button("上天", () => Game.I.EnterMap(Map.SuperMapIndex));
+                UI.Button("入地", () => Game.I.EnterPreviousMap());
+            }
+
+
 
             UI.Space();
 
             UI.Button("设置", Settings);
 
-            UI.Button("上天", () => Game.I.EnterMap(Map.SuperMapIndex));
+
 
             UI.Space();
 

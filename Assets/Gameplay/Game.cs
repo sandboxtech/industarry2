@@ -136,7 +136,7 @@ namespace W
         public Map Map => on_ship ? spaceshipMap : thisMap;
         [JsonProperty]
         private bool on_ship = false;
-        public bool IsOnSpaceship {
+        public bool OnShip {
             get => on_ship;
             set {
                 A.Assert(on_ship != value);
@@ -167,6 +167,18 @@ namespace W
                 superMap.LoadNext(index, out thisMap);
             }
             Map.OnEnter();
+        }
+
+        public void EnterPreviousMap() {
+            A.Assert(!on_ship);
+            thisMap.LoadPrevious(out Map map);
+            if (map == null) return;
+            thisMap = map;
+
+            thisMap.LoadNext(Map.SuperMapIndex, out superMap);
+            thisMap.OnEnter();
+
+            on_ship = false;
         }
 
 

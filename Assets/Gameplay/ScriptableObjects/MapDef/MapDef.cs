@@ -77,7 +77,7 @@ namespace W
         private List<TileDef> constructables;
         public IReadOnlyList<TileDef> Constructables => constructables;
 
-        public virtual void ProcessMap(Map map) {
+        public virtual void ProcessMapTerrain(Map map) {
 
         }
 
