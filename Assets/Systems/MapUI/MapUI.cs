@@ -6,15 +6,6 @@ using UnityEngine;
 namespace W
 {
 
-    public class MapTileInfo
-    {
-        public int X;
-        public int Y;
-        public Map Map;
-        public TileDef TileDef;
-        public int Level;
-    }
-
     /// <summary>
     /// 代码大混合
     /// </summary>
@@ -38,14 +29,14 @@ namespace W
                 // Map.DoChange(GameConfig.I.Name2Obj["Population_N1"] as IDValue, 1, IdleReference.Inc);
             }
             if (Input.GetKeyDown(KeyCode.Space)) {
-                Game.I.EnterPreviousMap();
+                // Game.I.EnterPreviousMap();
+                Game.I.Relativity.TimeScale = Game.I.Relativity.TimeScale > 1 ? 1 : 3;
             }
         }
 
 
 
         private static void IconText(ID cn) => UI.IconText(cn.CN, cn.Icon, cn.Color);
-
         private static void IconTextWithLevel(ID cn, int level) => UI.IconText(NameAndLevel(cn, level), cn.Icon, cn.Color);
         private static void IconButtonWithLevel(ID cn, int level, Color textColor, Action action)
             => UI.IconButton(NameAndLevel(cn, level), textColor, cn.Icon, cn.Color, action);
@@ -61,8 +52,8 @@ namespace W
                 idValue.Key.Icon, idValue.Key.Color);
         }
 
-        private void CanChangeText(IDValue idValue, long level, IdleReference i) {
-            bool canChange = Map.CanChange(idValue, level, i);
+        private static void CanChangeText(Map map, IDValue idValue, long level, IdleReference i) {
+            bool canChange = map.CanChange(idValue, level, i);
             IconTextWithValueAndColor(idValue, level, canChange);
         }
 
@@ -79,46 +70,11 @@ namespace W
 
 
 
-        private static Map map; // todo to refactor
-
-        /// <summary>
-        /// 是否启用UI
-        /// </summary>
-        private bool enableUI;
-
-        /// <summary>
-        /// 按下格子的x坐标
-        /// </summary>
-        private int x;
-        /// <summary>
-        /// 按下格子的y坐标
-        /// </summary>
-        private int y;
-
-
-        /// <summary>
-        /// 按下格子的建筑
-        /// </summary>
-        private TileDef existing;
-        /// <summary>
-        /// 按下格子的等级
-        /// </summary>
-        private int existingLevel;
-
-        /// <summary>
-        /// 要建造的建筑
-        /// </summary>
-        private TileDef replacement;
-        /// <summary>
-        /// 要建造的建筑等级
-        /// </summary>
-        private int replacementLevel;
-
 
         /// <summary>
         /// 格子按下时的行为
         /// </summary>
-        private void OnTap() {
+        private static void OnTap() {
             if (Application.platform == RuntimePlatform.WindowsEditor) {
                 OnTap_();
             }
@@ -135,63 +91,60 @@ namespace W
             }
         }
 
-        private void OnTap_() {
+        private static void OnTap_() {
 
             Audio.I.Clip = Audio.I.DefaultSound;
 
-            MapTileInfo info = new MapTileInfo();
-            info.X = MapTapping.I.X;
-            info.Y = MapTapping.I.Y;
+            MapTileInfo info = new MapTileInfo() {
+                X = MapTapping.I.X,
+                Y = MapTapping.I.Y,
+                Map = Game.I.Map,
+                EnableUI = true,
 
-            x = MapTapping.I.X;
-            y = MapTapping.I.Y;
+            };
 
-            map = Game.I.Map;
-
-            enableUI = true;
-
-            if (!map.HasPosition(x, y)) {
-                TapNothing();
+            if (!info.Map.HasPosition(info.X, info.Y)) {
+                TapNothing(info.X, info.Y);
                 return;
             }
 
-            uint existingID = map.ID(x, y);
+            uint existingID = info.Map.ID(info.X, info.Y);
             if (existingID == ID.Invalid) {
-                TapNothing();
+                TapNothing(info.X, info.Y);
                 return;
             }
 
-            existingLevel = map.Level(x, y);
+            info.Level = info.Map.Level(info.X, info.Y);
 
-            if (existingID == 0 && existingLevel != 0) {
+            if (existingID == 0 && info.Level != 0) {
                 A.Assert(false, () => "可能忘了更新 GameConfigReference");
             }
 
-            TapSomething();
+            TapSomething(info.X, info.Y);
 
             if (existingID == ID.Empty) {
-                existing = null;
+                info.TileDef = null;
             } else {
-                existing = GameConfig.I.ID2Obj[existingID] as TileDef;
-                A.Assert(existing != null);
+                info.TileDef = GameConfig.I.ID2Obj[existingID] as TileDef;
+                A.Assert(info.TileDef != null);
             }
 
             if (existingID == ID.Empty) {
-                TapEmpty();
-                ParticlePlayer.I.FrameAnimation(ParticlePlayer.I.Destruct, x, y);
+                TapEmpty(info);
+                ParticlePlayer.I.FrameAnimation(ParticlePlayer.I.Destruct, info.X, info.Y);
             } else {
-                MapView.I.ScaleTileAt(x, y);
-                TapExisting();
+                MapView.I.ScaleTileAt(info.X, info.Y);
+                TapExisting(info);
             }
         }
 
-        private void TapNothing() {
+        private static void TapNothing(int x, int y) {
             ParticlePlayer.I.FrameAnimation(ParticlePlayer.I.Construct, x, y);
             SettingsPage.Show();
             MapTapping.I.HideIndicator();
         }
 
-        private void TapSomething() {
+        private static void TapSomething(int x, int y) {
             MapTapping.I.ShowIndicatorAt(x, y);
         }
 
@@ -218,10 +171,10 @@ namespace W
         /// <summary>
         /// 按下已有建筑
         /// </summary>
-        private void TapExisting() {
+        private static void TapExisting(MapTileInfo info) {
             UI.Prepare();
 
-            IconTextWithLevel(existing, existingLevel);
+            IconTextWithLevel(info.TileDef, info.Level);
 
             //string info = existing.Description;
             //if (info != null) {
@@ -230,42 +183,42 @@ namespace W
             //    UI.Space();
             //}
 
-            if (existing.Techs.Count == 0) {
+            if (info.TileDef.Techs.Count == 0) {
                 UI.Space();
             } else {
-                Sprites.IconButton(Sprites.TechDef, () => TapTechs(existing));
+                Sprites.IconButton(Sprites.TechDef, () => TapTechs(info));
             }
 
             Sprites.IconButton(Sprites.Information, () => {
                 UI.Prepare();
-                IconTextWithLevel(existing, existingLevel);
-                AddTileInformation(existing, existingLevel);
+                IconTextWithLevel(info.TileDef, info.Level);
+                AddTileInformation(info.TileDef, info.Level);
                 UI.Show();
             });
 
             UI.Space();
-            Sprites.IconButton(Sprites.Destruction, CanDestruct() ? ColorNormal : ColorDisable, Game.I.Settings.SkipConfirmation ? TryDestruct : AskDestruct);
+            Sprites.IconButton(Sprites.Destruction, CanDestruct(info) ? ColorNormal : ColorDisable, Game.I.Settings.SkipConfirmation ? () => TryDestruct(info) : () => AskDestruct(info));
 
-            Map.AddRelatedResDefValue(existing);
+            info.Map.AddRelatedResDefValue(info.TileDef);
 
 
             UI.Show();
         }
 
-        private static void TapTechs(TileDef tileDef) {
+        private static void TapTechs(MapTileInfo info) {
             UI.Prepare();
 
-            IconText(tileDef);
+            IconText(info.TileDef);
             Sprites.IconText(Sprites.TechDef);
 
-            foreach (TechDef tech in tileDef.Techs) {
-                AddTapTech(tech);
+            foreach (TechDef tech in info.TileDef.Techs) {
+                AddTapTech(info.Map, tech);
             }
 
             UI.Show();
         }
 
-        private static void AddTapTech(TechDef techDef) {
+        private static void AddTapTech(Map map, TechDef techDef) {
             Game.I.TechLevel(techDef.id, out int techLevel);
 
             UI.Space();
@@ -275,29 +228,29 @@ namespace W
             if (techLevel == techDef.MaxLevel) {
                 UI.IconButton("满级", ColorDisable, techDef.Icon, null);
             } else {
-                bool canAfford = CanAffordTechCosts(techDef);
+                bool canAfford = CanAffordTechCosts(map, techDef);
 
-                UI.IconButton(LevelText(techLevel), canAfford ? ColorNormal : ColorDisable, Sprites.IconOf(Sprites.TechDef), !canAfford ? null : () => TryUpgradeTech(techDef));
+                UI.IconButton(LevelText(techLevel), canAfford ? ColorNormal : ColorDisable, Sprites.IconOf(Sprites.TechDef), !canAfford ? null : () => TryUpgradeTech(map, techDef));
 
-                AddTechCosts(techDef);
+                AddTechCosts(map, techDef);
             }
         }
         private static string LevelText(int level) => level == 0 ? "研发" : "升级";
 
-        private static bool CanAffordTechCosts(TechDef techDef) {
+        private static bool CanAffordTechCosts(Map map, TechDef techDef) {
             Game.I.TechLevel(techDef.id, out int techLevel);
             foreach (IDValue idValue in techDef.Upgrade) {
                 long cost = CostOf(idValue.Value, techDef.Multiplier, techLevel);
-                bool canChange = Map.CanChange(idValue, -cost, IdleReference.Val);
+                bool canChange = map.CanChange(idValue, -cost, IdleReference.Val);
                 if (!canChange) return false;
             }
             return true;
         }
-        private static void AddTechCosts(TechDef techDef) {
+        private static void AddTechCosts(Map map, TechDef techDef) {
             Game.I.TechLevel(techDef.id, out int techLevel);
             foreach (IDValue idValue in techDef.Upgrade) {
                 long cost = CostOf(idValue.Value, techDef.Multiplier, techLevel);
-                bool canChange = Map.CanChange(idValue, -cost, IdleReference.Val);
+                bool canChange = map.CanChange(idValue, -cost, IdleReference.Val);
                 UI.IconText($"{idValue.Key.CN} {cost}", canChange ? ColorNormal : ColorWarning,
                     idValue.Key.Icon, idValue.Key.Color);
             }
@@ -312,13 +265,13 @@ namespace W
             return cost * upgradeValue;
         }
 
-        private static void TryUpgradeTech(TechDef techDef) {
+        private static void TryUpgradeTech(Map map, TechDef techDef) {
             Game.I.TechLevel(techDef.id, out int techLevel);
 
             foreach (IDValue idValue in techDef.Upgrade) {
                 long cost = CostOf(idValue.Value, techDef.Multiplier, techLevel);
 
-                if (!Map.CanChange(idValue, -cost, IdleReference.Val)) {
+                if (!map.CanChange(idValue, -cost, IdleReference.Val)) {
                     FailUpgrade(techDef);
                     return;
                 }
@@ -367,7 +320,6 @@ namespace W
                 UI.Space();
                 Sprites.IconText(Sprites.Construction);
                 foreach (IDValue idValue in existing.Construction) {
-                    // TileDefInfoItem(idValue, existingLevel);
                     IconTextWithValueAndColor(idValue, existingLevel, true);
                 }
             }
@@ -420,30 +372,32 @@ namespace W
 
 
 
-        private void TapEmpty() {
+        private static void TapEmpty(MapTileInfo info) {
             UI.Prepare();
 
             // UI.Text($"坐标 {x} {y}");
-            UI.IconText(map.Def.CN, GameConfig.I.Name2Obj[Sprites.MapDef].Icon);
+            UI.IconText(info.Map.Def.CN, GameConfig.I.Name2Obj[Sprites.MapDef].Icon);
             UI.Space();
 
-            var unlockeds = AddUnlockeds();
+            var unlockeds = AddUnlockeds(info);
             if (unlockeds.Count > 0) {
                 Sprites.IconText(Sprites.Construction);
                 UI.Space();
 
                 foreach (TileDef unlocked in unlockeds) {
 
-                    CalcReplacement(unlocked);
+                    info.TileDef = unlocked;
+                    CalcReplacement(info);
 
-                    IconButtonWithLevel(replacement, replacementLevel, CanConstruct() ? ColorNormal : ColorDisable, () => {
+                    IconButtonWithLevel(info.TileDef, info.Level, CanConstruct(info) ? ColorNormal : ColorDisable, () => {
 
-                        CalcReplacement(unlocked);
+                        info.TileDef = unlocked;
+                        CalcReplacement(info);
 
                         if (Game.I.Settings.SkipConfirmation) {
-                            TryConstruct();
+                            TryConstruct(info);
                         } else {
-                            AskConstruct();
+                            AskConstruct(info);
                         }
                     });
                 }
@@ -453,24 +407,23 @@ namespace W
             UI.Show();
         }
 
-        private void CalcReplacement(TileDef replacement) {
-            if (replacement == null) {
+        public static void CalcReplacement(MapTileInfo info) {
+            if (info.TileDef == null) {
                 A.Error($"建设的物体不能为空");
             }
-            this.replacement = replacement; // capture 
-            replacementLevel = CalcBonus(x, y, replacement) * CalcTech(replacement);
+            info.Level = CalcBonus(info) * CalcTech(info.TileDef);
         }
 
 
-        private readonly HashSet<TileDef> constructables = new HashSet<TileDef>();
-        private HashSet<TileDef> AddUnlockeds() {
+        private static readonly HashSet<TileDef> constructables = new HashSet<TileDef>();
+        private static HashSet<TileDef> AddUnlockeds(MapTileInfo info) {
             constructables.Clear();
-            AddUnlocked(0, +1);
-            AddUnlocked(0, -1);
-            AddUnlocked(+1, 0);
-            AddUnlocked(-1, 0);
+            AddUnlocked(info, 0, +1);
+            AddUnlocked(info, 0, -1);
+            AddUnlocked(info, +1, 0);
+            AddUnlocked(info, -1, 0);
             if (constructables.Count == 0) {
-                foreach (TileDef unlocked in map.Def.Constructables) {
+                foreach (TileDef unlocked in info.Map.Def.Constructables) {
                     if (!constructables.Contains(unlocked)) {
                         constructables.Add(unlocked);
                     }
@@ -478,8 +431,8 @@ namespace W
             }
             return constructables;
         }
-        private void AddUnlocked(int dx, int dy) {
-            uint neighborID = map.ID_Safe(x + dx, y + dy);
+        private static void AddUnlocked(MapTileInfo info, int dx, int dy) {
+            uint neighborID = info.Map.ID_Safe(info.X + dx, info.Y + dy);
             if (ID.IsInvalid(neighborID)) return;
             TileDef neighbor = GameConfig.I.ID2Obj[neighborID] as TileDef;
             foreach (TileDef unlocked in neighbor.BonusReverse) {
@@ -494,22 +447,22 @@ namespace W
             }
         }
 
-        private static int CalcBonus(int x, int y, TileDef tileDef) {
+        private static int CalcBonus(MapTileInfo info) {
             int bonus = 0;
-            bonus += AddBonus(x, y + 1, tileDef);
-            bonus += AddBonus(x, y - 1, tileDef);
-            bonus += AddBonus(x + 1, y, tileDef);
-            bonus += AddBonus(x - 1, y, tileDef);
+            bonus += AddBonus(info, 0, 0 + 1);
+            bonus += AddBonus(info, 0, 0 - 1);
+            bonus += AddBonus(info, 0 + 1, 0);
+            bonus += AddBonus(info, 0 - 1, 0);
             if (bonus < 1) bonus = 1;
             return bonus;
         }
 
-        private static int AddBonus(int dx, int dy, TileDef tileDef) {
-            uint bonusID = map.ID_Safe(dx, dy);
+        private static int AddBonus(MapTileInfo info, int dx, int dy) {
+            uint bonusID = info.Map.ID_Safe(info.X + dx, info.Y + dy);
             if (ID.IsInvalid(bonusID)) return 0;
             TileDef neighbor = GameConfig.I.ID2Obj[bonusID] as TileDef;
             A.Assert(neighbor != null);
-            foreach (var bonus in tileDef.Bonus) {
+            foreach (var bonus in info.TileDef.Bonus) {
                 if (bonus == neighbor) return 1;
             }
             return 0;
@@ -546,141 +499,141 @@ namespace W
 
 
 
-        private void AskConstruct() {
+        private static void AskConstruct(MapTileInfo info) {
             UI.Prepare();
 
-            IconTextWithLevel(replacement, replacementLevel);
+            IconTextWithLevel(info.TileDef, info.Level);
 
             Sprites.IconButton(Sprites.Construction, () => {
-                TryConstruct();
+                TryConstruct(info);
             });
 
-            AddConstructInfo();
+            AddConstructInfo(info);
 
             UI.Show();
         }
-        private void AddConstructInfo() {
-            if (replacement.Construction.Count > 0) {
+        private static void AddConstructInfo(MapTileInfo info) {
+            if (info.TileDef.Construction.Count > 0) {
                 UI.Space();
                 Sprites.IconText(Sprites.Val);
-                foreach (IDValue idValue in replacement.Construction) {
-                    CanChangeText(idValue, 1, IdleReference.Val);
+                foreach (IDValue idValue in info.TileDef.Construction) {
+                    CanChangeText(info.Map, idValue, 1, IdleReference.Val);
                 }
             }
 
-            if (replacement.Inc.Count > 0) {
+            if (info.TileDef.Inc.Count > 0) {
                 UI.Space();
                 Sprites.IconText(Sprites.Inc);
-                foreach (IDValue idValue in replacement.Inc) {
-                    CanChangeText(idValue, replacementLevel, IdleReference.Inc);
+                foreach (IDValue idValue in info.TileDef.Inc) {
+                    CanChangeText(info.Map, idValue, info.Level, IdleReference.Inc);
                 }
             }
 
-            if (replacement.Max.Count > 0) {
+            if (info.TileDef.Max.Count > 0) {
                 UI.Space();
                 Sprites.IconText(Sprites.Max);
-                foreach (IDValue idValue in replacement.Max) {
-                    CanChangeText(idValue, replacementLevel, IdleReference.Max);
+                foreach (IDValue idValue in info.TileDef.Max) {
+                    CanChangeText(info.Map, idValue, info.Level, IdleReference.Max);
                 }
             }
         }
 
-        private bool CanConstruct() {
-            foreach (IDValue idValue in replacement.Construction) {
-                if (!Map.CanChange(idValue, 1, IdleReference.Val)) return false;
+        private static bool CanConstruct(MapTileInfo info) {
+            foreach (IDValue idValue in info.TileDef.Construction) {
+                if (!info.Map.CanChange(idValue, 1, IdleReference.Val)) return false;
             }
-            foreach (IDValue idValue in replacement.Inc) {
-                if (!Map.CanChange(idValue, replacementLevel, IdleReference.Inc)) return false;
+            foreach (IDValue idValue in info.TileDef.Inc) {
+                if (!info.Map.CanChange(idValue, info.Level, IdleReference.Inc)) return false;
             }
-            foreach (IDValue idValue in replacement.Max) {
-                if (!Map.CanChange(idValue, replacementLevel, IdleReference.Max)) return false;
+            foreach (IDValue idValue in info.TileDef.Max) {
+                if (!info.Map.CanChange(idValue, info.Level, IdleReference.Max)) return false;
             }
-            if (!CanConstructByNeighbor(0, +1)) return false;
-            if (!CanConstructByNeighbor(0, -1)) return false;
-            if (!CanConstructByNeighbor(+1, 0)) return false;
-            if (!CanConstructByNeighbor(-1, 0)) return false;
+            if (!CanConstructByNeighbor(info, 0, +1)) return false;
+            if (!CanConstructByNeighbor(info, 0, -1)) return false;
+            if (!CanConstructByNeighbor(info, +1, 0)) return false;
+            if (!CanConstructByNeighbor(info, -1, 0)) return false;
             return true;
         }
 
-        private bool CanConstructByNeighbor(int dx, int dy) {
-            TileDef neighbor = NeighborOf(dx, dy);
+        private static bool CanConstructByNeighbor(MapTileInfo info, int dx, int dy) {
+            TileDef neighbor = NeighborOf(info, dx, dy);
             if (neighbor == null) return true;
-            foreach (TileDef repel in replacement.Repels) {
+            foreach (TileDef repel in info.TileDef.Repels) {
                 if (repel == neighbor) return false;
             }
             foreach (TileDef repel in neighbor.Repels) {
-                if (repel == replacement) return false;
+                if (repel == info.TileDef) return false;
             }
             return true;
         }
-        private TileDef NeighborOf(int dx, int dy) {
-            uint neighborID = map.ID_Safe(x + dx, y + dy);
+        private static TileDef NeighborOf(MapTileInfo info, int dx, int dy) {
+            uint neighborID = info.Map.ID_Safe(info.X + dx, info.Y + dy);
             if (ID.IsInvalid(neighborID)) return null;
             TileDef neighbor = GameConfig.I.ID2Obj[neighborID] as TileDef;
             return neighbor;
         }
 
-        private bool TryConstruct() {
-            if (!CanConstruct()) {
-                FailConstruct();
+        public static bool TryConstruct(MapTileInfo info) {
+            if (!CanConstruct(info)) {
+                FailConstruct(info);
                 return false;
             }
 
-            SucceedConstruct();
-            map.ID(x, y, replacement.id);
-            map.Level(x, y, replacementLevel);
-            if (enableUI) MapDataView.ShowTile(x, y, replacement, replacementLevel, true);
+            SucceedConstruct(info);
+            info.Map.ID(info.X, info.Y, info.TileDef.id);
+            info.Map.Level(info.X, info.Y, info.Level);
+            if (info.EnableUI) MapDataView.ShowTile(info.X, info.Y, info.TileDef, info.Level, true);
 
-            foreach (IDValue idValue in replacement.Construction) {
-                Map.DoChange(idValue, 1, IdleReference.Val);
+            foreach (IDValue idValue in info.TileDef.Construction) {
+                info.Map.DoChange(idValue, 1, IdleReference.Val);
             }
 
-            foreach (IDValue idValue in replacement.Inc) {
-                Map.DoChange(idValue, replacementLevel, IdleReference.Inc);
+            foreach (IDValue idValue in info.TileDef.Inc) {
+                info.Map.DoChange(idValue, info.Level, IdleReference.Inc);
             }
 
-            foreach (IDValue idValue in replacement.Max) {
-                Map.DoChange(idValue, replacementLevel, IdleReference.Max);
+            foreach (IDValue idValue in info.TileDef.Max) {
+                info.Map.DoChange(idValue, info.Level, IdleReference.Max);
             }
 
             return true;
         }
 
-        private void SucceedConstruct() {
-            if (!enableUI) return;
+        private static void SucceedConstruct(MapTileInfo info) {
+            if (!info.EnableUI) return;
 
             Audio.I.Clips = Audio.I.ConstructSound;
 
             UI.Prepare();
 
-            IconText(replacement);
+            IconText(info.TileDef);
             UI.Space();
             Sprites.IconText(Sprites.Construction);
             UI.Space();
             Sprites.IconText(Sprites.Success);
 
-            AddConstructInfo();
+            AddConstructInfo(info);
 
             UI.Show();
         }
 
-        private readonly HashSet<TileDef> neighbors = new HashSet<TileDef>();
-        private void FailConstruct() {
-            if (!enableUI) return;
+        private static readonly HashSet<TileDef> neighbors = new HashSet<TileDef>();
+        private static void FailConstruct(MapTileInfo info) {
+            if (!info.EnableUI) return;
 
             UI.Prepare();
 
-            IconText(replacement);
+            IconText(info.TileDef);
             UI.Space();
             Sprites.IconText(Sprites.Construction);
             UI.Space();
             Sprites.IconText(Sprites.Failure);
 
             neighbors.Clear();
-            FailConstructRepelText(0, +1);
-            FailConstructRepelText(0, -1);
-            FailConstructRepelText(+1, 0);
-            FailConstructRepelText(-1, 0);
+            FailConstructRepelText(info, 0, +1);
+            FailConstructRepelText(info, 0, -1);
+            FailConstructRepelText(info, +1, 0);
+            FailConstructRepelText(info, -1, 0);
             if (neighbors.Count > 0) {
                 UI.Space();
                 Sprites.IconText(Sprites.Repel);
@@ -694,23 +647,23 @@ namespace W
 
             bool title;
             title = false;
-            foreach (IDValue idValue in replacement.Construction) {
-                FailConstructText(idValue, 1, IdleReference.Val, ref title);
+            foreach (IDValue idValue in info.TileDef.Construction) {
+                FailConstructText(info.Map, idValue, 1, IdleReference.Val, ref title);
             }
             title = false;
-            foreach (IDValue idValue in replacement.Inc) {
-                FailConstructText(idValue, replacementLevel, IdleReference.Inc, ref title);
+            foreach (IDValue idValue in info.TileDef.Inc) {
+                FailConstructText(info.Map, idValue, info.Level, IdleReference.Inc, ref title);
             }
             title = false;
-            foreach (IDValue idValue in replacement.Max) {
-                FailConstructText(idValue, replacementLevel, IdleReference.Max, ref title);
+            foreach (IDValue idValue in info.TileDef.Max) {
+                FailConstructText(info.Map, idValue, info.Level, IdleReference.Max, ref title);
             }
             title = false;
 
             UI.Show();
         }
-        private void FailConstructText(IDValue idValue, long level, IdleReference i, ref bool title) {
-            bool canConstruct = Map.CanChange(idValue, level, i);
+        private static void FailConstructText(Map map, IDValue idValue, long level, IdleReference i, ref bool title) {
+            bool canConstruct = map.CanChange(idValue, level, i);
             if (!canConstruct) {
                 if (!title) {
                     title = true;
@@ -730,19 +683,19 @@ namespace W
             }
         }
 
-        private void FailConstructRepelText(int dx, int dy) {
-            TileDef neighbor = NeighborOf(dx, dy);
+        private static void FailConstructRepelText(MapTileInfo info, int dx, int dy) {
+            TileDef neighbor = NeighborOf(info, dx, dy);
             if (neighbor == null) return;
 
             if (neighbors.Contains(neighbor)) return;
-            foreach (TileDef repel in replacement.Repels) {
+            foreach (TileDef repel in info.TileDef.Repels) {
                 if (repel == neighbor) {
                     neighbors.Add(neighbor);
                 }
             }
             if (neighbors.Contains(neighbor)) return;
             foreach (TileDef repel in neighbor.Repels) {
-                if (repel == replacement) {
+                if (repel == info.TileDef) {
                     neighbors.Add(neighbor);
                 }
             }
@@ -764,109 +717,109 @@ namespace W
 
 
 
-        private void AskDestruct() {
+        private static void AskDestruct(MapTileInfo info) {
             UI.Prepare();
 
-            IconTextWithLevel(existing, existingLevel);
+            IconTextWithLevel(info.TileDef, info.Level);
 
-            Sprites.IconButton(Sprites.Destruction, CanDestruct() ? ColorNormal : ColorDisable, () => {
-                TryDestruct();
+            Sprites.IconButton(Sprites.Destruction, CanDestruct(info) ? ColorNormal : ColorDisable, () => {
+                TryDestruct(info);
             });
 
-            AddDestructInfo();
+            AddDestructInfo(info);
 
             UI.Show();
         }
 
-        private void AddDestructInfo() {
-            if (existing.Destruction.Count > 0) {
+        private static void AddDestructInfo(MapTileInfo info) {
+            if (info.TileDef.Destruction.Count > 0) {
                 UI.Space();
                 Sprites.IconText(Sprites.Val);
-                foreach (IDValue idValue in existing.Destruction) {
-                    CanChangeText(idValue, 1, IdleReference.Val);
+                foreach (IDValue idValue in info.TileDef.Destruction) {
+                    CanChangeText(info.Map, idValue, 1, IdleReference.Val);
                 }
             }
 
-            if (existing.Inc.Count > 0) {
+            if (info.TileDef.Inc.Count > 0) {
                 UI.Space();
                 Sprites.IconText(Sprites.Inc);
-                foreach (IDValue idValue in existing.Inc) {
-                    CanChangeText(idValue, -existingLevel, IdleReference.Inc);
+                foreach (IDValue idValue in info.TileDef.Inc) {
+                    CanChangeText(info.Map, idValue, -info.Level, IdleReference.Inc);
                 }
             }
 
-            if (existing.Max.Count > 0) {
+            if (info.TileDef.Max.Count > 0) {
                 UI.Space();
                 Sprites.IconText(Sprites.Max);
-                foreach (IDValue idValue in existing.Max) {
-                    CanChangeText(idValue, -existingLevel, IdleReference.Max);
+                foreach (IDValue idValue in info.TileDef.Max) {
+                    CanChangeText(info.Map, idValue, -info.Level, IdleReference.Max);
                 }
             }
         }
 
-        private bool CanDestruct() {
-            foreach (IDValue idValue in existing.Destruction) {
-                if (!Map.CanChange(idValue, 1, IdleReference.Val)) return false;
+        private static bool CanDestruct(MapTileInfo info) {
+            foreach (IDValue idValue in info.TileDef.Destruction) {
+                if (!info.Map.CanChange(idValue, 1, IdleReference.Val)) return false;
             }
-            foreach (IDValue idValue in existing.Inc) {
-                if (!Map.CanChange(idValue, -existingLevel, IdleReference.Inc)) return false;
+            foreach (IDValue idValue in info.TileDef.Inc) {
+                if (!info.Map.CanChange(idValue, -info.Level, IdleReference.Inc)) return false;
             }
-            foreach (IDValue idValue in existing.Max) {
-                if (!Map.CanChange(idValue, -existingLevel, IdleReference.Max)) return false;
+            foreach (IDValue idValue in info.TileDef.Max) {
+                if (!info.Map.CanChange(idValue, -info.Level, IdleReference.Max)) return false;
             }
             return true;
         }
 
-        private void TryDestruct() {
-            if (!CanDestruct()) {
-                FailDestruct();
+        private static void TryDestruct(MapTileInfo info) {
+            if (!CanDestruct(info)) {
+                FailDestruct(info);
                 return;
             }
 
-            SucceedDestruct();
-            map.ID(x, y, ID.Empty);
-            map.Level(x, y, 0);
-            if (enableUI) MapDataView.ShowTile(x, y, null, 0, true);
+            SucceedDestruct(info);
+            info.Map.ID(info.X, info.Y, ID.Empty);
+            info.Map.Level(info.X, info.Y, 0);
+            if (info.EnableUI) MapDataView.ShowTile(info.X, info.Y, null, 0, true);
 
-            foreach (IDValue idValue in existing.Inc) {
-                Map.DoChange(idValue, -existingLevel, IdleReference.Inc);
+            foreach (IDValue idValue in info.TileDef.Inc) {
+                info.Map.DoChange(idValue, -info.Level, IdleReference.Inc);
             }
 
-            foreach (IDValue idValue in existing.Max) {
-                Map.DoChange(idValue, -existingLevel, IdleReference.Max);
+            foreach (IDValue idValue in info.TileDef.Max) {
+                info.Map.DoChange(idValue, -info.Level, IdleReference.Max);
             }
 
-            foreach (IDValue idValue in existing.Construction) {
-                Map.DoChange(idValue, 1, IdleReference.Val);
+            foreach (IDValue idValue in info.TileDef.Construction) {
+                info.Map.DoChange(idValue, 1, IdleReference.Val);
             }
         }
 
 
-        private void SucceedDestruct() {
-            if (!enableUI) return;
+        private static void SucceedDestruct(MapTileInfo info) {
+            if (!info.EnableUI) return;
 
             Audio.I.Clips = Audio.I.DestructSound;
 
             UI.Prepare();
 
-            IconText(existing);
+            IconText(info.TileDef);
             Sprites.IconText(Sprites.Destruction);
             UI.Space();
             Sprites.IconText(Sprites.Success);
 
-            AddDestructInfo();
+            AddDestructInfo(info);
 
             UI.Show();
         }
 
 
 
-        private void FailDestruct() {
-            if (!enableUI) return;
+        private static void FailDestruct(MapTileInfo info) {
+            if (!info.EnableUI) return;
 
             UI.Prepare();
 
-            IconText(existing);
+            IconText(info.TileDef);
             Sprites.IconText(Sprites.Destruction);
             UI.Space();
             Sprites.IconText(Sprites.Failure);
@@ -874,23 +827,23 @@ namespace W
 
             bool title;
             title = false;
-            foreach (IDValue idValue in existing.Destruction) {
-                FailDestructText(idValue, 1, IdleReference.Val, ref title);
+            foreach (IDValue idValue in info.TileDef.Destruction) {
+                FailDestructText(info.Map, idValue, 1, IdleReference.Val, ref title);
             }
             title = false;
-            foreach (IDValue idValue in existing.Inc) {
-                FailDestructText(idValue, -existingLevel, IdleReference.Inc, ref title);
+            foreach (IDValue idValue in info.TileDef.Inc) {
+                FailDestructText(info.Map, idValue, -info.Level, IdleReference.Inc, ref title);
             }
             title = false;
-            foreach (IDValue idValue in existing.Max) {
-                FailDestructText(idValue, -existingLevel, IdleReference.Max, ref title);
+            foreach (IDValue idValue in info.TileDef.Max) {
+                FailDestructText(info.Map, idValue, -info.Level, IdleReference.Max, ref title);
             }
 
             UI.Show();
         }
 
-        private void FailDestructText(IDValue idValue, long level, IdleReference i, ref bool title) {
-            bool canConstruct = Map.CanChange(idValue, level, i);
+        private static void FailDestructText(Map map, IDValue idValue, long level, IdleReference i, ref bool title) {
+            bool canConstruct = map.CanChange(idValue, level, i);
             if (!canConstruct) {
                 if (!title) {
                     title = true;
@@ -928,50 +881,7 @@ namespace W
 
 
 
-        public void TryConstructInitials(Map map) {
-            MapUI.map = map;
-            map.TemporaryRandomGenerator = new System.Random((int)map.Seed);
-            map.Def.ProcessMapTerrain(map);
-            TryConstructInitialStructures(map);
-        }
 
-        
-
-        public void TryConstructInitialStructures(Map map) {
-            MapDef mapDef = map.Def;
-
-            if (mapDef.InitialRandomStructures == null || mapDef.InitialRandomStructures.Count == 0) return;
-
-            int width = mapDef.Width;
-            int height = mapDef.Height;
-            int square = width * height;
-
-            enableUI = false;
-
-            foreach (IDValue idValue in mapDef.InitialRandomStructures) {
-
-                if (idValue.Key is TileDef tileDef) {
-
-                    long times = 0;
-                    long times_success = 0;
-
-                    while (times_success < idValue.Value && times < square) {
-                        x = map.TemporaryRandomGenerator.Next(width);
-                        y = map.TemporaryRandomGenerator.Next(height);
-
-                        uint id = map.ID(x, y);
-                        if (id == ID.Empty) {
-                            CalcReplacement(tileDef);
-                            if (TryConstruct()) {
-                                times_success++;
-                            }
-                        }
-
-                        times++;
-                    }
-                }
-            }
-        }
     }
 }
 

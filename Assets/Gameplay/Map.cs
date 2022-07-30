@@ -48,12 +48,55 @@ namespace W
             if (body == null) {
                 body = new MapBody();
                 body.Init(Width, Height);
-                MapUI.I.TryConstructInitials(this);
+                TryConstructInitials();
             }
+            Game.I.Relativity.TimeScale = Def.TimeScale;
             MapDataView.EnterMap(this);
         }
-        private void ConstructInitials() {
+        private void TryConstructInitials() {
+            TemporaryRandomGenerator = new System.Random((int)Seed);
+            Def.ProcessMapTerrain(this);
+            TryConstructInitialStructures();
+        }
 
+
+        private void TryConstructInitialStructures() {
+            MapTileInfo info = new MapTileInfo();
+            info.Map = this;
+
+            MapDef mapDef = Def;
+            if (mapDef.InitialRandomStructures == null || mapDef.InitialRandomStructures.Count == 0) return;
+
+            int width = mapDef.Width;
+            int height = mapDef.Height;
+            int square = width * height;
+
+            info.EnableUI = false;
+
+            foreach (IDValue idValue in mapDef.InitialRandomStructures) {
+
+                if (idValue.Key is TileDef tileDef) {
+
+                    long times = 0;
+                    long times_success = 0;
+
+                    while (times_success < idValue.Value && times < square) {
+                        info.X = TemporaryRandomGenerator.Next(width);
+                        info.Y = TemporaryRandomGenerator.Next(height);
+
+                        uint id = ID(info.X, info.Y);
+                        if (id == W.ID.Empty) {
+                            info.TileDef = tileDef;
+                            MapUI.CalcReplacement(info);
+                            if (MapUI.TryConstruct(info)) {
+                                times_success++;
+                            }
+                        }
+
+                        times++;
+                    }
+                }
+            }
         }
 
 
@@ -132,8 +175,9 @@ namespace W
 
         public const uint SuperMapIndex = uint.MaxValue;
 
-        public const uint NULLPreviousMap = 0;
-        public bool NoPreviousMap => previousSeed == NULLPreviousMap;
+
+        public const uint NullSeed = 0;
+        public bool NoPreviousMap => previousSeed == NullSeed;
         public void LoadPrevious(out Map map) {
             if (NoPreviousMap) {
                 map = null;
@@ -143,35 +187,45 @@ namespace W
             LoadWithSeedAndLevel(previousSeed, previousMapLevel, out map);
         }
 
-        public void LoadNext(uint index, out Map nextMap) {
+        public void LoadMap(uint index, out Map other) {
             uint seed = Seed;
             int nextLevel = index == SuperMapIndex ? mapLevel + 1 : mapLevel - 1;
             if (nextLevel >= MapDefName.MaxMapLevel) {
                 nextLevel = MapDefName.MaxMapLevel;
             }
             uint nextSeed = H.Hash(seed);
-            LoadWithSeedAndLevel(nextSeed, nextLevel, out nextMap);
-        }
-        private void LoadWithSeedAndLevel(uint nextSeed, int nextLevel, out Map nextMap) {
-            string key = KeyOf(nextSeed, nextLevel);
-            Load(key, out nextMap);
-            if (nextMap == null) {
-                nextMap = new Map();
-                nextMap.seed = nextSeed;
-                nextMap.mapLevel = nextLevel;
-                nextMap.previousSeed = seed;
-                nextMap.previousMapLevel = mapLevel;
+            if (nextSeed == 0) H.Hashed(ref nextSeed); // in case hash collision to 0
 
-                nextMap.Init();
+            LoadWithSeedAndLevel(nextSeed, nextLevel, out other);
+        }
+
+        private void LoadWithSeedAndLevel(uint nextSeed, int nextLevel, out Map other) {
+            string key = KeyOf(nextSeed, nextLevel);
+            Load(key, out other);
+            if (other == null) {
+                other = new Map {
+                    seed = nextSeed,
+                    mapLevel = nextLevel,
+                    previousSeed = seed,
+                    previousMapLevel = mapLevel
+                };
+                other.Init();
             }
         }
 
-        public void LoadWithLevel(int mapLevel) {
-            A.Assert(seed == 0 && mapDefID == 0);
-            this.mapLevel = mapLevel;
+        public static Map Create(uint seed, int mapLevel) {
+            A.Assert(seed != NullSeed);
 
-            Init();
+            Map map = new Map {
+                seed = seed,
+                mapLevel = mapLevel,
+                previousSeed = NullSeed
+            };
+            map.Init();
+            return map;
         }
+
+
 
         private void Init() {
             A.Assert(resources == null);
@@ -243,13 +297,13 @@ namespace W
         }
 
 
-        public static bool CanChange(IDValue idValue, long multiplier, IdleReference i) {
+        public bool CanChange(IDValue idValue, long multiplier, IdleReference i) {
             ResDef resDef = idValue.Key as ResDef;
             A.Assert(resDef != null);
             uint resDefID = resDef.id;
             if (multiplier * idValue.Value == 0) {
                 return true;
-            } else if (Game.I.Map.Resources.TryGetValue(resDefID, out Idle idle)) {
+            } else if (Resources.TryGetValue(resDefID, out Idle idle)) {
                 long idleValue = long.MinValue;
                 switch (i) {
                     case IdleReference.Val:
@@ -274,17 +328,17 @@ namespace W
                 return multiplier * idValue.Value > 0;
             }
         }
-        public static void DoChange(IDValue idValue, long multiplier, IdleReference i) {
+        public void DoChange(IDValue idValue, long multiplier, IdleReference i) {
             ResDef resDef = idValue.Key as ResDef;
             A.Assert(resDef != null);
             uint resDefID = resDef.id;
             if (multiplier == 0) {
                 return;
             } else {
-                if (!Game.I.Map.Resources.TryGetValue(resDefID, out Idle idle)) {
-                    long del = resDef.DeltaTicks;
+                if (!Resources.TryGetValue(resDefID, out Idle idle)) {
+                    long del = resDef.DeltaTicks / Def.TimeScale;
                     idle = new Idle(0, 0, del, 0);
-                    Game.I.Map.Resources.Add(resDefID, idle);
+                    Resources.Add(resDefID, idle);
                 }
                 switch (i) {
                     case IdleReference.Val:
@@ -305,7 +359,7 @@ namespace W
         }
 
         private readonly static HashSet<ID> existingRes = new HashSet<ID>();
-        public static void AddRelatedResDefValue(TileDef tileDef) {
+        public void AddRelatedResDefValue(TileDef tileDef) {
             existingRes.Clear();
             foreach (IDValue idValue in tileDef.Inc) {
                 if (!existingRes.Contains(idValue.Key)) {
@@ -319,11 +373,12 @@ namespace W
             }
 
             foreach (ID key in existingRes) {
-                if (!Game.I.Map.Resources.TryGetValue(key.id, out Idle idle)) {
+                if (!Resources.TryGetValue(key.id, out Idle idle)) {
                     continue;
                 }
                 UI.Space();
                 UI.IconText(key.CN, key.Icon, key.Color);
+
                 UI.Progress(() => $"{idle.Value}/{idle.Max}  +{idle.Inc}/{idle.DelSecond}s", () => idle.Progress);
             }
 

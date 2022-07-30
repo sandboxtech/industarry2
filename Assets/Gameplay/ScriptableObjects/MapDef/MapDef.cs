@@ -47,7 +47,13 @@ namespace W
     [CreateAssetMenu(fileName = "__MapDef__", menuName = "创建 MapDef 地图定义", order = 1)]
     public class MapDef : ID
     {
-        
+
+        [Header("相对论效应")]
+        [SerializeField]
+        private int relativityTimeScale = 1;
+        public int TimeScale => relativityTimeScale < 0 ? 1 : relativityTimeScale > 100 ? 100 : relativityTimeScale;
+
+
         [Header("地图样式")]
         [SerializeField]
         private MapThemeDef mapThemeDef;

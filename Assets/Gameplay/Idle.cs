@@ -26,7 +26,7 @@ namespace W
         private static long Clamp(long min, long max, long x) => x < min ? min : (x > max ? max : x);
         private static float Clamp(float min, float max, float x) => x < min ? min : (x > max ? max : x);
 
-        private long Now => G.now;
+        private long Now => Game.I.Relativity.ScaleNow;
         private void Sync() {
             //long now = Now;
             //long turn = (now - time) / Del;

@@ -39,21 +39,14 @@ namespace W
                 config.Prepare();
             }
 
+            relativityTimeScale = new Relativity();
             settings = new Settings();
             techs = new Dictionary<uint, int>();
 
             on_ship = false;
-            spaceshipMap = new Map();
-            thisMap = new Map();
-            superMap = new Map();
-
-            spaceshipMap.LoadWithLevel(MapDefName.SpaceshipLevel);
-            thisMap.LoadWithLevel(MapDefName.PlanetLevel);
-            thisMap.LoadNext(Map.SuperMapIndex, out superMap);
-
-            //(spaceshipMap as IMap).Init(null, uint.MaxValue);
-            //(thisMap as IMap).Init(spaceshipMap, uint.MaxValue);
-            //(superMap as IMap).Init(thisMap, uint.MaxValue);
+            spaceshipMap = Map.Create(1, MapDefName.SpaceshipLevel);
+            thisMap = Map.Create(1, MapDefName.PlanetLevel);
+            thisMap.LoadMap(Map.SuperMapIndex, out superMap);
 
             thisMapKey = thisMap.Key;
             superMapKey = superMap.Key;
@@ -71,6 +64,7 @@ namespace W
             }
             Map.OnEnter();
         }
+
 
         private const long VERSION = 3;
         [JsonProperty]
@@ -93,6 +87,11 @@ namespace W
             return game;
         }
 
+
+
+        [JsonProperty]
+        private Relativity relativityTimeScale;
+        public Relativity Relativity => I.relativityTimeScale;
 
 
         [JsonProperty]
@@ -161,21 +160,26 @@ namespace W
         public void EnterMap(uint index) {
             if (index == Map.SuperMapIndex) {
                 thisMap = superMap;
-                thisMap.LoadNext(index, out superMap);
+                thisMap.LoadMap(index, out superMap);
             } else {
                 superMap = thisMap;
-                superMap.LoadNext(index, out thisMap);
+                superMap.LoadMap(index, out thisMap);
             }
-            Map.OnEnter();
+            if (!OnShip) {
+                Map.OnEnter();
+            }
         }
 
         public void EnterPreviousMap() {
             A.Assert(!on_ship);
+
             thisMap.LoadPrevious(out Map map);
-            if (map == null) return;
+            if (map == null) {
+                return;
+            }
             thisMap = map;
 
-            thisMap.LoadNext(Map.SuperMapIndex, out superMap);
+            thisMap.LoadMap(Map.SuperMapIndex, out superMap);
             thisMap.OnEnter();
 
             on_ship = false;
