@@ -44,9 +44,37 @@ namespace W
     //    BlackHole,
     //}
 
+    [System.Serializable]
+    public class MapDefOrbit
+    {
+        // [UnityEngine.Serialization.FormerlySerializedAs("ResDef")]
+        [Header("数值")]
+        [SerializeField]
+        private MapDef key;
+        public MapDef Key => key;
+
+        [Header("轨道半径")]
+        [SerializeField]
+        private int radius;
+        public int Radius => radius;
+
+        [Header("概率")]
+        [SerializeField]
+        private double possiblity;
+        public double Possibility => possiblity == 0 ? 1 : possiblity;
+
+    }
+
+
     [CreateAssetMenu(fileName = "__MapDef__", menuName = "创建 MapDef 地图定义", order = 1)]
     public class MapDef : ID
     {
+
+        [Header("无法进入")]
+        [SerializeField]
+        private bool notAccessible;
+        public bool NotAccessible => notAccessible;
+
 
         [Header("相对论效应")]
         [SerializeField]
@@ -72,13 +100,24 @@ namespace W
         private static int Validate(int size) => size <= 0 ? 16 : size >= 1024 ? 1024 : size;
 
 
+        [Header("上级地图类型")]
+        [SerializeField]
+        private MapDef superMapDef;
+        public MapDef SuperMapDef => superMapDef;
+
+        [Header("轨道定义")]
+        [SerializeField]
+        private List<MapDefOrbit> mapDefOrbits;
+        public List<MapDefOrbit> MapDefOrbits => mapDefOrbits;
+
 
         [Header("初始随机建筑")]
         [SerializeField]
-        private List<IDValue> initialRandomStructures;
-        public List<IDValue> InitialRandomStructures => initialRandomStructures;
+        private List<TileDefValue> initialRandomStructures;
+        public List<TileDefValue> InitialRandomStructures => initialRandomStructures;
 
-        [Header("测试：可造建筑")]
+
+        [Header("无条件可造建筑")]
         [SerializeField]
         private List<TileDef> constructables;
         public IReadOnlyList<TileDef> Constructables => constructables;

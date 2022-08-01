@@ -8,8 +8,8 @@ namespace W
     public class TechDef : ID
 	{
         [SerializeField]
-        private List<IDValue> upgrade;
-        public List<IDValue> Upgrade => upgrade;
+        private List<ResDefValue> upgrade;
+        public List<ResDefValue> Upgrade => upgrade;
 
         [SerializeField]
         private long multiplier = 10;

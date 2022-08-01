@@ -4,7 +4,7 @@ using UnityEngine;
 namespace W
 {
     public static class MapDataView
-	{
+    {
 
         private static Map map;
         public static void EnterMap(Map m) {
@@ -21,11 +21,12 @@ namespace W
             UI.Text($"type {map.Def.CN}");
             UI.Show();
 
+            // 地形
             if (map.Def.Theme.Tileset != null && map.Def.Theme.Tileset.Length != 0) {
                 A.Assert(map.Def.Theme.Tileset.Length == TileUtility.Size8x6);
                 for (int i = -1; i <= map.Width; i++) {
                     for (int j = -1; j <= map.Height; j++) {
-                        int index = TileUtility.Index_8x6((Vec2 delta) => {
+                        int spriteIndex = TileUtility.Index_8x6((Vec2 delta) => {
                             Vec2 pos = delta + new Vec2(i, j);
                             if (pos.x <= -1 || pos.x >= map.Width) return true;
                             if (pos.y <= -1 || pos.y >= map.Height) return true;
@@ -35,22 +36,36 @@ namespace W
                             }
                             return false;
                         });
-                        if (index != TileUtility.Full8x6) {
-                            MapView.I.SetBackSpriteAt(i, j, map.Def.Theme.Tileset[index], map.Def.Theme.GroundColor);
+                        if (spriteIndex != TileUtility.Full8x6) {
+                            MapView.I.SetBackSpriteAt(i, j, map.Def.Theme.Tileset[spriteIndex], map.Def.Theme.GroundColor);
                         }
                     }
                 }
+            } else {
+                MapView.I.Lightness = 1;
             }
 
+            // 
             for (int i = 0; i < map.Width; i++) {
                 for (int j = 0; j < map.Height; j++) {
                     uint id = map.ID(i, j);
-                    if (ID.IsInvalid(id)) continue;
-                    TileDef tileDef = GameConfig.I.ID2Obj[id] as TileDef;
-                    A.Assert(tileDef != null);
-                    int level = map.Level(i, j);
-                    ShowTile(i, j, tileDef, level, false);
-                    TranslateTiles(i, j);
+                    if (ID.IsInvalid(id)) {
+                        uint index = map.IndexOf(i, j);
+                        if (!map.NoPreviousMap && index == map.PreviousMapIndex) {
+                            MapDef mapDef = GameConfig.I.ID2Obj[map.PreviousMapDefID] as MapDef;
+                            A.Assert(mapDef != null);
+                            ShowTile(i, j, mapDef, 0, false);
+                        } else if (map.SubMaps != null && map.SubMaps.TryGetValue(index, out uint mapDefID)) {
+                            MapDef mapDef = GameConfig.I.ID2Obj[mapDefID] as MapDef;
+                            A.Assert(mapDef != null);
+                            ShowTile(i, j, mapDef, 0, false);
+                        }
+                    } else {
+                        TileDef tileDef = GameConfig.I.ID2Obj[id] as TileDef;
+                        A.Assert(tileDef != null);
+                        int level = map.Level(i, j);
+                        ShowTile(i, j, tileDef, level, false);
+                    }
                 }
             }
         }
@@ -63,10 +78,10 @@ namespace W
 
             if (id == null) {
                 MapView.I.ClearFrontSpriteAt(x, y);
-            } else if (id.Sprite != null) {
-                MapView.I.SetFrontSpriteAt(x, y, id.Sprite, id.Color);
             } else if (id.Sprites != null && id.Sprites.Length > 0) {
                 MapView.I.SetFrontSpritesAt(x, y, id.Sprites, id.SpritesDuration, id.Color);
+            } else if (id.Sprite != null) {
+                MapView.I.SetFrontSpriteAt(x, y, id.Sprite, id.Color);
             } else {
                 MapView.I.ClearFrontSpriteAt(x, y);
             }
@@ -118,13 +133,13 @@ namespace W
             TileDef neighbor = GameConfig.I.ID2Obj[id] as TileDef;
             foreach (TileDef bonus in self.Bonus) {
                 if (bonus == neighbor) {
-                    MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, self.Color, dir);
+                    MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, self.BonusAnim.Color, dir);
                     return;
                 }
             }
             foreach (TileDef bonus in self.Conditions) {
                 if (bonus == neighbor) {
-                    MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, self.Color, dir);
+                    MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, self.BonusAnim.Color, dir);
                     return;
                 }
             }

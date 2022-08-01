@@ -43,17 +43,6 @@ namespace W
             BindBonusAndConditions();
         }
 
-        //private void CheckIDValue() {
-        //    if (UnityEngine.Application.platform != UnityEngine.RuntimePlatform.WindowsEditor) {
-        //        return;
-        //    }
-        //    foreach (var pair in name2obj) {
-        //        if (pair.Value is IDValue idValue) {
-        //            A.Assert(idValue.Key != null, () => $"未配key {idValue.CN}");
-        //            A.Assert(idValue.Value != 0, () => $"未配value {idValue.CN}");
-        //        }
-        //    }
-        //}
 
         private void BindBonusAndConditions() {
             // unlockRelation = new Dictionary<TileDef, HashSet<TileDef>>();
@@ -80,9 +69,25 @@ namespace W
             id2name = new Dictionary<uint, string>();
             uint i = 1;
             foreach (var pair in name2obj) {
+
+                if (!IsValid(pair.Value)) {
+                    A.Error($"not valid : {pair.Value.name} {pair.Value.CN}");
+                }
+
                 id2name.Add(i, pair.Key);
                 i++;
             }
+        }
+
+        private bool IsValid(ID id) {
+            if (id is TechDef tech) {
+                foreach (var pair in tech.Upgrade) {
+                    if (pair.Key == null) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public void Prepare() {

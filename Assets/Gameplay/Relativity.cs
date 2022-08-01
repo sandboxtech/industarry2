@@ -1,5 +1,6 @@
 
 using Newtonsoft.Json;
+using System.Runtime.Serialization;
 
 namespace W
 {
@@ -41,6 +42,12 @@ namespace W
                 ticks += deltaRealTicks * TimeScale;
                 return ticks;
             }
+        }
+
+        [OnSerializing]
+        private void OnSerializingMethod(StreamingContext context) {
+            // 序列化之前，保存Map
+            ticks = ScaleNow;
         }
     }
 }

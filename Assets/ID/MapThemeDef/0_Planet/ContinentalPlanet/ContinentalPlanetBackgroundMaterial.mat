@@ -41,7 +41,7 @@ Material:
     m_Floats:
     - _EnableExternalAlpha: 0
     - _HueshiftScale: 1
-    - _Lerp: 0.51250815
+    - _Lerp: 0
     - _WorldScale: 1
     - _X: 4
     - _Y: 4

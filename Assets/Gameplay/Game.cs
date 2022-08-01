@@ -39,19 +39,19 @@ namespace W
                 config.Prepare();
             }
 
-            relativityTimeScale = new Relativity();
+            relativity = new Relativity();
             settings = new Settings();
             techs = new Dictionary<uint, int>();
 
             on_ship = false;
             spaceshipMap = Map.Create(1, MapDefName.SpaceshipLevel);
             thisMap = Map.Create(1, MapDefName.PlanetLevel);
-            thisMap.LoadMap(Map.SuperMapIndex, out superMap);
+            thisMap.LoadSuper(out superMap);
 
             thisMapKey = thisMap.Key;
             superMapKey = superMap.Key;
 
-            CameraControl.I.Position = new Vector2(thisMap.Width / 2, thisMap.Height / 2);
+            thisMap.OnEnter();
         }
 
         [JsonProperty]
@@ -90,8 +90,8 @@ namespace W
 
 
         [JsonProperty]
-        private Relativity relativityTimeScale;
-        public Relativity Relativity => I.relativityTimeScale;
+        private Relativity relativity;
+        public Relativity Relativity => relativity;
 
 
         [JsonProperty]
@@ -132,54 +132,65 @@ namespace W
         [JsonProperty]
         private string spaceshipMapKey;
 
+        private Map OtherMap => on_ship ? thisMap : spaceshipMap;
         public Map Map => on_ship ? spaceshipMap : thisMap;
+        public Map SpaceshipMap => spaceshipMap;
+
         [JsonProperty]
         private bool on_ship = false;
         public bool OnShip {
             get => on_ship;
             set {
                 A.Assert(on_ship != value);
-                if (on_ship) {
-                    thisMap.SaveCameraPosition();
-                    spaceshipMap.LoadCameraPosition();
-                } else {
-                    spaceshipMap.SaveCameraPosition();
-                    thisMap.LoadCameraPosition();
-                }
+                //if (on_ship) {
+                //    thisMap.SaveCameraPosition();
+                //    spaceshipMap.LoadCameraPosition();
+                //} else {
+                //    spaceshipMap.SaveCameraPosition();
+                //    thisMap.LoadCameraPosition();
+                //}
+                Save();
                 on_ship = value;
 
+                OtherMap.OnExit();
                 Map.OnEnter();
             }
         }
 
 
+        public void EnterSuperMap() => EnterMap(Map.SuperMapIndex, ID.Invalid);
         /// <summary>
         /// todo
         /// </summary>
         /// <param name="index"></param>
-        public void EnterMap(uint index) {
+        public void EnterMap(uint index, uint mapDefID) {
+            thisMap.OnExit();
+            Save();
             if (index == Map.SuperMapIndex) {
                 thisMap = superMap;
-                thisMap.LoadMap(index, out superMap);
+                thisMap.LoadMap(index, mapDefID, out superMap);
             } else {
                 superMap = thisMap;
-                superMap.LoadMap(index, out thisMap);
+                superMap.LoadMap(index, mapDefID, out thisMap);
             }
             if (!OnShip) {
-                Map.OnEnter();
+                thisMap.OnEnter();
             }
         }
 
         public void EnterPreviousMap() {
             A.Assert(!on_ship);
+            thisMap.OnExit();
+            Save();
 
             thisMap.LoadPrevious(out Map map);
             if (map == null) {
                 return;
             }
             thisMap = map;
+            thisMap.LoadSuper(out superMap);
 
-            thisMap.LoadMap(Map.SuperMapIndex, out superMap);
+            // thisMap.LoadMap(Map.SuperMapIndex, out superMap);
             thisMap.OnEnter();
 
             on_ship = false;
@@ -189,9 +200,9 @@ namespace W
 
         [OnDeserialized]
         private void OnDeserializedMethod(StreamingContext context) {
-            Map.Load(spaceshipMapKey, out spaceshipMap);
             Map.Load(thisMapKey, out thisMap);
             Map.Load(superMapKey, out superMap);
+            Map.Load(spaceshipMapKey, out spaceshipMap);
 
             Map.LoadBody();
         }

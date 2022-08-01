@@ -136,6 +136,7 @@ namespace W
 
                     tr.sharedMaterial.SetFloat("_GlowIntensity", 3);
                 }
+                Glow.enabled = true;
             }
         }
 
@@ -210,7 +211,7 @@ namespace W
         public void SetFrontSpritesAt(int x, int y, Sprite[] sprites, float duration, Color color) {
             Vector3Int pos = new Vector3Int(x, y, 0);
             A.Assert(sprites != null && sprites.Length > 0);
-            Front.SetTile(pos, TileOf(sprites, duration * sprites.Length, color));
+            Front.SetTile(pos, TileOf(sprites, sprites.Length / duration, color));
             if (PlayParticleEffect) {
                 StartCoroutine(ScaleTileCoroutine(x, y, G.now));
                 ParticlePlayer.I.FrameAnimation(ParticlePlayer.I.Construct, x, y);
@@ -322,6 +323,7 @@ namespace W
             Front.ClearAllTiles();
 
             Glow.ClearAllTiles();
+            Index.ClearAllTiles();
             Up.ClearAllTiles();
             Down.ClearAllTiles();
             Left.ClearAllTiles();
@@ -337,7 +339,7 @@ namespace W
 
             BackgroundSprite.sprite = mapDef.Theme.Background;
             BackgroundSprite.color = mapDef.Theme.BackgroundColor;
-            BackgroundSprite.material = mapDef.Theme.BackgroundMaterial;
+            BackgroundSprite.sharedMaterial = mapDef.Theme.BackgroundMaterial;
             BackgroundSprite.material = BackgroundSprite.material; // copy
 
             if (mapDef.Theme.Tileset == null || mapDef.Theme.Tileset.Length == 0) {

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8be4a172c490f0a4b88537c33a872ada, type: 3}
+  m_Name: Berry
+  m_EditorClassIdentifier: 
+  cn: "\u732B\u53F6"
+  sprite: {fileID: 21300000, guid: 6c568dc7a21556a4bb52622e98a5c313, type: 3}
+  sprites: []
+  spritesDuration: 1
+  glow: {fileID: 0}
+  color: {r: 0.49019608, g: 0.85882354, b: 0.42745098, a: 1}
+  del: 0

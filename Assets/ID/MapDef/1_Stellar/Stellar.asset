@@ -13,15 +13,33 @@ MonoBehaviour:
   m_Name: Stellar
   m_EditorClassIdentifier: 
   cn: "\u6052\u661F\u7CFB"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 5fa9902421969cb459e4758233be8a91, type: 3}
   sprites: []
   spritesDuration: 1
   glow: {fileID: 0}
   color: {r: 1, g: 1, b: 1, a: 1}
+  notAccessible: 0
+  relativityTimeScale: 1
   mapThemeDef: {fileID: 11400000, guid: 4b127e4f6994504498c75331b3d711e6, type: 2}
   width: 31
   height: 31
-  edge: 0
+  superMapDef: {fileID: 0}
+  mapDefOrbits:
+  - key: {fileID: 11400000, guid: b3d972f443e31164292c4f6743538ca4, type: 2}
+    radius: 0
+    possiblity: 1
+  - key: {fileID: 11400000, guid: 75588dd6e32a9654dbf92ece5fc533fa, type: 2}
+    radius: 4
+    possiblity: 1
+  - key: {fileID: 11400000, guid: 75588dd6e32a9654dbf92ece5fc533fa, type: 2}
+    radius: 6
+    possiblity: 1
+  - key: {fileID: 11400000, guid: 75588dd6e32a9654dbf92ece5fc533fa, type: 2}
+    radius: 10
+    possiblity: 1
+  - key: {fileID: 11400000, guid: 75588dd6e32a9654dbf92ece5fc533fa, type: 2}
+    radius: 12
+    possiblity: 1
   initialRandomStructures: []
   constructables:
   - {fileID: 11400000, guid: f3c11d88e1721a946a0f966965647e67, type: 2}

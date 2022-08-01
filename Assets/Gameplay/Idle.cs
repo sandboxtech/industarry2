@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace W
 {
-
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     public class Idle
     {
         [JsonProperty] private long val;
@@ -19,7 +19,7 @@ namespace W
             this.inc = inc;
             this.del = del;
             this.max = max;
-            time = G.now;
+            time = Now;
         }
 
 

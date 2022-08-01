@@ -13,15 +13,18 @@ MonoBehaviour:
   m_Name: Galaxy
   m_EditorClassIdentifier: 
   cn: "\u661F\u7CFB"
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 5fa9902421969cb459e4758233be8a91, type: 3}
   sprites: []
   spritesDuration: 1
   glow: {fileID: 0}
   color: {r: 1, g: 1, b: 1, a: 1}
+  notAccessible: 0
+  relativityTimeScale: 1
   mapThemeDef: {fileID: 11400000, guid: d620561356c8a274b9bbc91f9dc46842, type: 2}
   width: 61
   height: 61
-  edge: 0
+  superMapDef: {fileID: 0}
+  mapDefOrbits: []
   initialRandomStructures: []
   constructables:
   - {fileID: 11400000, guid: a10021eb8dad755439bf17cdafa4f13c, type: 2}

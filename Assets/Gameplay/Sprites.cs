@@ -6,6 +6,10 @@ namespace W
 {
     public static class Sprites
     {
+        public static void IconText(string message, string icon) {
+            ID id = GameConfig.I.Name2Obj[icon];
+            UI.IconText(message, id.Icon, id.Color);
+        }
         public static void IconText(string name) {
             ID id = GameConfig.I.Name2Obj[name];
             UI.IconText(id.CN, id.Icon, id.Color);

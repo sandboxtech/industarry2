@@ -34,7 +34,7 @@ namespace W
         [Header("贴图")]
         [SerializeField]
         private Sprite sprite;
-        public Sprite Sprite => sprite ?? GameConfigReference.I.DefaultSprite;
+        public Sprite Sprite => sprite != null ? sprite : ((sprites != null && sprites.Length > 0) ? sprites[0] : GameConfigReference.I.DefaultSprite);
         public Sprite Icon => Sprite;
 
         [Header("帧动画")]

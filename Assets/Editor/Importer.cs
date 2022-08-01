@@ -16,7 +16,10 @@ namespace W
             settings.aniso = 0;
             settings.filterMode = UnityEngine.FilterMode.Point;
             settings.spriteAlignment = (int)SpriteAlignment.Custom;
-            settings.spritePivot = new UnityEngine.Vector2(0, 0);
+            importer.GetSourceTextureWidthAndHeight(out int width, out int height);
+            if (width == 16 && height == 16) {
+                settings.spritePivot = new UnityEngine.Vector2(0, 0);
+            }
             settings.spriteGenerateFallbackPhysicsShape = false;
             settings.wrapMode = UnityEngine.TextureWrapMode.Repeat;
             importer.SetTextureSettings(settings);

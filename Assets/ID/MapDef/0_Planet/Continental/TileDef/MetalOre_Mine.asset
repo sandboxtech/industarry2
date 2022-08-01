@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
+  m_Name: MetalOre_Mine
+  m_EditorClassIdentifier: 
+  cn: "\u77FF\u573A"
+  sprite: {fileID: 21300000, guid: 495c734118d458945a2f32b2c207dbf7, type: 3}
+  sprites: []
+  spritesDuration: 1
+  glow: {fileID: 0}
+  color: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}
+  construction:
+  - key: {fileID: 11400000, guid: 8d0036c6a661b734eb2d6da695c69b00, type: 2}
+    value: -1
+  destruction:
+  - key: {fileID: 11400000, guid: 8d0036c6a661b734eb2d6da695c69b00, type: 2}
+    value: -1
+  notDestructable: 0
+  inc:
+  - key: {fileID: 11400000, guid: 8d0036c6a661b734eb2d6da695c69b00, type: 2}
+    value: -1
+  - key: {fileID: 11400000, guid: 5f041c90a91c07b40aa664d2f0b98314, type: 2}
+    value: 1
+  max:
+  - key: {fileID: 11400000, guid: 5f041c90a91c07b40aa664d2f0b98314, type: 2}
+    value: 10
+  bonusAnim: {fileID: 0}
+  bonus:
+  - {fileID: 11400000, guid: 1e6aa5faa9e49724f901c3dc29888fbd, type: 2}
+  conditions: []
+  repels: []
+  techs: []

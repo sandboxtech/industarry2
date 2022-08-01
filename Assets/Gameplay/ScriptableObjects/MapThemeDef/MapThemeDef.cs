@@ -22,7 +22,7 @@ namespace W
 
         [Header("背景颜色")]
         [SerializeField]
-        private Color backgroundColor;
+        private Color backgroundColor = Color.white;
         public Color BackgroundColor => backgroundColor;
 
         [Header("背景纹理")]
@@ -41,7 +41,7 @@ namespace W
 
         [Header("地面颜色")]
         [SerializeField]
-        private Color groundColor;
+        private Color groundColor = Color.white;
         public Color GroundColor => groundColor;
 
         [Header("地面纹理")]

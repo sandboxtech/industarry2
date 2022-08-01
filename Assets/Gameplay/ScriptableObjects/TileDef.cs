@@ -20,27 +20,30 @@ namespace W
         [Header("建造成本")]
 
         [SerializeField]
-        private List<IDValue> construction; // val
-        public IReadOnlyList<IDValue> Construction => construction;
+        private List<ResDefValue> construction; // val
+        public IReadOnlyList<ResDefValue> Construction => construction;
 
         [Header("拆除成本")]
         [SerializeField]
-        private List<IDValue> destruction; // val
-        public IReadOnlyList<IDValue> Destruction => destruction;
+        private List<ResDefValue> destruction; // val
+        public IReadOnlyList<ResDefValue> Destruction => destruction;
 
+        [Header("无法拆除")]
+        [SerializeField]
+        private bool notDestructable;
+        public bool NotDestructable => notDestructable;
 
         [Space]
 
         [Header("增速影响")]
         [SerializeField]
-        private List<IDValue> inc; // inc
-        public IReadOnlyList<IDValue> Inc => inc;
+        private List<ResDefValue> inc; // inc
+        public IReadOnlyList<ResDefValue> Inc => inc;
 
         [Header("容量影响")]
         [SerializeField]
-        private List<IDValue> max; // max
-        public IReadOnlyList<IDValue> Max => max;
-
+        private List<ResDefValue> max; // max
+        public IReadOnlyList<ResDefValue> Max => max;
 
         [Space]
 
