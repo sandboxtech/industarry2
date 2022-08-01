@@ -406,6 +406,22 @@ namespace W
         #endregion
 
 
+        #region techs
+
+        public bool CanEnter() {
+            foreach (TechDefValue techDefValue in Def.TechRequirementForEntrence) {
+                Game.I.TechLevel(techDefValue.Key.id, out int level);
+                if (level < techDefValue.Value) {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+
+        #endregion
+
+
         #region resources
 
         [JsonProperty]
@@ -414,6 +430,7 @@ namespace W
 
 
         public bool CanChange(ResDefValue idValue, long multiplier, IdleReference i) {
+            if (i == IdleReference.Val && Game.I.Settings.InfiniteResourceCheat) return true; 
             ResDef resDef = idValue.Key;
             A.Assert(resDef != null);
             uint resDefID = resDef.id;
@@ -445,6 +462,8 @@ namespace W
             }
         }
         public void DoChange(ResDefValue idValue, long multiplier, IdleReference i) {
+            if (i == IdleReference.Val && Game.I.Settings.InfiniteResourceCheat) return;
+
             ResDef resDef = idValue.Key;
             A.Assert(resDef != null);
             uint resDefID = resDef.id;

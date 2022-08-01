@@ -99,4 +99,3 @@ MonoBehaviour:
   constructables:
   - {fileID: 11400000, guid: a10021eb8dad755439bf17cdafa4f13c, type: 2}
   - {fileID: 11400000, guid: 322fb6d0fbe552c4882c302aeb869d2b, type: 2}
-  - {fileID: 11400000, guid: f2e916dfb9d975f42abaa148709cc5d7, type: 2}

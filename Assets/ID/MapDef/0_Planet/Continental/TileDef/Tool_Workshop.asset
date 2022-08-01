@@ -17,13 +17,15 @@ MonoBehaviour:
   sprites: []
   spritesDuration: 1
   glow: {fileID: 0}
-  color: {r: 0.49019608, g: 0.85882354, b: 0.42745098, a: 1}
+  color: {r: 0.8490566, g: 0.8490566, b: 0.8490566, a: 1}
   construction:
   - key: {fileID: 11400000, guid: 8d0036c6a661b734eb2d6da695c69b00, type: 2}
     value: -1
   destruction:
   - key: {fileID: 11400000, guid: 8d0036c6a661b734eb2d6da695c69b00, type: 2}
     value: -1
+  - key: {fileID: 11400000, guid: 78c0d5e1fdd07194ea651b8b0ae122b3, type: 2}
+    value: -10
   notDestructable: 0
   inc:
   - key: {fileID: 11400000, guid: 8d0036c6a661b734eb2d6da695c69b00, type: 2}

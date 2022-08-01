@@ -114,7 +114,6 @@ namespace W
         public static void TranslateTiles(int x, int y) {
             uint id = map.ID_Safe(x, y);
             TileDef tile = ID.IsInvalid(id) ? null : GameConfig.I.ID2Obj[id] as TileDef;
-            if (tile != null && tile.BonusAnim == null) return;
 
             TranslateTile(x, y, x, y + 1, MapView.Dir.Up, tile);
             TranslateTile(x, y, x, y - 1, MapView.Dir.Down, tile);
@@ -133,14 +132,32 @@ namespace W
             TileDef neighbor = GameConfig.I.ID2Obj[id] as TileDef;
             foreach (TileDef bonus in self.Bonus) {
                 if (bonus == neighbor) {
-                    MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, self.BonusAnim.Color, dir);
-                    return;
+                    foreach (ResDefValue input in self.Inc) {
+                        if (input.Value > 0) continue;
+                        foreach (ResDefValue output in neighbor.Inc) {
+                            if (output.Value < 0) continue;
+                            if (input.Key == output.Key) {
+                                MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, dir);
+                                return;
+                            }
+                        }
+                    }
                 }
             }
             foreach (TileDef bonus in self.Conditions) {
                 if (bonus == neighbor) {
-                    MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, self.BonusAnim.Color, dir);
-                    return;
+                    //MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, self.BonusAnim.Color, dir);
+                    //return;
+                    foreach (ResDefValue input in self.Inc) {
+                        if (input.Value > 0) continue;
+                        foreach (ResDefValue output in neighbor.Inc) {
+                            if (output.Value < 0) continue;
+                            if (input.Key == output.Key) {
+                                MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, dir);
+                                return;
+                            }
+                        }
+                    }
                 }
             }
         }

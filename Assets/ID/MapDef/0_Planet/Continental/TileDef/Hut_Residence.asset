@@ -34,7 +34,8 @@ MonoBehaviour:
   - key: {fileID: 11400000, guid: 8d0036c6a661b734eb2d6da695c69b00, type: 2}
     value: 1
   bonusAnim: {fileID: 0}
-  bonus: []
+  bonus:
+  - {fileID: 11400000, guid: a10021eb8dad755439bf17cdafa4f13c, type: 2}
   conditions: []
   repels: []
   techs: []

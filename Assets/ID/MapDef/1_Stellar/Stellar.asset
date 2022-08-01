@@ -23,6 +23,9 @@ MonoBehaviour:
   mapThemeDef: {fileID: 11400000, guid: 4b127e4f6994504498c75331b3d711e6, type: 2}
   width: 31
   height: 31
+  techRequirementForEntrence:
+  - key: {fileID: 11400000, guid: 04c824281b1593a44b2c8eb3adc92df0, type: 2}
+    value: 1
   superMapDef: {fileID: 0}
   mapDefOrbits:
   - key: {fileID: 11400000, guid: b3d972f443e31164292c4f6743538ca4, type: 2}

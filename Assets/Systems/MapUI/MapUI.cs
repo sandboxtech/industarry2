@@ -47,7 +47,7 @@ namespace W
         private static void IconTextWithValueAndColor(ID id, long v, long multiplier, bool canChange) {
             long product = v * multiplier;
             bool positive = product > 0;
-            UI.IconText($"{id.CN} {(positive ? "+" : "-")}{(v > 0 ? v : -v)}{(multiplier == 1 ? "" : $"*{(multiplier > 0 ?  multiplier : -multiplier)}")}",
+            UI.IconText($"{id.CN} {(positive ? "+" : "-")}{(v > 0 ? v : -v)}{(multiplier == 1 ? "" : $"*{(multiplier > 0 ? multiplier : -multiplier)}")}",
                 !canChange ? ColorWarning : positive ? ColorPositive : ColorNegative,
                 id.Icon, id.Color);
         }
@@ -77,8 +77,7 @@ namespace W
         private static void OnTap() {
             if (Application.platform == RuntimePlatform.WindowsEditor) {
                 OnTap_();
-            }
-            else {
+            } else {
                 try {
                     OnTap_();
                 } catch (Exception e) {
@@ -134,13 +133,11 @@ namespace W
                     MapDef mapDef = GameConfig.I.ID2Obj[info.Map.PreviousMapDefID] as MapDef;
                     A.Assert(mapDef != null);
                     TapPortal(info, mapDef);
-                }
-                else if (info.Map.SubMaps != null && info.Map.SubMaps.TryGetValue(index, out uint mapDefID)) {
+                } else if (info.Map.SubMaps != null && info.Map.SubMaps.TryGetValue(index, out uint mapDefID)) {
                     MapDef mapDef = GameConfig.I.ID2Obj[mapDefID] as MapDef;
                     A.Assert(mapDef != null);
                     TapPortal(info, mapDef);
-                }
-                else {
+                } else {
                     TapEmpty(info);
                 }
                 ParticlePlayer.I.FrameAnimation(ParticlePlayer.I.Destruct, info.X, info.Y);
@@ -159,8 +156,7 @@ namespace W
 
             if (mapDef.NotAccessible) {
                 Sprites.IconText("无法进入", Sprites.Information);
-            }
-            else {
+            } else {
                 UI.Button("进入", () => Game.I.EnterMap(info.Map.IndexOf(info.X, info.Y), mapDef.id));
             }
 
@@ -191,7 +187,6 @@ namespace W
             //}
 
             UI.Show();
-
         }
 
         private static void AddMapHeadInfo(Map map) {
@@ -209,7 +204,15 @@ namespace W
             if (Game.I.OnShip) {
 
             } else {
-                UI.Button("上天", () => Game.I.EnterSuperMap());
+                UI.IconButton("航行", Game.I.SuperMap.CanEnter() ? ColorNormal : ColorNegative, Sprites.IconOf(Sprites.Failure), () => {
+                    if (Game.I.SuperMap.CanEnter()) {
+                        Game.I.EnterSuperMap();
+                    }
+                    else {
+                        FailGotoSuperMapPage();
+                    }
+                });
+
                 if (Game.I.Map.PreviousSeed != Map.NullSeed && Game.I.Map.PreviousMapLevel <= Game.I.Map.MapLevel) {
                     UI.Button("返回", () => Game.I.EnterPreviousMap());
                 }
@@ -225,6 +228,26 @@ namespace W
 
             UI.Show();
         }
+
+        private static void FailGotoSuperMapPage() {
+            UI.Prepare();
+
+            Sprites.IconText(Sprites.Failure);
+
+            foreach (TechDefValue techDefValue in Game.I.SuperMap.Def.TechRequirementForEntrence) {
+                Game.I.TechLevel(techDefValue.Key.id, out int level);
+                if (level < techDefValue.Value) {
+                    // return false;
+                    UI.Space();
+
+                    IconText(techDefValue.Key);
+                    UI.IconText($"等级 {level} < {techDefValue.Value}", Sprites.IconOf(Sprites.Level));
+                }
+            }
+
+            UI.Show();
+        }
+
 
         private static void TapSomething(int x, int y) {
             MapTapping.I.ShowIndicatorAt(x, y);
@@ -455,6 +478,18 @@ namespace W
                     IconText(tile);
                 }
             }
+
+
+            if ((existing.BonusReverse != null && existing.BonusReverse.Count > 0) || (existing.ConditionsReverse != null && existing.ConditionsReverse.Count > 0)) {
+                UI.Space();
+                Sprites.IconText(Sprites.BonusReverse);
+                foreach (TileDef tile in existing.BonusReverse) {
+                    IconText(tile);
+                }
+                foreach (TileDef tile in existing.ConditionsReverse) {
+                    IconText(tile);
+                }
+            }
         }
 
 
@@ -591,6 +626,8 @@ namespace W
 
             IconTextWithLevel(info.TileDef, info.Level);
 
+            UI.Space();
+
             Sprites.IconButton(Sprites.Construction, () => {
                 TryConstruct(info, false);
             });
@@ -625,7 +662,7 @@ namespace W
             }
         }
 
-        private static bool CanConstruct(MapTileInfo info, bool ignoreConstruction=false) {
+        private static bool CanConstruct(MapTileInfo info, bool ignoreConstruction = false) {
             if (!ignoreConstruction) {
                 foreach (ResDefValue idValue in info.TileDef.Construction) {
                     if (!info.Map.CanChange(idValue, 1, IdleReference.Val)) return false;
@@ -814,6 +851,8 @@ namespace W
             UI.Prepare();
 
             IconTextWithLevel(info.TileDef, info.Level);
+
+            UI.Space();
 
             if (info.TileDef.NotDestructable) {
                 UI.Space();

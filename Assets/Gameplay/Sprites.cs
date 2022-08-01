@@ -34,6 +34,7 @@ namespace W
         public const string Inc = "Inc";
         public const string Max = "Max";
         public const string Bonus = "Bonus";
+        public const string BonusReverse = "BonusReverse";
         public const string Repel = "Repel";
         public const string Condition = "Condition";
 

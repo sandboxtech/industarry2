@@ -47,10 +47,10 @@ namespace W
 
         [Space]
 
-        [Header("相邻动画")]
-        [SerializeField]
-        private ID bonusAnim;
-        public ID BonusAnim => bonusAnim;
+        //[Header("相邻动画")]
+        //[SerializeField]
+        //private ID bonusAnim;
+        //public ID BonusAnim => bonusAnim;
 
 
         [Header("相邻奖励")]

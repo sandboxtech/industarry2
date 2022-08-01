@@ -119,11 +119,13 @@ namespace W
 
         [JsonIgnore]
         private Map thisMap;
+        public Map ThisMap => thisMap;
         [JsonProperty]
         private string thisMapKey;
 
         [JsonIgnore]
         private Map superMap;
+        public Map SuperMap => superMap;
         [JsonProperty]
         private string superMapKey;
 

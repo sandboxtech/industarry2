@@ -100,21 +100,28 @@ namespace W
         private static int Validate(int size) => size <= 0 ? 16 : size >= 1024 ? 1024 : size;
 
 
+        [Header("进入科技要求")]
+        [SerializeField]
+        private List<TechDefValue> techRequirementForEntrence;
+        public IReadOnlyList<TechDefValue> TechRequirementForEntrence => techRequirementForEntrence;
+
+
         [Header("上级地图类型")]
         [SerializeField]
         private MapDef superMapDef;
         public MapDef SuperMapDef => superMapDef;
 
+
         [Header("轨道定义")]
         [SerializeField]
         private List<MapDefOrbit> mapDefOrbits;
-        public List<MapDefOrbit> MapDefOrbits => mapDefOrbits;
+        public IReadOnlyList<MapDefOrbit> MapDefOrbits => mapDefOrbits;
 
 
         [Header("初始随机建筑")]
         [SerializeField]
         private List<TileDefValue> initialRandomStructures;
-        public List<TileDefValue> InitialRandomStructures => initialRandomStructures;
+        public IReadOnlyList<TileDefValue> InitialRandomStructures => initialRandomStructures;
 
 
         [Header("无条件可造建筑")]

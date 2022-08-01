@@ -63,6 +63,19 @@ namespace W
         [SerializeField]
         private long value;
         public long Value => value;
+    }
 
+    [System.Serializable]
+    public class TechDefValue
+    {
+        // [UnityEngine.Serialization.FormerlySerializedAs("ResDef")]
+        [Header("数值")]
+        [SerializeField]
+        private TechDef key;
+        public TechDef Key => key;
+
+        [SerializeField]
+        private long value;
+        public long Value => value;
     }
 }

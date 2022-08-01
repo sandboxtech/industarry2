@@ -135,8 +135,10 @@ namespace W
                     light2D.color = Color.white;
 
                     tr.sharedMaterial.SetFloat("_GlowIntensity", 3);
+
+                    Glow.color = new Color(1, 1, 1, 1);
+                    Glow.enabled = true;
                 }
-                Glow.enabled = true;
             }
         }
 

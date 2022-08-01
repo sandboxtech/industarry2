@@ -40,7 +40,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _EnableExternalAlpha: 0
-    - _Glow: 3
+    - _Glow: 2.4
     - _GlowIntensity: 1.5
     - _HueshiftScale: 1
     - _Lerp: 1
