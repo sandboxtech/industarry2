@@ -37,9 +37,14 @@ namespace W
         private Tilemap Index;
         [SerializeField]
         private Tilemap Glow;
-        private TilemapRenderer tr;
+        [SerializeField]
+        private Tilemap GlowDayNight;
+        private TilemapRenderer glowDayNightTilemapRenderer;
         [SerializeField]
         private Tilemap Front;
+        [SerializeField]
+        private Tilemap Back;
+
         [SerializeField]
         private Tilemap Up;
         private Transform upTrans;
@@ -52,8 +57,20 @@ namespace W
         [SerializeField]
         private Tilemap Right;
         private Transform rightTrans;
+
         [SerializeField]
-        private Tilemap Back;
+        private Tilemap UpGlow;
+        private Transform upGlowTrans;
+        [SerializeField]
+        private Tilemap DownGlow;
+        private Transform downGlowTrans;
+        [SerializeField]
+        private Tilemap LeftGlow;
+        private Transform leftGlowTrans;
+        [SerializeField]
+        private Tilemap RightGlow;
+        private Transform rightGlowTrans;
+
 
         private void Start() {
             upTrans = Up.transform;
@@ -61,12 +78,18 @@ namespace W
             leftTrans = Left.transform;
             rightTrans = Right.transform;
 
-            tr = Glow.GetComponent<TilemapRenderer>();
-            tr.material = tr.material; // yes
+            upGlowTrans = UpGlow.transform;
+            downGlowTrans = DownGlow.transform;
+            leftGlowTrans = LeftGlow.transform;
+            rightGlowTrans = RightGlow.transform;
+
+            glowDayNightTilemapRenderer = GlowDayNight.GetComponent<TilemapRenderer>();
+            glowDayNightTilemapRenderer.material = glowDayNightTilemapRenderer.material; // yes
+
         }
 
         private const long deltaT = 2 * Constants.Second;
-        private const float stayT = 0.25f;
+        private const float stayT = 0.375f;
         private const float fadeT = 0.0625f;
 
         private void Update() {
@@ -75,7 +98,7 @@ namespace W
         }
         private void UpdateTranslates() {
             float t = (float)(G.now % deltaT) / deltaT;
-            t = SmoothT(t);
+            t = SmoothPosition(t);
 
             float motion = 1 - t;
             upTrans.position = new Vector3(0, motion, 0);
@@ -83,12 +106,21 @@ namespace W
             rightTrans.position = new Vector3(motion, 0, 0);
             leftTrans.position = new Vector3(-motion, 0, 0);
 
+            upGlowTrans.position = new Vector3(0, motion, 0);
+            downGlowTrans.position = new Vector3(0, -motion, 0);
+            rightGlowTrans.position = new Vector3(motion, 0, 0);
+            leftGlowTrans.position = new Vector3(-motion, 0, 0);
+
             float opacity = SmoothOpacity(t);
             Color color = new Color(1, 1, 1, opacity);
             Up.color = color;
             Down.color = color;
             Left.color = color;
             Right.color = color;
+            UpGlow.color = color;
+            DownGlow.color = color;
+            LeftGlow.color = color;
+            RightGlow.color = color;
         }
 
 
@@ -101,7 +133,7 @@ namespace W
                 float day = Time.time / theme.DayDuration;
                 light2D.color = theme.DefaultDaylightGradient.Evaluate(day % 1);
 
-                const float minIntensity = 0.375f;
+                const float minIntensity = 0.25f;
 
                 float sin = (M.Cos(2 * M.PI * day) + 1) / 2f;
 
@@ -116,13 +148,13 @@ namespace W
                 float glow = M.InverseLerp(0.5f, minIntensity, intensity);
                 glow = M.Clamp(0, 1, glow);
                 if (glow > 0) {
-                    Glow.enabled = true;
-                    tr.sharedMaterial.SetFloat("_GlowIntensity", glow * 4);
-                    Glow.color = new Color(1, 1, 1, glow);
+                    GlowDayNight.enabled = true;
+                    glowDayNightTilemapRenderer.sharedMaterial.SetFloat("_GlowIntensity", glow * 4);
+                    GlowDayNight.color = new Color(1, 1, 1, glow);
 
                     BackgroundSprite.sharedMaterial.SetFloat("_Lerp", glow);
                 } else {
-                    Glow.enabled = false;
+                    GlowDayNight.enabled = false;
                     BackgroundSprite.sharedMaterial.SetFloat("_Lerp", 0);
                 }
 
@@ -134,10 +166,9 @@ namespace W
                     light2D.intensity = 1;
                     light2D.color = Color.white;
 
-                    tr.sharedMaterial.SetFloat("_GlowIntensity", 3);
-
-                    Glow.color = new Color(1, 1, 1, 1);
-                    Glow.enabled = true;
+                    glowDayNightTilemapRenderer.sharedMaterial.SetFloat("_GlowIntensity", 3);
+                    GlowDayNight.color = new Color(1, 1, 1, 1);
+                    GlowDayNight.enabled = true;
                 }
             }
         }
@@ -148,7 +179,7 @@ namespace W
             }
         }
 
-        private float SmoothT(float t) {
+        private float SmoothPosition(float t) {
             if (t < stayT) {
                 return 0;
             } else if (t > 1 - stayT) {
@@ -160,12 +191,17 @@ namespace W
         }
         private float SmoothOpacity(float t) {
             if (t < fadeT) {
-                return t;
+                return t / fadeT;
             } else if (t > 1 - fadeT) {
                 return (-t + 1 - fadeT) / fadeT + 1;
             } else {
                 return 1;
             }
+        }
+
+        public void SetGlowDayNightSpriteAt(int x, int y, Sprite glow) {
+            Vector3Int pos = new Vector3Int(x, y, 0);
+            GlowDayNight.SetTile(pos, TileOf(glow));
         }
 
         public void SetGlowSpriteAt(int x, int y, Sprite glow) {
@@ -256,11 +292,14 @@ namespace W
             Front.SetTransformMatrix(pos, Matrix4x4.TRS(0.5f * (1 - scale) * Vector3.one, Quaternion.identity, Vector3.one * scale));
             Glow.SetTileFlags(pos, TileFlags.None);
             Glow.SetTransformMatrix(pos, Matrix4x4.TRS(0.5f * (1 - scale) * Vector3.one, Quaternion.identity, Vector3.one * scale));
+            GlowDayNight.SetTileFlags(pos, TileFlags.None);
+            GlowDayNight.SetTransformMatrix(pos, Matrix4x4.TRS(0.5f * (1 - scale) * Vector3.one, Quaternion.identity, Vector3.one * scale));
         }
         private void ScaleTileEnd(int x, int y) {
             Vector3Int pos = new Vector3Int(x, y, 0);
             Front.SetTransformMatrix(pos, Matrix4x4.identity);
             Glow.SetTransformMatrix(pos, Matrix4x4.identity);
+            GlowDayNight.SetTransformMatrix(pos, Matrix4x4.identity);
         }
 
 
@@ -271,26 +310,33 @@ namespace W
             Up, Down, Left, Right
         }
 
-        public void SetAnimSpriteAt(int x, int y, Sprite sprite, Color color, Dir dir) {
+        public void SetAnimSpriteAt(int x, int y, Sprite sprite, Color color, Sprite glow, Dir dir) {
             Tilemap tilemap;
+            Tilemap tilemapGlow;
             switch (dir) {
                 case Dir.Up:
                     tilemap = Up;
+                    tilemapGlow = UpGlow;
                     break;
                 case Dir.Down:
                     tilemap = Down;
+                    tilemapGlow = DownGlow;
                     break;
                 case Dir.Right:
                     tilemap = Right;
+                    tilemapGlow = RightGlow;
                     break;
                 case Dir.Left:
                     tilemap = Left;
+                    tilemapGlow = LeftGlow;
                     break;
                 default:
                     tilemap = null;
+                    tilemapGlow = null;
                     break;
             };
             tilemap.SetTile(new Vector3Int(x, y, 0), TileOf(sprite, color));
+            tilemapGlow.SetTile(new Vector3Int(x, y, 0), TileOf(glow, Color.white));
         }
 
         public void SetBackSpriteAt(int x, int y, Sprite sprite, Color color) {
@@ -324,12 +370,17 @@ namespace W
             Back.ClearAllTiles();
             Front.ClearAllTiles();
 
-            Glow.ClearAllTiles();
+            GlowDayNight.ClearAllTiles();
+            
             Index.ClearAllTiles();
             Up.ClearAllTiles();
             Down.ClearAllTiles();
             Left.ClearAllTiles();
             Right.ClearAllTiles();
+            UpGlow.ClearAllTiles();
+            DownGlow.ClearAllTiles();
+            LeftGlow.ClearAllTiles();
+            RightGlow.ClearAllTiles();
 
             int width = mapDef.Width;
             int height = mapDef.Height;

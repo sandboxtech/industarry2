@@ -16,6 +16,7 @@ MonoBehaviour:
   sprite: {fileID: 21300000, guid: 84ef146a4c66f1d4a9432c07029dbbbd, type: 3}
   sprites: []
   spritesDuration: 1
-  glow: {fileID: 0}
+  glow: {fileID: 21300000, guid: 934bea7d183dc884ab8667c731b57079, type: 3}
+  glowDayNight: {fileID: 0}
   color: {r: 0.7490196, g: 0.7490196, b: 0.7490196, a: 1}
-  Del: {fileID: 11400000, guid: 1b22f30e2ccc7f84da9963c729b9e166, type: 2}
+  del: 0

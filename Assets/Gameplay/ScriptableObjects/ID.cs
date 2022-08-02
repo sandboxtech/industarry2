@@ -50,6 +50,11 @@ namespace W
         private Sprite glow;
         public Sprite Glow => glow;
 
+        [Header("高光贴图昼夜")]
+        [SerializeField]
+        private Sprite glowDayNight;
+        public Sprite GlowDayNight => glowDayNight;
+
         [Header("颜色")]
         [SerializeField]
         private Color color = Color.white;

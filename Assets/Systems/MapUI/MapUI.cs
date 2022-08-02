@@ -171,11 +171,13 @@ namespace W
 
             AddMapHeadInfo(info.Map);
 
-            UI.Button(Game.I.OnShip ? "离开飞船" : "进入飞船", () => {
-                Game.I.OnShip = !Game.I.OnShip;
-            });
+            //if (false) {
+            //    UI.Button(Game.I.OnShip ? "离开飞船" : "进入飞船", () => {
+            //        Game.I.OnShip = !Game.I.OnShip;
+            //    });
+            //    UI.Space();
+            //}
 
-            UI.Space();
             UI.Button("设置", SettingsPage.Settings);
             UI.Space();
 
@@ -479,17 +481,23 @@ namespace W
                 }
             }
 
-
-            if ((existing.BonusReverse != null && existing.BonusReverse.Count > 0) || (existing.ConditionsReverse != null && existing.ConditionsReverse.Count > 0)) {
+            if ((existing.BonusReverse != null && existing.BonusReverse.Count > 0)) {
                 UI.Space();
                 Sprites.IconText(Sprites.BonusReverse);
                 foreach (TileDef tile in existing.BonusReverse) {
                     IconText(tile);
                 }
-                foreach (TileDef tile in existing.ConditionsReverse) {
-                    IconText(tile);
-                }
             }
+            //if ((existing.BonusReverse != null && existing.BonusReverse.Count > 0) || (existing.ConditionsReverse != null && existing.ConditionsReverse.Count > 0)) {
+            //    UI.Space();
+            //    Sprites.IconText(Sprites.BonusReverse);
+            //    foreach (TileDef tile in existing.BonusReverse) {
+            //        IconText(tile);
+            //    }
+            //    foreach (TileDef tile in existing.ConditionsReverse) {
+            //        IconText(tile);
+            //    }
+            //}
         }
 
 

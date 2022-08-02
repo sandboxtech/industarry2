@@ -87,6 +87,7 @@ namespace W
             }
 
             MapView.I.SetGlowSpriteAt(x, y, id == null ? null : id.Glow);
+            MapView.I.SetGlowDayNightSpriteAt(x, y, id == null ? null : id.GlowDayNight);
             MapView.I.SetIndexSpriteAt(x, y, level);
             TranslateTiles5(x, y);
         }
@@ -123,7 +124,7 @@ namespace W
 
         public static void TranslateTile(int x, int y, int dx, int dy, MapView.Dir dir, TileDef self) {
             if (self == null) {
-                MapView.I.SetAnimSpriteAt(x, y, null, Color.white, dir);
+                MapView.I.SetAnimSpriteAt(x, y, null, Color.white, null, dir);
                 return;
             }
 
@@ -137,7 +138,7 @@ namespace W
                         foreach (ResDefValue output in neighbor.Inc) {
                             if (output.Value < 0) continue;
                             if (input.Key == output.Key) {
-                                MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, dir);
+                                MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
                                 return;
                             }
                         }
@@ -153,7 +154,7 @@ namespace W
                         foreach (ResDefValue output in neighbor.Inc) {
                             if (output.Value < 0) continue;
                             if (input.Key == output.Key) {
-                                MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, dir);
+                                MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
                                 return;
                             }
                         }

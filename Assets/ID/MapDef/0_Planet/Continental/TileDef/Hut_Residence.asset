@@ -17,6 +17,7 @@ MonoBehaviour:
   sprites: []
   spritesDuration: 1
   glow: {fileID: 0}
+  glowDayNight: {fileID: 21300000, guid: 17f22f5bb87541b479473c6b02d972ae, type: 3}
   color: {r: 0.8867924, g: 0.81459403, b: 0.46431112, a: 1}
   construction:
   - key: {fileID: 11400000, guid: 0fdb028efc1a5c341b0949be5f9898da, type: 2}
@@ -33,9 +34,8 @@ MonoBehaviour:
   max:
   - key: {fileID: 11400000, guid: 8d0036c6a661b734eb2d6da695c69b00, type: 2}
     value: 1
-  bonusAnim: {fileID: 0}
-  bonus:
+  bonus: []
+  conditions:
   - {fileID: 11400000, guid: a10021eb8dad755439bf17cdafa4f13c, type: 2}
-  conditions: []
   repels: []
   techs: []
