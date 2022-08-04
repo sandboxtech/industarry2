@@ -11,7 +11,7 @@ namespace W
             UI.Prepare();
 
             UI.Button("保存", () => {
-                Game.I.Save();
+                Game.I.SaveDelayed();
             });
             UI.Button("删档", () => {
                 Persistence.ClearSaves();

@@ -31,6 +31,7 @@ namespace W
             if (Input.GetKeyDown(KeyCode.Space)) {
                 // Game.I.EnterPreviousMap();
                 // Game.I.Relativity.TimeScale = Game.I.Relativity.TimeScale > 1 ? 1 : 3;
+                Debug.Log($"Map {Game.I.Map.Def.CN} {Game.I.Map.SubMaps == null}  SuperMap {Game.I.SuperMap.Def.CN} {Game.I.SuperMap.SubMaps == null}");
             }
         }
 
@@ -465,7 +466,7 @@ namespace W
             if (tileDef.IncSuper.Count > 0) {
                 UI.Space();
                 Sprites.IconText(Sprites.IncSuper);
-                foreach (ResDefValue idValue in tileDef.Inc) {
+                foreach (ResDefValue idValue in tileDef.IncSuper) {
                     IconTextWithValueAndColor(idValue.Key, idValue.Value, level, true);
                 }
             }

@@ -50,6 +50,7 @@ namespace W
         public static void Save(string filename, object obj) {
             A.Assert(filename != null, () => filename);
             string json = Serialization.Serialize(obj);
+            // Persistence.Save(obj.GetType().FullName, filename, json);
             saves.Add((obj.GetType().FullName, filename, json));
         }
         private static HashSet<(string, string, string)> saves = new HashSet<(string, string, string)>();

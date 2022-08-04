@@ -60,7 +60,7 @@ namespace W
             if (!created) {
                 config.Prepare();
             }
-            Map.OnEnter();
+            thisMap.OnEnter();
         }
 
 
@@ -76,7 +76,7 @@ namespace W
         }
 
         private const string GameFilename = "game.json";
-        public void Save() {
+        public void SaveDelayed() {
             string key = GameFilename;
             GameLoop.Save(key, this);
         }
@@ -169,10 +169,12 @@ namespace W
         /// <param name="index"></param>
         public void EnterMap(uint index, uint mapDefID) {
             thisMap.OnExit();
-            Save();
+            SaveDelayed();
+
             if (index == Map.SuperMapIndex) {
                 thisMap = superMap;
-                thisMap.LoadMap(index, mapDefID, out superMap);
+                // thisMap.LoadMap(index, mapDefID, out superMap);
+                thisMap.LoadSuper(out superMap); // LoadMap(SuperMapIndex, W.ID.Invalid, out map)
             } else {
                 superMap = thisMap;
                 superMap.LoadMap(index, mapDefID, out thisMap);
@@ -182,18 +184,20 @@ namespace W
 
         public void EnterPreviousMap() {
             thisMap.OnExit();
-            Save();
+            SaveDelayed();
+
+            superMap = thisMap;
+            // thisMap.LoadSuper(out superMap);
 
             thisMap.LoadPrevious(out Map map);
             if (map == null) {
+                A.Error();
                 return;
             }
             thisMap = map;
-            thisMap.LoadSuper(out superMap);
+
 
             thisMap.OnEnter();
-
-            // on_ship = false;
         }
 
 

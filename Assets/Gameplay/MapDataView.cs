@@ -45,7 +45,6 @@ namespace W
                 MapView.I.Lightness = 1;
             }
 
-            // 
             for (int i = 0; i < map.Width; i++) {
                 for (int j = 0; j < map.Height; j++) {
                     uint id = map.ID(i, j);
