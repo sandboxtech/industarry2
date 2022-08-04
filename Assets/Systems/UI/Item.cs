@@ -35,6 +35,7 @@ namespace W
         public Color IconColor;
 
         public Sprite Icon;
+        public Sprite IconGlow;
     }
 
     public partial class UI
@@ -119,11 +120,40 @@ namespace W
             return item;
         }
 
+        public static Item IconGlowText(string text, Sprite icon, Color spriteColor, Sprite glow) {
+            Item item = new Item {
+                Type = ItemType.Text,
+                Text = text,
+                Icon = icon,
+                IconGlow = glow,
+                IconColorDefined = true,
+                IconColor = spriteColor,
+            };
+            if (items != null) items.Add(item);
+            return item;
+        }
+
         public static Item IconText(string text, Color textColor, Sprite icon, Color spriteColor) {
             Item item = new Item {
                 Type = ItemType.Text,
                 Text = text,
                 Icon = icon,
+
+                TextColorDefined = true,
+                TextColor = textColor,
+
+                IconColorDefined = true,
+                IconColor = spriteColor,
+            };
+            if (items != null) items.Add(item);
+            return item;
+        }
+        public static Item IconGlowText(string text, Color textColor, Sprite icon, Color spriteColor, Sprite glow) {
+            Item item = new Item {
+                Type = ItemType.Text,
+                Text = text,
+                Icon = icon,
+                IconGlow = glow,
 
                 TextColorDefined = true,
                 TextColor = textColor,
@@ -215,6 +245,26 @@ namespace W
             if (items != null) items.Add(item);
             return item;
         }
+        public static Item IconGlowButton(string text, Color color, Sprite icon, Color iconColor, Sprite glow, Action button) {
+            Item item = new Item {
+                Type = ItemType.Button,
+                Text = text,
+                Button = button,
+
+                Icon = icon,
+                IconGlow = glow,
+
+                TextColorDefined = true,
+                TextColor = color,
+
+                IconColorDefined = true,
+                IconColor = iconColor,
+            };
+            if (items != null) items.Add(item);
+            return item;
+        }
+
+
         public static Item Button(Func<string> textDynamic, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,

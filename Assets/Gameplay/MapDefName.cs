@@ -21,7 +21,7 @@ namespace W
                         def = GameConfig.I.Name2Obj["Spaceship"] as MapDef;
                         break;
                     case PlanetLevel:
-                        def = GameConfig.I.Name2Obj["Continental"] as MapDef;
+                        def = GameConfig.I.Name2Obj["Mars"] as MapDef;
                         break;
                     case StarSystemLevel:
                         def = GameConfig.I.Name2Obj["Stellar"] as MapDef;

@@ -24,6 +24,7 @@ namespace W
         public void Init(int width, int height) {
             A.Assert(ids == null && levels == null);
             int size = width * height;
+            A.Assert(size > 0);
             ids = new uint[size];
             levels = new int[size];
         }
@@ -61,7 +62,7 @@ namespace W
 
 
         [JsonProperty]
-        private int previousMapLevel = 0;
+        private int previousMapLevel = int.MaxValue;
         public int PreviousMapLevel => previousMapLevel;
 
 
@@ -265,7 +266,7 @@ namespace W
         public const int MysteriousRadius = 8;
         private void TryConstructPreviousMapIndex() {
             if (previousMapLevel > mapLevel) return;
-            uint index = RandomOrbitPosition(MysteriousRadius, mapDef.Width / 2, mapDef.Height / 2);
+            uint index = RandomOrbitPosition((int)mapDef.PreviousMapOrbitRadius, mapDef.Width / 2, mapDef.Height / 2);
             previousMapIndex = index;
         }
 
@@ -311,8 +312,10 @@ namespace W
         }
 
         private void TryConstructInitialStructures() {
+            A.Assert(Game.I.ThisMap == this);
             MapTileInfo info = new MapTileInfo();
             info.Map = this;
+            info.MapSuper = Game.I.SuperMap;
 
             MapDef mapDef = Def;
             if (mapDef.InitialRandomStructures == null || mapDef.InitialRandomStructures.Count == 0) return;
@@ -321,7 +324,7 @@ namespace W
             int height = mapDef.Height;
             int square = width * height;
 
-            info.EnableUI = false;
+            info.PlayerBuildOrAutoBuild = false;
 
             foreach (TileDefValue pair in mapDef.InitialRandomStructures) {
 
@@ -337,8 +340,8 @@ namespace W
                         uint id = ID(info.X, info.Y);
                         if (id == W.ID.Empty) {
                             info.TileDef = tileDef;
-                            MapUI.CalcReplacement(info);
-                            if (MapUI.TryConstruct(info, true)) {
+                            MapUI.CalcLevel(info);
+                            if (MapUI.TryConstruct(info)) {
                                 times_success++;
                             }
                         }
@@ -355,7 +358,9 @@ namespace W
 
         //[JsonProperty]
         //private uint[] ids; // 对应位置的建筑类型
-        public uint ID(int x, int y) => body.IDs[IndexOf(x, y)];
+        public uint ID(int x, int y) {
+            return body.IDs[IndexOf(x, y)];
+        }
         public void ID(int x, int y, uint value) => body.IDs[IndexOf(x, y)] = value;
 
         public uint ID_Safe(int x, int y) {
@@ -409,12 +414,11 @@ namespace W
         #region techs
 
         public bool CanEnter() {
-            foreach (TechDefValue techDefValue in Def.TechRequirementForEntrence) {
-                Game.I.TechLevel(techDefValue.Key.id, out int level);
-                if (level < techDefValue.Value) {
+            foreach (TechDef techDef in Def.TechRequirementForEntrence) {
+                Game.I.TechLevel(techDef.id, out int level);
+                if (level == 0) {
                     return false;
                 }
-
             }
             return true;
         }
@@ -430,7 +434,7 @@ namespace W
 
 
         public bool CanChange(ResDefValue idValue, long multiplier, IdleReference i) {
-            if (i == IdleReference.Val && Game.I.Settings.InfiniteResourceCheat) return true; 
+            if (i == IdleReference.Val && Game.I.Settings.Cheat) return true; 
             ResDef resDef = idValue.Key;
             A.Assert(resDef != null);
             uint resDefID = resDef.id;
@@ -462,7 +466,7 @@ namespace W
             }
         }
         public void DoChange(ResDefValue idValue, long multiplier, IdleReference i) {
-            if (i == IdleReference.Val && Game.I.Settings.InfiniteResourceCheat) return;
+            if (i == IdleReference.Val && Game.I.Settings.Cheat) return;
 
             ResDef resDef = idValue.Key;
             A.Assert(resDef != null);
@@ -512,12 +516,22 @@ namespace W
                     continue;
                 }
                 UI.Space();
-                UI.IconText(key.CN, key.Icon, key.Color);
+                UI.IconGlowText(key.CN, key.Icon, key.Color, key.Glow);
 
                 UI.Progress(() => $"{idle.Value}/{idle.Max}  +{idle.Inc}/{idle.DelSecond}s", () => idle.Progress);
             }
 
             existingRes.Clear();
+        }
+
+        public void AddAllResDefValue() {
+            foreach (var pair in Resources) {
+                ID key = GameConfig.I.ID2Obj[pair.Key];
+                Idle idle = pair.Value;
+                UI.Space();
+                UI.IconGlowText(key.CN, key.Icon, key.Color, key.Glow);
+                UI.Progress(() => $"{idle.Value}/{idle.Max}  +{idle.Inc}/{idle.DelSecond}s", () => idle.Progress);
+            }
         }
 
         #endregion

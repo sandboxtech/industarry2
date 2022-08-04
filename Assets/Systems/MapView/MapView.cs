@@ -88,7 +88,7 @@ namespace W
 
         }
 
-        private const long deltaT = 2 * Constants.Second;
+        private const long deltaT = 3 * Constants.Second;
         private const float stayT = 0.375f;
         private const float fadeT = 0.0625f;
 
@@ -145,7 +145,7 @@ namespace W
                 light2D.intensity = intensity;
 
 
-                float glow = M.InverseLerp(0.5f, minIntensity, intensity);
+                float glow = M.InverseLerp(minIntensity + 0.125f, minIntensity, intensity);
                 glow = M.Clamp(0, 1, glow);
                 if (glow > 0) {
                     GlowDayNight.enabled = true;
@@ -158,8 +158,7 @@ namespace W
                     BackgroundSprite.sharedMaterial.SetFloat("_Lerp", 0);
                 }
 
-            }
-            else {
+            } else {
                 if (lightEnabled) {
                     lightEnabled = false;
 
@@ -251,7 +250,7 @@ namespace W
             A.Assert(sprites != null && sprites.Length > 0);
             Front.SetTile(pos, TileOf(sprites, sprites.Length / duration, color));
             if (PlayParticleEffect) {
-                StartCoroutine(ScaleTileCoroutine(x, y, G.now));
+                // StartCoroutine(ScaleTileCoroutine(x, y, G.now));
                 ParticlePlayer.I.FrameAnimation(ParticlePlayer.I.Construct, x, y);
             }
         }
@@ -370,8 +369,9 @@ namespace W
             Back.ClearAllTiles();
             Front.ClearAllTiles();
 
+            Glow.ClearAllTiles();
             GlowDayNight.ClearAllTiles();
-            
+
             Index.ClearAllTiles();
             Up.ClearAllTiles();
             Down.ClearAllTiles();
@@ -399,8 +399,7 @@ namespace W
 
                 if (mapDef.Theme.Ground == null) {
                     GroundSprite.enabled = false;
-                }
-                else {
+                } else {
                     GroundSprite.enabled = true;
 
                     Ground.localScale = new Vector3(width, height, 0);
@@ -410,8 +409,7 @@ namespace W
                     GroundSprite.material = mapDef.Theme.GroundMaterial;
                     GroundSprite.material = GroundSprite.material; // copy
                 }
-            }
-            else {
+            } else {
                 GroundSprite.enabled = false;
             }
         }

@@ -102,14 +102,18 @@ namespace W
 
         [Header("进入科技要求")]
         [SerializeField]
-        private List<TechDefValue> techRequirementForEntrence;
-        public IReadOnlyList<TechDefValue> TechRequirementForEntrence => techRequirementForEntrence;
+        private List<TechDef> techRequirementForEntrence;
+        public IReadOnlyList<TechDef> TechRequirementForEntrence => techRequirementForEntrence;
 
 
         [Header("上级地图类型")]
         [SerializeField]
         private MapDef superMapDef;
         public MapDef SuperMapDef => superMapDef;
+        [Header("下级地图轨道半径")]
+        [SerializeField]
+        private uint previousMapOrbitRadius;
+        public uint PreviousMapOrbitRadius => previousMapOrbitRadius == 0 ? 6 : previousMapOrbitRadius;
 
 
         [Header("轨道定义")]

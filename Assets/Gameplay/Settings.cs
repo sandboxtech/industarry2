@@ -26,7 +26,7 @@ namespace W
 
         public bool SkipConfirmation = true;
 
-        public bool InfiniteResourceCheat = false;
+        public bool Cheat = false;
 
     }
 }

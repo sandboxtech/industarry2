@@ -21,6 +21,8 @@ namespace W
 
         [SerializeField]
         private Image icon;
+        [SerializeField]
+        private Image iconGlow;
 
         private Func<string> TextDynamic;
         private IEnumerator TextCoroutine() {
@@ -52,10 +54,16 @@ namespace W
                 icon.gameObject.SetActive(true);
 
                 Text.horizontalOverflow = HorizontalWrapMode.Overflow;
+
+                if (item.IconGlow != null) {
+                    iconGlow.gameObject.SetActive(true);
+                    iconGlow.sprite = item.IconGlow;
+                }
             }
             else {
                 Text.horizontalOverflow = HorizontalWrapMode.Wrap;
             }
+
 
             string text = item.Text;
             Func<string> textDynamic = item.TextDynamic;

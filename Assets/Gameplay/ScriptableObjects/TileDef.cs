@@ -16,6 +16,7 @@ namespace W
     [CreateAssetMenu(fileName = "__TileDef__", menuName = "创建 TileDef 建筑定义", order = 1)]
     public class TileDef : ID
     {
+        [Space]
 
         [Header("建造成本")]
 
@@ -45,13 +46,13 @@ namespace W
         private List<ResDefValue> max; // max
         public IReadOnlyList<ResDefValue> Max => max;
 
-        [Space]
 
         //[Header("相邻动画")]
         //[SerializeField]
         //private ID bonusAnim;
         //public ID BonusAnim => bonusAnim;
 
+        [Space]
 
         [Header("相邻奖励")]
         [SerializeField]
@@ -79,5 +80,30 @@ namespace W
         private List<TechDef> techs;
         public List<TechDef> Techs => techs;
 
+
+
+
+        [Space]
+
+        [Header("建造成本(上级)")]
+
+        [SerializeField]
+        private List<ResDefValue> constructionSuper; // val
+        public IReadOnlyList<ResDefValue> ConstructionSuper => constructionSuper;
+
+        [Header("拆除成本(上级)")]
+        [SerializeField]
+        private List<ResDefValue> destructionSuper; // val
+        public IReadOnlyList<ResDefValue> DestructionSuper => destructionSuper;
+
+        [Header("增速影响(上级)")]
+        [SerializeField]
+        private List<ResDefValue> incSuper; // inc
+        public IReadOnlyList<ResDefValue> IncSuper => incSuper;
+
+        [Header("容量影响(上级)")]
+        [SerializeField]
+        private List<ResDefValue> maxSuper; // max
+        public IReadOnlyList<ResDefValue> MaxSuper => maxSuper;
     }
 }

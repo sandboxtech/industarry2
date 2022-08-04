@@ -33,6 +33,14 @@ namespace W
         public const string Val = "Val";
         public const string Inc = "Inc";
         public const string Max = "Max";
+
+        public const string ConstructionSuper = "ConstructionSuper";
+        public const string DestructionSuper = "DestructionSuper";
+
+        public const string IncSuper = "IncSuper";
+        public const string MaxSuper = "MaxSuper";
+        public const string ValSuper = "ValSuper";
+
         public const string Bonus = "Bonus";
         public const string BonusReverse = "BonusReverse";
         public const string Repel = "Repel";

@@ -43,15 +43,13 @@ namespace W
             settings = new Settings();
             techs = new Dictionary<uint, int>();
 
-            on_ship = false;
-            spaceshipMap = Map.Create(1, MapDefName.SpaceshipLevel);
+            //on_ship = false;
+            //spaceshipMap = Map.Create(1, MapDefName.SpaceshipLevel);
             thisMap = Map.Create(1, MapDefName.PlanetLevel);
             thisMap.LoadSuper(out superMap);
 
             thisMapKey = thisMap.Key;
             superMapKey = superMap.Key;
-
-            thisMap.OnEnter();
         }
 
         [JsonProperty]
@@ -102,15 +100,17 @@ namespace W
         // public Dictionary<uint, int> Techs => techs;
         public void TechLevel(uint id, out int level) {
             if (!techs.TryGetValue(id, out level)) {
-                techs.Add(id, 0);
+                // techs.Add(id, 0);
                 level = 0;
             }
         }
         public void TechLevel(uint id, int level) {
             if (!techs.TryGetValue(id, out _)) {
-                techs.Add(id, 0);
+                techs.Add(id, level);
             }
-            techs[id] = level;
+            else {
+                techs[id] = level;
+            }
         }
 
 
@@ -129,35 +129,37 @@ namespace W
         [JsonProperty]
         private string superMapKey;
 
-        [JsonIgnore]
-        private Map spaceshipMap;
-        [JsonProperty]
-        private string spaceshipMapKey;
+        //[JsonIgnore]
+        //private Map spaceshipMap;
+        //[JsonProperty]
+        //private string spaceshipMapKey;
 
-        private Map OtherMap => on_ship ? thisMap : spaceshipMap;
-        public Map Map => on_ship ? spaceshipMap : thisMap;
-        public Map SpaceshipMap => spaceshipMap;
+        //private Map OtherMap => on_ship ? thisMap : spaceshipMap;
+        //public Map Map => on_ship ? spaceshipMap : thisMap;
+        public Map Map => thisMap;
+        //public Map SpaceshipMap => spaceshipMap;
 
-        [JsonProperty]
-        private bool on_ship = false;
-        public bool OnShip {
-            get => on_ship;
-            set {
-                A.Assert(on_ship != value);
-                //if (on_ship) {
-                //    thisMap.SaveCameraPosition();
-                //    spaceshipMap.LoadCameraPosition();
-                //} else {
-                //    spaceshipMap.SaveCameraPosition();
-                //    thisMap.LoadCameraPosition();
-                //}
-                Save();
-                on_ship = value;
+        //[JsonProperty]
+        //private bool on_ship = false;
 
-                OtherMap.OnExit();
-                Map.OnEnter();
-            }
-        }
+        //public bool OnShip {
+        //    get => on_ship;
+        //    set {
+        //        A.Assert(on_ship != value);
+        //        //if (on_ship) {
+        //        //    thisMap.SaveCameraPosition();
+        //        //    spaceshipMap.LoadCameraPosition();
+        //        //} else {
+        //        //    spaceshipMap.SaveCameraPosition();
+        //        //    thisMap.LoadCameraPosition();
+        //        //}
+        //        Save();
+        //        on_ship = value;
+
+        //        OtherMap.OnExit();
+        //        Map.OnEnter();
+        //    }
+        //}
 
 
         public void EnterSuperMap() => EnterMap(Map.SuperMapIndex, ID.Invalid);
@@ -175,13 +177,10 @@ namespace W
                 superMap = thisMap;
                 superMap.LoadMap(index, mapDefID, out thisMap);
             }
-            if (!OnShip) {
-                thisMap.OnEnter();
-            }
+            thisMap.OnEnter();
         }
 
         public void EnterPreviousMap() {
-            A.Assert(!on_ship);
             thisMap.OnExit();
             Save();
 
@@ -192,10 +191,9 @@ namespace W
             thisMap = map;
             thisMap.LoadSuper(out superMap);
 
-            // thisMap.LoadMap(Map.SuperMapIndex, out superMap);
             thisMap.OnEnter();
 
-            on_ship = false;
+            // on_ship = false;
         }
 
 
@@ -204,7 +202,7 @@ namespace W
         private void OnDeserializedMethod(StreamingContext context) {
             Map.Load(thisMapKey, out thisMap);
             Map.Load(superMapKey, out superMap);
-            Map.Load(spaceshipMapKey, out spaceshipMap);
+            //Map.Load(spaceshipMapKey, out spaceshipMap);
 
             Map.LoadBody();
         }
@@ -217,7 +215,7 @@ namespace W
         private void SaveMaps() {
             thisMap.Save(out thisMapKey);
             superMap.Save(out superMapKey);
-            spaceshipMap.Save(out spaceshipMapKey);
+            //spaceshipMap.Save(out spaceshipMapKey);
 
             Map.SaveBody();
         }

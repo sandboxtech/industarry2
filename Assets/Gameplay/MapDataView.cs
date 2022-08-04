@@ -145,22 +145,32 @@ namespace W
                     }
                 }
             }
-            foreach (TileDef bonus in self.Conditions) {
+            foreach (TileDef bonus in self.Bonus) {
                 if (bonus == neighbor) {
-                    //MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, self.BonusAnim.Color, dir);
-                    //return;
                     foreach (ResDefValue input in self.Inc) {
-                        if (input.Value > 0) continue;
-                        foreach (ResDefValue output in neighbor.Inc) {
-                            if (output.Value < 0) continue;
-                            if (input.Key == output.Key) {
-                                MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
-                                return;
-                            }
-                        }
+                        if (input.Value < 0) continue;
+                        MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
+                        return;
                     }
                 }
             }
+
+            //foreach (TileDef bonus in self.Conditions) {
+            //    if (bonus == neighbor) {
+            //        //MapView.I.SetAnimSpriteAt(x, y, self.BonusAnim.Sprite, self.BonusAnim.Color, dir);
+            //        //return;
+            //        foreach (ResDefValue input in self.Inc) {
+            //            if (input.Value > 0) continue;
+            //            foreach (ResDefValue output in neighbor.Inc) {
+            //                if (output.Value < 0) continue;
+            //                if (input.Key == output.Key) {
+            //                    MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
+            //                    return;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
         }
 
     }
