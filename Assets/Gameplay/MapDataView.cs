@@ -53,11 +53,11 @@ namespace W
                         if (!map.NoPreviousMap && index == map.PreviousMapIndex) {
                             MapDef mapDef = GameConfig.I.ID2Obj[map.PreviousMapDefID] as MapDef;
                             A.Assert(mapDef != null);
-                            ShowTile(i, j, mapDef, 0, false);
+                            ShowSubMapPortal(i, j, mapDef);
                         } else if (map.SubMaps != null && map.SubMaps.TryGetValue(index, out uint mapDefID)) {
                             MapDef mapDef = GameConfig.I.ID2Obj[mapDefID] as MapDef;
                             A.Assert(mapDef != null);
-                            ShowTile(i, j, mapDef, 0, false);
+                            ShowSubMapPortal(i, j, mapDef);
                         }
                     } else {
                         TileDef tileDef = GameConfig.I.ID2Obj[id] as TileDef;
@@ -70,9 +70,24 @@ namespace W
         }
 
 
+        public static void ShowSubMapPortal(int x, int y, MapDef id) {
+
+            if (id == null) {
+                MapView.I.ClearFrontSpriteAt(x, y);
+            } else if (id.Sprites != null && id.Sprites.Length > 0) {
+                MapView.I.SetFrontSpritesAt(x, y, id.Sprites, id.SpritesDuration, id.Color);
+            } else if (id.Sprite != null) {
+                MapView.I.SetFrontSpriteAt(x, y, id.Sprite, id.Color);
+            } else {
+                MapView.I.ClearFrontSpriteAt(x, y);
+            }
+
+            MapView.I.SetGlowSpriteAt(x, y, id == null ? null : id.Glow);
+            TranslateTiles5(x, y);
+        }
 
 
-        public static void ShowTile(int x, int y, ID id, int level, bool effect = false) {
+        public static void ShowTile(int x, int y, TileDef id, int level, bool effect = false) {
             MapView.I.PlayParticleEffect = effect;
 
             if (id == null) {
@@ -92,7 +107,7 @@ namespace W
         }
 
         /// <summary>
-        /// 计算相邻物品
+        /// 计算相邻物品。丛SetFrontSpriteAt路由至此
         /// </summary>
         private static void RuleTiles5(int x, int y) {
             // TODO

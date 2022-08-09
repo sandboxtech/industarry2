@@ -86,14 +86,18 @@ MonoBehaviour:
   notAccessible: 0
   relativityTimeScale: 1
   mapThemeDef: {fileID: 11400000, guid: c484de748e3a3b84fb42fab7e16a5b15, type: 2}
-  width: 15
-  height: 15
+  width: 25
+  height: 25
   techRequirementForEntrence: []
   superMapDef: {fileID: 11400000, guid: ff36f06d568acfa4088b9f82b3132ed9, type: 2}
   previousMapOrbitRadius: 0
   mapDefOrbits: []
   initialRandomStructures:
-  - key: {fileID: 11400000, guid: 1915ea437b5e2ce43b6d96927c2b18af, type: 2}
-    value: 8
+  - key: {fileID: 11400000, guid: b71c117a3575cf248b63fdfe25cc50b4, type: 2}
+    value: 16
+  - key: {fileID: 11400000, guid: a10021eb8dad755439bf17cdafa4f13c, type: 2}
+    value: 20
+  - key: {fileID: 11400000, guid: f2e916dfb9d975f42abaa148709cc5d7, type: 2}
+    value: 10
   constructables:
   - {fileID: 11400000, guid: a10021eb8dad755439bf17cdafa4f13c, type: 2}

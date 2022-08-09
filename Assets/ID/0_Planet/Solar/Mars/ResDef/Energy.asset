@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cn: "\u80FD\u91CF"
   sprite: {fileID: 21300000, guid: 94e5860a0ae272f458caf35936566294, type: 3}
-  tags: []
-  MaxOnly: 0
-  Del: {fileID: 0}
+  sprites: []
+  spritesDuration: 1
+  glow: {fileID: 21300000, guid: d2aeb98adc9601c4391b13c35eb17b9d, type: 3}
+  glowDayNight: {fileID: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  del: 60

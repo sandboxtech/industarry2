@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8be4a172c490f0a4b88537c33a872ada, type: 3}
-  m_Name: Population
+  m_Name: IronOre
   m_EditorClassIdentifier: 
-  cn: "\u732B\u53E3"
-  sprite: {fileID: 21300000, guid: 8b9bc0921d4b45244b86e5d9a10b6b05, type: 3}
+  cn: "\u94C1\u77FF\u77F3"
+  sprite: {fileID: 21300000, guid: 84ef146a4c66f1d4a9432c07029dbbbd, type: 3}
   sprites: []
   spritesDuration: 1
-  glow: {fileID: 21300000, guid: d2aeb98adc9601c4391b13c35eb17b9d, type: 3}
+  glow: {fileID: 0}
   glowDayNight: {fileID: 0}
-  color: {r: 1, g: 1, b: 1, a: 1}
-  del: 60
+  color: {r: 0.59607846, g: 0.3019608, b: 0.17254902, a: 1}
+  del: 0

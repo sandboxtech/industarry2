@@ -40,6 +40,14 @@ namespace W
 
     public partial class UI
     {
+        public static Color ColorDisable => new Color(0.5f, 0.5f, 0.5f, 0.5f);
+        public static Color ColorNormal => new Color(1f, 1f, 1f, 1f);
+        public static Color ColorWarning => new Color(1f, 0, 0, 1f);
+
+        public static Color ColorPositive => new Color(0.5f, 1f, 0.5f, 1f);
+        public static Color ColorNegative => new Color(1f, 0.5f, 0.5f, 1f);
+
+
         public static Item Space() {
             Item item = new Item {
                 Type = ItemType.Space,

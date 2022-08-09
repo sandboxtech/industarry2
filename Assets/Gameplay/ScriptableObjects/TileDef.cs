@@ -16,6 +16,31 @@ namespace W
     [CreateAssetMenu(fileName = "__TileDef__", menuName = "创建 TileDef 建筑定义", order = 1)]
     public class TileDef : ID
     {
+        [Header("帧动画")]
+        [SerializeField]
+        private Sprite[] sprites;
+        public Sprite[] Sprites => sprites;
+        [SerializeField]
+        private float spritesDuration = 1;
+        public float SpritesDuration => spritesDuration;
+
+        [Header("地块44")]
+        [SerializeField]
+        private Sprite[] ruleTile44;
+        public Sprite[] RuleTile44 => ruleTile44;
+
+        [Header("地块86")]
+        [SerializeField]
+        private Sprite[] ruleTile86;
+        public Sprite[] RuleTile86 => ruleTile86;
+
+        [Header("高光贴图昼夜")]
+        [SerializeField]
+        private Sprite glowDayNight;
+        public Sprite GlowDayNight => glowDayNight;
+
+
+
         [Space]
 
         [Header("建造成本")]

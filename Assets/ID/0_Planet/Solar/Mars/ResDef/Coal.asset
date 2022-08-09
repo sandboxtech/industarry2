@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8be4a172c490f0a4b88537c33a872ada, type: 3}
-  m_Name: Population
+  m_Name: Coal
   m_EditorClassIdentifier: 
-  cn: "\u732B\u53E3"
-  sprite: {fileID: 21300000, guid: 8b9bc0921d4b45244b86e5d9a10b6b05, type: 3}
+  cn: "\u7164\u70AD"
+  sprite: {fileID: 21300000, guid: 57c0bad30d9785545a3a816626beed82, type: 3}
   sprites: []
   spritesDuration: 1
-  glow: {fileID: 21300000, guid: d2aeb98adc9601c4391b13c35eb17b9d, type: 3}
+  glow: {fileID: 0}
   glowDayNight: {fileID: 0}
-  color: {r: 1, g: 1, b: 1, a: 1}
-  del: 60
+  color: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 1}
+  del: 0

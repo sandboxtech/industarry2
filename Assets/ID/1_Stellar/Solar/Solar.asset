@@ -32,12 +32,13 @@ MonoBehaviour:
   - key: {fileID: 11400000, guid: 5ad421dcd33207346b66f9cbbd6254d3, type: 2}
     radius: 0
     possiblity: 1
+    satellite: {fileID: 0}
+    satellitePossibility: 0
   - key: {fileID: 11400000, guid: 74c0c13a55c05084b841e80f89944f99, type: 2}
     radius: 5
     possiblity: 1
-  - key: {fileID: 11400000, guid: 98c8fdf1c70157b479e5473df2d64315, type: 2}
-    radius: 5
-    possiblity: 1
+    satellite: {fileID: 11400000, guid: 98c8fdf1c70157b479e5473df2d64315, type: 2}
+    satellitePossibility: 0
   initialRandomStructures: []
   constructables:
   - {fileID: 11400000, guid: 6d83a79543f836f41bde826daf47728f, type: 2}

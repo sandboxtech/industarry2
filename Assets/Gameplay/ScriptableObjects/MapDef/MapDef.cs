@@ -47,8 +47,8 @@ namespace W
     [System.Serializable]
     public class MapDefOrbit
     {
-        // [UnityEngine.Serialization.FormerlySerializedAs("ResDef")]
-        [Header("数值")]
+        
+        [Header("类型")]
         [SerializeField]
         private MapDef key;
         public MapDef Key => key;
@@ -63,12 +63,31 @@ namespace W
         private double possiblity;
         public double Possibility => possiblity == 0 ? 1 : possiblity;
 
+        [Header("卫星")]
+        [SerializeField]
+        private MapDef satellite;
+        public MapDef Satellite => satellite;
+
+        [Header("卫星概率")]
+        [SerializeField]
+        private double satellitePossibility;
+        public double SatellitePossibility => satellitePossibility == 0 ? 1 : possiblity;
+
     }
 
 
     [CreateAssetMenu(fileName = "__MapDef__", menuName = "创建 MapDef 地图定义", order = 1)]
     public class MapDef : ID
     {
+        [Header("帧动画")]
+        [SerializeField]
+        private Sprite[] sprites;
+        public Sprite[] Sprites => sprites;
+        [SerializeField]
+        private float spritesDuration = 1;
+        public float SpritesDuration => spritesDuration;
+
+
 
         [Header("无法进入")]
         [SerializeField]
@@ -106,6 +125,10 @@ namespace W
         public IReadOnlyList<TechDef> TechRequirementForEntrence => techRequirementForEntrence;
 
 
+
+
+
+
         [Header("上级地图类型")]
         [SerializeField]
         private MapDef superMapDef;
@@ -115,11 +138,12 @@ namespace W
         private uint previousMapOrbitRadius;
         public uint PreviousMapOrbitRadius => previousMapOrbitRadius == 0 ? 6 : previousMapOrbitRadius;
 
-
         [Header("轨道定义")]
         [SerializeField]
         private List<MapDefOrbit> mapDefOrbits;
         public IReadOnlyList<MapDefOrbit> MapDefOrbits => mapDefOrbits;
+
+
 
 
         [Header("初始随机建筑")]

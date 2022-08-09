@@ -90,10 +90,7 @@ MonoBehaviour:
   height: 31
   techRequirementForEntrence: []
   superMapDef: {fileID: 0}
+  previousMapOrbitRadius: 0
   mapDefOrbits: []
-  initialRandomStructures:
-  - key: {fileID: 11400000, guid: 322fb6d0fbe552c4882c302aeb869d2b, type: 2}
-    value: 1
-  constructables:
-  - {fileID: 11400000, guid: a10021eb8dad755439bf17cdafa4f13c, type: 2}
-  - {fileID: 11400000, guid: 322fb6d0fbe552c4882c302aeb869d2b, type: 2}
+  initialRandomStructures: []
+  constructables: []

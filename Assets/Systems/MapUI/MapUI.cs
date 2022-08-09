@@ -20,7 +20,6 @@ namespace W
         }
 
 
-
         private void Update() {
             if (Input.GetKeyDown(KeyCode.Z)) {
                 // Map.DoChange(GameConfig.I.Name2Obj["Population_1"] as IDValue, 1, IdleReference.Inc);
@@ -59,12 +58,12 @@ namespace W
         }
 
 
-        private static Color ColorDisable => new Color(0.5f, 0.5f, 0.5f, 0.5f);
-        private static Color ColorNormal => new Color(1f, 1f, 1f, 1f);
-        private static Color ColorWarning => new Color(1f, 0, 0, 1f);
+        private static Color ColorDisable => UI.ColorDisable;
+        private static Color ColorNormal => UI.ColorNormal;
+        private static Color ColorWarning => UI.ColorWarning;
 
-        private static Color ColorPositive => new Color(0.5f, 1f, 0.5f, 1f);
-        private static Color ColorNegative => new Color(1f, 0.5f, 0.5f, 1f);
+        private static Color ColorPositive => UI.ColorPositive;
+        private static Color ColorNegative => UI.ColorNegative;
 
 
 
@@ -175,7 +174,8 @@ namespace W
 
             UI.Prepare();
 
-            AddMapHeadInfo(info.Map);
+            info.Map.AddInfoButton();
+            UI.Space();
 
             //if (false) {
             //    UI.Button(Game.I.OnShip ? "离开飞船" : "进入飞船", () => {
@@ -185,72 +185,66 @@ namespace W
             //}
 
             UI.Button("设置", SettingsPage.Settings);
-            UI.Space();
-
-            //foreach (var pair in Game.I.Map.Resources) {
-            //    ID id = GameConfig.I.ID2Obj[pair.Key];
-            //    Idle idle = pair.Value;
-            //    UI.IconText(id.CN, id.Icon);
-            //    UI.Progress(() => $"{idle.Value}/{idle.Max}  +{idle.Inc}/{idle.DelSecond}s", () => idle.Progress);
-            //}
-
-            UI.Show();
-        }
-
-        private static void AddMapHeadInfo(Map map) {
-            // UI.IconText(map.Def.CN, GameConfig.I.Name2Obj[Sprites.MapDef].Icon);
-            UI.IconButton(map.Def.CN, map.Def.Sprite, () => ShowMapPage(map));
-
-            UI.Space();
-        }
-        private static void ShowMapPage(Map map) {
-            UI.Prepare();
-
-            UI.IconText(map.Def.CN, map.Def.Sprite);
-            UI.Space();
-
-            bool canEnter = Game.I.Settings.Cheat || Game.I.SuperMap.CanEnter();
-            UI.IconButton("离开", canEnter ? ColorNormal : ColorNegative, Sprites.IconOf(canEnter ? Sprites.Success : Sprites.Failure), () => {
-                if (canEnter) {
-                    Game.I.EnterSuperMap();
-                } else {
-                    FailGotoSuperMapPage();
-                }
+            UI.Button("资源", () => {
+                UI.Prepare();
+                Game.I.Map.AddInfoButton();
+                UI.Space();
+                Game.I.Map.AddAllResDefValue();
+                UI.Show();
             });
-
-            //if (Game.I.Map.PreviousSeed != Map.NullSeed && Game.I.Map.PreviousMapLevel <= Game.I.Map.MapLevel) {
-            //    UI.Button("返回", () => Game.I.EnterPreviousMap());
-            //}
             UI.Space();
-
-            UI.Text("地图种子");
-            UI.Text(map.Seed.ToString());
-
-            UI.Space();
-            UI.Text("钟慢效应");
-            UI.Text(map.Def.TimeScale.ToString());
 
             UI.Show();
         }
 
-        private static void FailGotoSuperMapPage() {
-            UI.Prepare();
+        //private static void ShowMapPage(Map map) {
+        //    UI.Prepare();
 
-            Sprites.IconText(Sprites.Failure);
+        //    UI.IconText(map.Def.CN, map.Def.Sprite);
+        //    UI.Space();
 
-            foreach (TechDef techDef in Game.I.SuperMap.Def.TechRequirementForEntrence) {
-                Game.I.TechLevel(techDef.id, out int level);
-                if (level == 0) {
-                    // return false;
-                    UI.Space();
+        //    bool canEnter = Game.I.Settings.Cheat || Game.I.SuperMap.CanEnter();
+        //    UI.IconButton("离开", canEnter ? ColorNormal : ColorNegative, Sprites.IconOf(canEnter ? Sprites.Success : Sprites.Failure), () => {
+        //        if (canEnter) {
+        //            Game.I.EnterSuperMap();
+        //        } else {
+        //            FailGotoSuperMapPage();
+        //        }
+        //    });
 
-                    UI.IconText($"需要科技", Sprites.IconOf(Sprites.Failure));
-                    IconText(techDef);
-                }
-            }
+        //    //if (Game.I.Map.PreviousSeed != Map.NullSeed && Game.I.Map.PreviousMapLevel <= Game.I.Map.MapLevel) {
+        //    //    UI.Button("返回", () => Game.I.EnterPreviousMap());
+        //    //}
+        //    UI.Space();
 
-            UI.Show();
-        }
+        //    UI.Text("地图种子");
+        //    UI.Text(map.Seed.ToString());
+
+        //    UI.Space();
+        //    UI.Text("钟慢效应");
+        //    UI.Text(map.Def.TimeScale.ToString());
+
+        //    UI.Show();
+        //}
+
+        //private static void FailGotoSuperMapPage() {
+        //    UI.Prepare();
+
+        //    Sprites.IconText(Sprites.Failure);
+
+        //    foreach (TechDef techDef in Game.I.SuperMap.Def.TechRequirementForEntrence) {
+        //        Game.I.TechLevel(techDef.id, out int level);
+        //        if (level == 0) {
+        //            // return false;
+        //            UI.Space();
+
+        //            UI.IconText($"需要科技", Sprites.IconOf(Sprites.Failure));
+        //            IconText(techDef);
+        //        }
+        //    }
+
+        //    UI.Show();
+        //}
 
 
         private static void TapSomething(int x, int y) {
@@ -554,7 +548,8 @@ namespace W
         private static void TapEmpty(MapTileInfo info) {
             UI.Prepare();
 
-            AddMapHeadInfo(info.Map);
+            info.Map.AddInfoButton();
+            UI.Space();
 
             var unlockeds = AddUnlockeds(info);
             if (unlockeds.Count > 0) {
@@ -750,11 +745,13 @@ namespace W
         }
 
         private static bool CanConstruct(MapTileInfo info) {
-            if (!info.PlayerBuildOrAutoBuild) {
+
+            if (info.PlayerBuildOrAutoBuild) {
                 foreach (ResDefValue idValue in info.TileDef.Construction) {
                     if (!info.Map.CanChange(idValue, 1, IdleReference.Val)) return false;
                 }
             }
+
             foreach (ResDefValue idValue in info.TileDef.Inc) {
                 if (!info.Map.CanChange(idValue, info.Level, IdleReference.Inc)) return false;
             }
@@ -773,7 +770,6 @@ namespace W
             foreach (ResDefValue idValue in info.TileDef.MaxSuper) {
                 if (!info.MapSuper.CanChange(idValue, info.Level, IdleReference.Max)) return false;
             }
-
 
             if (!CanConstructByNeighbor(info, 0, +1)) return false;
             if (!CanConstructByNeighbor(info, 0, -1)) return false;

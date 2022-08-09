@@ -10,10 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8be4a172c490f0a4b88537c33a872ada, type: 3}
-  m_Name: Mass
+  m_Name: AluminumOre
   m_EditorClassIdentifier: 
-  cn: "\u8D28\u91CF"
-  sprite: {fileID: 21300000, guid: 2c0d65693453419429fcce5e175b6227, type: 3}
-  tags: []
-  MaxOnly: 0
-  Del: {fileID: 0}
+  cn: "\u94DD\u571F\u77FF\u77F3"
+  sprite: {fileID: 21300000, guid: 84ef146a4c66f1d4a9432c07029dbbbd, type: 3}
+  sprites: []
+  spritesDuration: 1
+  glow: {fileID: 0}
+  glowDayNight: {fileID: 0}
+  color: {r: 0.735849, g: 0.64666396, b: 0.60742253, a: 1}
+  del: 0

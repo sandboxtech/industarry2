@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
-  m_Name: ApocalypseRuin_City
+  m_Name: CoalDeposit
   m_EditorClassIdentifier: 
-  cn: "\u4EBA\u7C7B\u57CE\u5E02\u9057\u5740"
-  sprite: {fileID: 21300000, guid: 448cee568d615944fa9ecccaa624e136, type: 3}
+  cn: "\u7164\u70AD\u77FF\u85CF"
+  sprite: {fileID: 21300000, guid: 40c0163b823961644b887c9a2c24d52a, type: 3}
   sprites: []
   spritesDuration: 1
   glow: {fileID: 0}
   glowDayNight: {fileID: 0}
-  color: {r: 0.7169812, g: 0.7169812, b: 0.7169812, a: 1}
+  color: {r: 1, g: 1, b: 1, a: 1}
   construction: []
   destruction: []
-  notDestructable: 1
+  notDestructable: 0
   inc: []
   max: []
   bonus: []

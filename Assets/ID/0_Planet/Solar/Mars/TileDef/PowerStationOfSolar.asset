@@ -10,24 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
-  m_Name: Tree
+  m_Name: PowerStationOfSolar
   m_EditorClassIdentifier: 
-  cn: "\u6797\u5730"
-  sprite: {fileID: 21300000, guid: 6cde7834effcfd34dbe9edd59ce170a6, type: 3}
+  cn: "\u5149\u4F0F\u7535\u7AD9"
+  sprite: {fileID: 21300000, guid: 94e5860a0ae272f458caf35936566294, type: 3}
   sprites: []
   spritesDuration: 1
-  glow: {fileID: 0}
-  color: {r: 0.49019608, g: 0.85882354, b: 0.42745098, a: 1}
+  glow: {fileID: 21300000, guid: 94e5860a0ae272f458caf35936566294, type: 3}
+  glowDayNight: {fileID: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
   construction:
   - key: {fileID: 11400000, guid: 8f172da28d0c784448156bc8172ad24f, type: 2}
     value: -10
   destruction:
   - key: {fileID: 11400000, guid: 8f172da28d0c784448156bc8172ad24f, type: 2}
     value: -10
+  notDestructable: 0
   inc: []
   max: []
-  bonusAnim: {fileID: 0}
   bonus: []
   conditions: []
   repels: []
   techs: []
+  constructionSuper: []
+  destructionSuper: []
+  incSuper: []
+  maxSuper: []

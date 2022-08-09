@@ -10,22 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
-  m_Name: DepositMetalOre
+  m_Name: CoalLiquefaction
   m_EditorClassIdentifier: 
-  cn: "\u77FF\u573A"
-  sprite: {fileID: 21300000, guid: 84ef146a4c66f1d4a9432c07029dbbbd, type: 3}
+  cn: "\u7164\u70AD\u6DB2\u5316\u5DE5\u5382"
+  sprite: {fileID: 21300000, guid: 6cde7834effcfd34dbe9edd59ce170a6, type: 3}
   sprites: []
   spritesDuration: 1
   glow: {fileID: 0}
-  color: {r: 1, g: 1, b: 1, a: 1}
+  glowDayNight: {fileID: 0}
+  color: {r: 0.49019608, g: 0.85882354, b: 0.42745098, a: 1}
   construction: []
-  destruction:
-  - key: {fileID: 0}
-    value: 0
+  destruction: []
+  notDestructable: 0
   inc: []
   max: []
-  bonusAnim: {fileID: 0}
   bonus: []
   conditions: []
   repels: []
   techs: []
+  constructionSuper: []
+  destructionSuper: []
+  incSuper: []
+  maxSuper: []

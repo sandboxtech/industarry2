@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
   m_Name: CatnipResidence
   m_EditorClassIdentifier: 
-  cn: "\u732B\u7A9D"
-  sprite: {fileID: 21300000, guid: 08468106080ac0243a6263c2fc67c1f5, type: 3}
+  cn: "\u732B\u9547"
+  sprite: {fileID: 21300000, guid: 8b9bc0921d4b45244b86e5d9a10b6b05, type: 3}
   sprites: []
   spritesDuration: 1
   glow: {fileID: 0}
-  glowDayNight: {fileID: 21300000, guid: 17f22f5bb87541b479473c6b02d972ae, type: 3}
+  glowDayNight: {fileID: 21300000, guid: d2aeb98adc9601c4391b13c35eb17b9d, type: 3}
   color: {r: 0.8867924, g: 0.81459403, b: 0.46431112, a: 1}
   construction:
   - key: {fileID: 11400000, guid: 0fdb028efc1a5c341b0949be5f9898da, type: 2}
@@ -34,9 +34,13 @@ MonoBehaviour:
   max:
   - key: {fileID: 11400000, guid: 8d0036c6a661b734eb2d6da695c69b00, type: 2}
     value: 1
-  bonus: []
-  conditions:
+  bonus:
   - {fileID: 11400000, guid: a10021eb8dad755439bf17cdafa4f13c, type: 2}
+  conditions: []
   repels:
   - {fileID: 11400000}
   techs: []
+  constructionSuper: []
+  destructionSuper: []
+  incSuper: []
+  maxSuper: []

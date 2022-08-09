@@ -60,7 +60,7 @@ namespace W
             if (!created) {
                 config.Prepare();
             }
-            thisMap.OnEnter();
+            Map.OnEnter();
         }
 
 
@@ -173,13 +173,12 @@ namespace W
 
             if (index == Map.SuperMapIndex) {
                 thisMap = superMap;
-                // thisMap.LoadMap(index, mapDefID, out superMap);
-                thisMap.LoadSuper(out superMap); // LoadMap(SuperMapIndex, W.ID.Invalid, out map)
+                thisMap.LoadSuper(out superMap);
             } else {
                 superMap = thisMap;
                 superMap.LoadMap(index, mapDefID, out thisMap);
             }
-            thisMap.OnEnter();
+            Map.OnEnter();
         }
 
         public void EnterPreviousMap() {
@@ -187,17 +186,14 @@ namespace W
             SaveDelayed();
 
             superMap = thisMap;
-            // thisMap.LoadSuper(out superMap);
 
-            thisMap.LoadPrevious(out Map map);
-            if (map == null) {
+            thisMap.LoadPrevious(out thisMap);
+            if (thisMap == null) {
                 A.Error();
                 return;
             }
-            thisMap = map;
 
-
-            thisMap.OnEnter();
+            Map.OnEnter();
         }
 
 

@@ -21,7 +21,7 @@ namespace W
                     float distY = M.Abs((height - 1) / 2f - j);
                     float t = (distX + distY) / distMax;
 
-                    bool isEmpty = (M.Abs(t - 0.625f) * 2) > map.TemporaryRandomGenerator.NextDouble();
+                    bool isEmpty = t < map.TemporaryRandomGenerator.NextDouble();
                     buffer.Item1[i, j] = isEmpty;
                 }
             }

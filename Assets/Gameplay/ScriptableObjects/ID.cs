@@ -34,26 +34,15 @@ namespace W
         [Header("贴图")]
         [SerializeField]
         private Sprite sprite;
-        public Sprite Sprite => sprite != null ? sprite : ((sprites != null && sprites.Length > 0) ? sprites[0] : GameConfigReference.I.DefaultSprite);
+        public Sprite Sprite => sprite != null ? sprite : GameConfigReference.I.DefaultSprite;
         public Sprite Icon => Sprite;
 
-        [Header("帧动画")]
-        [SerializeField]
-        private Sprite[] sprites;
-        public Sprite[] Sprites => sprites;
-        [SerializeField]
-        private float spritesDuration = 1;
-        public float SpritesDuration => spritesDuration;
+
 
         [Header("高光贴图")]
         [SerializeField]
         private Sprite glow;
         public Sprite Glow => glow;
-
-        [Header("高光贴图昼夜")]
-        [SerializeField]
-        private Sprite glowDayNight;
-        public Sprite GlowDayNight => glowDayNight;
 
         [Header("颜色")]
         [SerializeField]
