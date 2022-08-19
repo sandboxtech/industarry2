@@ -18,6 +18,11 @@ namespace W
             ID id = GameConfig.I.Name2Obj[name];
             UI.IconButton(id.CN, id.Icon, id.Color, action);
         }
+        public static void IconButton(string message, string name, Action action) {
+            ID id = GameConfig.I.Name2Obj[name];
+            UI.IconButton(message, id.Icon, id.Color, action);
+        }
+
         public static void IconButton(string name, Color color, Action action) {
             ID id = GameConfig.I.Name2Obj[name];
             UI.IconButton(id.CN, color, id.Icon, id.Color, action);

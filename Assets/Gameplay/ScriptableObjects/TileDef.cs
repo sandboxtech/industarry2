@@ -43,6 +43,13 @@ namespace W
 
         [Space]
 
+
+        [Header("建造科技要求")]
+        [SerializeField]
+        private TechDef techRequirementForConstruction;
+        public TechDef TechRequirementForConstruction => techRequirementForConstruction;
+
+
         [Header("建造成本")]
 
         [SerializeField]
@@ -100,11 +107,16 @@ namespace W
 
 
 
-        [Header("科技")]
+        [Header("加成科技")]
         [SerializeField]
         private List<TechDef> techs;
         public List<TechDef> Techs => techs;
 
+
+        [Header("研究科技")]
+        [SerializeField]
+        private List<TechDef> techsRelavant;
+        public List<TechDef> TechsRelavant => techsRelavant;
 
 
 

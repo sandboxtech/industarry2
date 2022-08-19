@@ -177,74 +177,19 @@ namespace W
             info.Map.AddInfoButton();
             UI.Space();
 
-            //if (false) {
-            //    UI.Button(Game.I.OnShip ? "离开飞船" : "进入飞船", () => {
-            //        Game.I.OnShip = !Game.I.OnShip;
-            //    });
+            //UI.Button("资源", () => {
+            //    UI.Prepare();
+            //    Game.I.Map.AddInfoButton();
             //    UI.Space();
-            //}
-
+            //    Game.I.Map.AddAllResDefValue();
+            //    UI.Show();
+            //});
             UI.Button("设置", SettingsPage.Settings);
-            UI.Button("资源", () => {
-                UI.Prepare();
-                Game.I.Map.AddInfoButton();
-                UI.Space();
-                Game.I.Map.AddAllResDefValue();
-                UI.Show();
-            });
+
             UI.Space();
 
             UI.Show();
         }
-
-        //private static void ShowMapPage(Map map) {
-        //    UI.Prepare();
-
-        //    UI.IconText(map.Def.CN, map.Def.Sprite);
-        //    UI.Space();
-
-        //    bool canEnter = Game.I.Settings.Cheat || Game.I.SuperMap.CanEnter();
-        //    UI.IconButton("离开", canEnter ? ColorNormal : ColorNegative, Sprites.IconOf(canEnter ? Sprites.Success : Sprites.Failure), () => {
-        //        if (canEnter) {
-        //            Game.I.EnterSuperMap();
-        //        } else {
-        //            FailGotoSuperMapPage();
-        //        }
-        //    });
-
-        //    //if (Game.I.Map.PreviousSeed != Map.NullSeed && Game.I.Map.PreviousMapLevel <= Game.I.Map.MapLevel) {
-        //    //    UI.Button("返回", () => Game.I.EnterPreviousMap());
-        //    //}
-        //    UI.Space();
-
-        //    UI.Text("地图种子");
-        //    UI.Text(map.Seed.ToString());
-
-        //    UI.Space();
-        //    UI.Text("钟慢效应");
-        //    UI.Text(map.Def.TimeScale.ToString());
-
-        //    UI.Show();
-        //}
-
-        //private static void FailGotoSuperMapPage() {
-        //    UI.Prepare();
-
-        //    Sprites.IconText(Sprites.Failure);
-
-        //    foreach (TechDef techDef in Game.I.SuperMap.Def.TechRequirementForEntrence) {
-        //        Game.I.TechLevel(techDef.id, out int level);
-        //        if (level == 0) {
-        //            // return false;
-        //            UI.Space();
-
-        //            UI.IconText($"需要科技", Sprites.IconOf(Sprites.Failure));
-        //            IconText(techDef);
-        //        }
-        //    }
-
-        //    UI.Show();
-        //}
 
 
         private static void TapSomething(int x, int y) {
@@ -286,7 +231,7 @@ namespace W
             //    UI.Space();
             //}
 
-            if (info.TileDef.Techs.Count == 0) {
+            if (info.TileDef.Techs.Count == 0 && info.TileDef.TechsRelavant.Count == 0) {
                 UI.Space();
             } else {
                 Sprites.IconButton(Sprites.TechDef, () => TapTechs(info));
@@ -295,7 +240,7 @@ namespace W
             Sprites.IconButton(Sprites.Information, () => {
                 UI.Prepare();
                 IconTextWithLevel(info.TileDef, info.Level);
-                AddTileInformation(info.TileDef, info.Level);
+                AddTileInformation(info);
                 UI.Show();
             });
 
@@ -306,8 +251,7 @@ namespace W
                 Sprites.IconButton(Sprites.Destruction, CanDestruct(info) ? ColorNormal : ColorDisable, Game.I.Settings.SkipConfirmation ? () => TryDestruct(info) : () => AskDestruct(info));
             }
 
-            info.Map.AddRelatedResDefValue(info.TileDef);
-
+            AddTileInformationIncMax(info);
 
             UI.Show();
         }
@@ -319,6 +263,9 @@ namespace W
             Sprites.IconText(Sprites.TechDef);
 
             foreach (TechDef tech in info.TileDef.Techs) {
+                AddTapTech(info.Map, tech);
+            }
+            foreach (TechDef tech in info.TileDef.TechsRelavant) {
                 AddTapTech(info.Map, tech);
             }
 
@@ -422,8 +369,10 @@ namespace W
         }
 
 
+        private static void AddTileInformationIncMax(MapTileInfo info) {
 
-        private static void AddTileInformation(TileDef tileDef, int level) {
+            TileDef tileDef = info.TileDef;
+            int level = info.Level;
 
             if (tileDef.Inc.Count > 0) {
                 UI.Space();
@@ -441,22 +390,6 @@ namespace W
                 }
             }
 
-            if (tileDef.Construction.Count > 0) {
-                UI.Space();
-                Sprites.IconText(Sprites.Construction);
-                foreach (ResDefValue idValue in tileDef.Construction) {
-                    IconTextWithValueAndColor(idValue.Key, idValue.Value, level, true);
-                }
-            }
-
-            if (tileDef.Destruction.Count > 0) {
-                UI.Space();
-                Sprites.IconText(Sprites.Destruction);
-                foreach (ResDefValue idValue in tileDef.Destruction) {
-                    IconTextWithValueAndColor(idValue.Key, idValue.Value, level, true);
-                }
-            }
-
             if (tileDef.IncSuper.Count > 0) {
                 UI.Space();
                 Sprites.IconText(Sprites.IncSuper);
@@ -469,6 +402,37 @@ namespace W
                 UI.Space();
                 Sprites.IconText(Sprites.MaxSuper);
                 foreach (ResDefValue idValue in tileDef.MaxSuper) {
+                    IconTextWithValueAndColor(idValue.Key, idValue.Value, level, true);
+                }
+            }
+        }
+
+        private static void AddTileInformation(MapTileInfo info) {
+
+            TileDef tileDef = info.TileDef;
+            int level = info.Level;
+
+            UI.Space();
+            Sprites.IconButton("资源", Sprites.Information, () => {
+                UI.Prepare();
+                info.Map.AddRelatedResDefValue(info.TileDef);
+                UI.Show();
+            });
+
+            AddTileInformationIncMax(info);
+
+            if (tileDef.Construction.Count > 0) {
+                UI.Space();
+                Sprites.IconText(Sprites.Construction);
+                foreach (ResDefValue idValue in tileDef.Construction) {
+                    IconTextWithValueAndColor(idValue.Key, idValue.Value, level, true);
+                }
+            }
+
+            if (tileDef.Destruction.Count > 0) {
+                UI.Space();
+                Sprites.IconText(Sprites.Destruction);
+                foreach (ResDefValue idValue in tileDef.Destruction) {
                     IconTextWithValueAndColor(idValue.Key, idValue.Value, level, true);
                 }
             }
@@ -744,7 +708,21 @@ namespace W
             }
         }
 
+        private static bool CanConstructTech(TileDef tileDef) {
+            if (tileDef.TechRequirementForConstruction != null) {
+                Game.I.TechLevel(tileDef.TechRequirementForConstruction.id, out int level);
+                if (level <= 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private static bool CanConstruct(MapTileInfo info) {
+
+            if (!CanConstructTech(info.TileDef)) {
+                return false;
+            }
 
             if (info.PlayerBuildOrAutoBuild) {
                 foreach (ResDefValue idValue in info.TileDef.Construction) {
@@ -861,9 +839,16 @@ namespace W
             IconText(info.TileDef);
             UI.Space();
             Sprites.IconText(Sprites.Construction);
-            UI.Space();
             // Sprites.IconText(Sprites.Failure);
-            Sprites.IconText("缺少资源", Sprites.Failure);
+            UI.Space();
+
+
+            if (!CanConstructTech(info.TileDef)) {
+                Sprites.IconText("需要科技", Sprites.Failure);
+                IconText(info.TileDef.TechRequirementForConstruction);
+                UI.Show();
+                return;
+            }
 
             neighbors.Clear();
             FailConstructRepelText(info, 0, +1);
@@ -871,13 +856,20 @@ namespace W
             FailConstructRepelText(info, +1, 0);
             FailConstructRepelText(info, -1, 0);
             if (neighbors.Count > 0) {
+                Sprites.IconText("不能相邻", Sprites.Failure);
+
                 UI.Space();
                 Sprites.IconText(Sprites.Repel);
                 foreach (TileDef neighbor in neighbors) {
                     IconText(neighbor);
                 }
             }
+            else {
+                Sprites.IconText("缺少资源", Sprites.Failure);
+            }
             neighbors.Clear();
+
+
 
             UI.Space();
 

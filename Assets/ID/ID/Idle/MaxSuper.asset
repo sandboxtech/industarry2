@@ -12,10 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85f587cffc2abc2458d96e5f124765b3, type: 3}
   m_Name: MaxSuper
   m_EditorClassIdentifier: 
-  cn: "\u5BB9\u91CF(\u4E0A\u7EA7)"
+  cn: "\u5BB9\u91CF(\u5B87\u822A)"
   sprite: {fileID: 21300000, guid: 6e58272e554cc114f8ff57e6f48248a0, type: 3}
-  sprites: []
-  spritesDuration: 1
   glow: {fileID: 0}
-  glowDayNight: {fileID: 0}
   color: {r: 1, g: 1, b: 1, a: 1}

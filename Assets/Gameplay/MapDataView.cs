@@ -16,9 +16,8 @@ namespace W
             MapView.I.EnterMap(map.Def);
 
             UI.Prepare();
-            UI.Text("进入地图");
-            UI.Text($"seed {map.Seed}");
-            UI.Text($"type {map.Def.CN}");
+            map.AddInfoButton();
+            // UI.Text("进入地图");
             UI.Show();
 
             // 地形
@@ -102,6 +101,7 @@ namespace W
 
             MapView.I.SetGlowSpriteAt(x, y, id == null ? null : id.Glow);
             MapView.I.SetGlowDayNightSpriteAt(x, y, id == null ? null : id.GlowDayNight);
+
             MapView.I.SetIndexSpriteAt(x, y, level);
             TranslateTiles5(x, y);
         }
@@ -159,15 +159,15 @@ namespace W
                     }
                 }
             }
-            foreach (TileDef bonus in self.Bonus) {
-                if (bonus == neighbor) {
-                    foreach (ResDefValue input in self.Inc) {
-                        if (input.Value < 0) continue;
-                        MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
-                        return;
-                    }
-                }
-            }
+            //foreach (TileDef bonus in self.Bonus) {
+            //    if (bonus == neighbor) {
+            //        foreach (ResDefValue input in self.Inc) {
+            //            if (input.Value < 0) continue;
+            //            MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
+            //            return;
+            //        }
+            //    }
+            //}
 
             //foreach (TileDef bonus in self.Conditions) {
             //    if (bonus == neighbor) {

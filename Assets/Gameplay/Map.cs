@@ -565,13 +565,22 @@ namespace W
         }
 
         public void AddInfoButton() {
-            UI.IconButton(Def.CN, Def.Sprite, ShowMapPage);
+            UI.IconButton(Def.CN, Def.Icon, ShowMapPage);
         }
 
         private void ShowMapPage() {
             UI.Prepare();
 
-            UI.IconText(Def.CN, Def.Sprite);
+            UI.IconText(Def.CN, Def.Icon);
+            UI.Space();
+
+            UI.Button("资源", () => {
+                UI.Prepare();
+                AddInfoButton();
+                UI.Space();
+                AddAllResDefValue();
+                UI.Show();
+            });
             UI.Space();
 
             bool canEnter = Game.I.Settings.Cheat || Game.I.SuperMap.CanEnter();

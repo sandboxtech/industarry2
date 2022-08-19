@@ -37,6 +37,7 @@ namespace W
         private Tilemap Index;
         [SerializeField]
         private Tilemap Glow;
+        private TilemapRenderer glowTilemapRenderer;
         [SerializeField]
         private Tilemap GlowDayNight;
         private TilemapRenderer glowDayNightTilemapRenderer;
@@ -83,9 +84,11 @@ namespace W
             leftGlowTrans = LeftGlow.transform;
             rightGlowTrans = RightGlow.transform;
 
-            glowDayNightTilemapRenderer = GlowDayNight.GetComponent<TilemapRenderer>();
-            glowDayNightTilemapRenderer.material = glowDayNightTilemapRenderer.material; // yes
+            glowTilemapRenderer = Glow.GetComponent<TilemapRenderer>();
+            glowTilemapRenderer.material = Instantiate(glowTilemapRenderer.material); // yes
 
+            glowDayNightTilemapRenderer = GlowDayNight.GetComponent<TilemapRenderer>();
+            glowDayNightTilemapRenderer.material = Instantiate(glowDayNightTilemapRenderer.material); // yes
         }
 
         private const long deltaT = 3 * Constants.Second;
@@ -170,6 +173,7 @@ namespace W
                     GlowDayNight.enabled = true;
                 }
             }
+            // UnityEngine.Debug.LogWarning(Glow.GetComponent<TilemapRenderer>().sharedMaterial == GlowDayNight.GetComponent<TilemapRenderer>().sharedMaterial);
         }
 
         public float Lightness {

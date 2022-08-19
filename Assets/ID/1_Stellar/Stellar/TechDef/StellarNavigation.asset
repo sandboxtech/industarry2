@@ -14,13 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cn: "\u6052\u661F\u7CFB\u822A\u884C"
   sprite: {fileID: 21300000, guid: 94e5860a0ae272f458caf35936566294, type: 3}
-  sprites: []
-  spritesDuration: 1
   glow: {fileID: 0}
-  glowDayNight: {fileID: 0}
   color: {r: 1, g: 1, b: 1, a: 1}
-  upgrade:
-  - key: {fileID: 11400000, guid: 38f4eacaaa87fc44d9d9271fee0b9e7a, type: 2}
-    value: 100
+  upgrade: []
   multiplier: 10
   max_level: 1

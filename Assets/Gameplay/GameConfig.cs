@@ -50,12 +50,18 @@ namespace W
                 if (pair.Value is TileDef value) {
                     foreach (TileDef bonusKey in value.Bonus) {
                         HashSet<TileDef> set = bonusKey.BonusReverse as HashSet<TileDef>;
+                        if (set == null) {
+                            throw new Exception($"null in {value.name}");
+                        }
                         if (!set.Contains(value)) {
                             set.Add(value);
                         }
                     }
                     foreach (TileDef conditionKey in value.Conditions) {
                         HashSet<TileDef> set = conditionKey.ConditionsReverse as HashSet<TileDef>;
+                        if (set == null) {
+                            throw new Exception($"null in {value.name}");
+                        }
                         if (!set.Contains(value)) {
                             set.Add(value);
                         }

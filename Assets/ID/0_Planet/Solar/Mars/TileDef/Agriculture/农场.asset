@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
+  m_Name: "\u519C\u573A"
+  m_EditorClassIdentifier: 
+  cn: 
+  sprite: {fileID: 21300000, guid: 6c568dc7a21556a4bb52622e98a5c313, type: 3}
+  glow: {fileID: 0}
+  color: {r: 0.49019608, g: 0.85882354, b: 0.42745098, a: 1}
+  sprites: []
+  spritesDuration: 1
+  ruleTile44: []
+  ruleTile86: []
+  glowDayNight: {fileID: 0}
+  construction: []
+  destruction: []
+  notDestructable: 0
+  inc:
+  - key: {fileID: 11400000, guid: 0fdb028efc1a5c341b0949be5f9898da, type: 2}
+    value: 1
+  max:
+  - key: {fileID: 11400000, guid: 0fdb028efc1a5c341b0949be5f9898da, type: 2}
+    value: 10
+  bonus:
+  - {fileID: 11400000}
+  conditions:
+  - {fileID: 11400000, guid: e205c82352f54a840bea6ded4c482c64, type: 2}
+  repels: []
+  techs: []
+  constructionSuper: []
+  destructionSuper: []
+  incSuper: []
+  maxSuper: []

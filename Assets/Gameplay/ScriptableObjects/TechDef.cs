@@ -16,7 +16,7 @@ namespace W
         public long Multiplier => multiplier;
 
         [SerializeField]
-        private long max_level = 10;
+        private long max_level = 1;
         public long MaxLevel => max_level;
     }
 }

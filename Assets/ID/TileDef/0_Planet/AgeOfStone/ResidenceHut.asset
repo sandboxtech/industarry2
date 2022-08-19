@@ -14,17 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cn: "\u732B\u7A9D"
   sprite: {fileID: 21300000, guid: 08468106080ac0243a6263c2fc67c1f5, type: 3}
-  sprites: []
-  spritesDuration: 1
   glow: {fileID: 21300000, guid: 17f22f5bb87541b479473c6b02d972ae, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
+  sprites: []
+  spritesDuration: 1
+  ruleTile44: []
+  ruleTile86: []
+  glowDayNight: {fileID: 0}
   construction: []
   destruction: []
+  notDestructable: 0
   inc: []
   max: []
-  bonusAnim: {fileID: 11400000, guid: 4e4f3c7b7e7b199468a7de1c9c8fe745, type: 2}
   bonus: []
   conditions: []
   repels: []
   techs:
   - {fileID: 11400000, guid: abc3467f20c1e1449b346a252d9f5aec, type: 2}
+  constructionSuper: []
+  destructionSuper: []
+  incSuper: []
+  maxSuper: []

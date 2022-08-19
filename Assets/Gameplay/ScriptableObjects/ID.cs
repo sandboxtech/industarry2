@@ -35,7 +35,15 @@ namespace W
         [SerializeField]
         private Sprite sprite;
         public Sprite Sprite => sprite != null ? sprite : GameConfigReference.I.DefaultSprite;
-        public Sprite Icon => Sprite;
+        public Sprite Icon {
+            get {
+                if (sprite != null) return sprite;
+                if (this is MapDef mapDef && mapDef.Sprites != null && mapDef.Sprites.Length > 0) {
+                    return mapDef.Sprites[0];
+                }
+                return GameConfigReference.I.DefaultSprite;
+            }
+        }
 
 
 

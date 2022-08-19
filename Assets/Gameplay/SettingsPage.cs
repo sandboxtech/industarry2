@@ -27,8 +27,6 @@ namespace W
                     Game.I.Settings.Cheat = !Game.I.Settings.Cheat;
                     Settings();
                 });
-
-                Game.I.Map.AddAllResDefValue();
             }
 
             UI.Space();
