@@ -9,6 +9,6 @@ namespace W
         public Map MapSuper;
         public TileDef TileDef;
         public int Level;
-        public bool PlayerBuildOrAutoBuild;
+        public bool PlayerBuild_OrAutoBuild;
     }
 }

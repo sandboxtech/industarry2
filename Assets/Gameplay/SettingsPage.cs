@@ -13,14 +13,23 @@ namespace W
             UI.Button("保存", () => {
                 Game.I.SaveDelayed();
             });
+ 
+            UI.Button("退出", () => {
+                Game.I.SaveDelayed();
+                GameLoop.Quit();
+            });
+
+            UI.Button(Game.I.Settings.LevelOne ? "单一建筑:已开启" : "单一建筑:已关闭", () => {
+                Game.I.Settings.LevelOne = !Game.I.Settings.LevelOne;
+                Settings();
+            });
+
+            UI.Space();
+
             UI.Button("删档", () => {
                 Persistence.ClearSaves();
                 GameLoop.Quit();
             });
-            UI.Button("退出", () => {
-                GameLoop.Quit();
-            });
-
             if (Application.platform == RuntimePlatform.WindowsEditor) {
                 UI.Space();
                 UI.Button(Game.I.Settings.Cheat ? "作弊:已开启" : "作弊:已关闭", () => {

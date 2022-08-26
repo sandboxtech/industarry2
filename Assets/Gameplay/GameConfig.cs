@@ -49,6 +49,9 @@ namespace W
             foreach (var pair in name2obj) {
                 if (pair.Value is TileDef value) {
                     foreach (TileDef bonusKey in value.Bonus) {
+                        if (bonusKey == null) {
+                            throw new Exception($"null in {value.name}");
+                        }
                         HashSet<TileDef> set = bonusKey.BonusReverse as HashSet<TileDef>;
                         if (set == null) {
                             throw new Exception($"null in {value.name}");
@@ -58,7 +61,22 @@ namespace W
                         }
                     }
                     foreach (TileDef conditionKey in value.Conditions) {
+                        if (conditionKey == null) {
+                            throw new Exception($"null in {value.name}");
+                        }
                         HashSet<TileDef> set = conditionKey.ConditionsReverse as HashSet<TileDef>;
+                        if (set == null) {
+                            throw new Exception($"null in {value.name}");
+                        }
+                        if (!set.Contains(value)) {
+                            set.Add(value);
+                        }
+                    }
+                    foreach (MapDef key in value.ConditionsSubmap) {
+                        if (key == null) {
+                            throw new Exception($"null in {value.name}");
+                        }
+                        HashSet<TileDef> set = key.ConditionsSubmapReverse as HashSet<TileDef>;
                         if (set == null) {
                             throw new Exception($"null in {value.name}");
                         }
@@ -89,6 +107,12 @@ namespace W
             if (id is TechDef tech) {
                 foreach (var pair in tech.Upgrade) {
                     if (pair.Key == null) {
+                        return false;
+                    }
+                }
+            } else if (id is TileDef tileDef) {
+                foreach (var pair in tileDef.Techs) {
+                    if (pair == null) {
                         return false;
                     }
                 }

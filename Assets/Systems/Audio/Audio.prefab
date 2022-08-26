@@ -304,6 +304,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MusicSource: {fileID: 3909801456614103057}
   SoundSource: {fileID: 2585543254265971196}
+  positiveSound: {fileID: 8300000, guid: ed4cd54c15d05a243a9bfd2e56a127de, type: 3}
+  negativeSound: {fileID: 8300000, guid: cc626d4f60740964494495dc95700339, type: 3}
   defaultSound: {fileID: 8300000, guid: 12d05c7e580ac2b4b95b07785ab02d59, type: 3}
   constructSound:
   - {fileID: 8300000, guid: 45ee549d6c776ad4582d757d143f2720, type: 3}

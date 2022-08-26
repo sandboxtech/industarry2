@@ -40,13 +40,26 @@ namespace W
 
     public partial class UI
     {
+        /// <summary>
+        /// 禁用按钮颜色
+        /// </summary>
         public static Color ColorDisable => new Color(0.5f, 0.5f, 0.5f, 0.5f);
+        /// <summary>
+        /// 可用按钮颜色
+        /// </summary>
         public static Color ColorNormal => new Color(1f, 1f, 1f, 1f);
+        /// <summary>
+        /// 警告按钮颜色
+        /// </summary>
         public static Color ColorWarning => new Color(1f, 0, 0, 1f);
-
+        /// <summary>
+        /// 正面按钮颜色
+        /// </summary>
         public static Color ColorPositive => new Color(0.5f, 1f, 0.5f, 1f);
+        /// <summary>
+        /// 负面按钮颜色
+        /// </summary>
         public static Color ColorNegative => new Color(1f, 0.5f, 0.5f, 1f);
-
 
         public static Item Space() {
             Item item = new Item {
@@ -253,6 +266,22 @@ namespace W
             if (items != null) items.Add(item);
             return item;
         }
+        public static Item IconGlowButton(string text, Sprite icon, Color iconColor, Sprite glow, Action button) {
+            Item item = new Item {
+                Type = ItemType.Button,
+                Text = text,
+                Button = button,
+
+                Icon = icon,
+                IconGlow = glow,
+
+                IconColorDefined = true,
+                IconColor = iconColor,
+            };
+            if (items != null) items.Add(item);
+            return item;
+        }
+
         public static Item IconGlowButton(string text, Color color, Sprite icon, Color iconColor, Sprite glow, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,

@@ -91,7 +91,7 @@ namespace W
             glowDayNightTilemapRenderer.material = Instantiate(glowDayNightTilemapRenderer.material); // yes
         }
 
-        private const long deltaT = 3 * Constants.Second;
+        private const long deltaT = 6 * Constants.Second;
         private const float stayT = 0.375f;
         private const float fadeT = 0.0625f;
 
@@ -99,36 +99,112 @@ namespace W
             UpdateTranslates();
             UpdateLightAndGlow();
         }
+
+        private long lastReminder = -1;
         private void UpdateTranslates() {
             float t = (float)(G.now % deltaT) / deltaT;
             t = SmoothPosition(t);
-
             float motion = 1 - t;
-            upTrans.position = new Vector3(0, motion, 0);
-            downTrans.position = new Vector3(0, -motion, 0);
-            rightTrans.position = new Vector3(motion, 0, 0);
-            leftTrans.position = new Vector3(-motion, 0, 0);
 
-            upGlowTrans.position = new Vector3(0, motion, 0);
-            downGlowTrans.position = new Vector3(0, -motion, 0);
-            rightGlowTrans.position = new Vector3(motion, 0, 0);
-            leftGlowTrans.position = new Vector3(-motion, 0, 0);
+            long count = G.now / deltaT;
+            count = H.Hash((uint)count);
+            long reminder = count % 4;
+
+            if (reminder != lastReminder) {
+                lastReminder = reminder;
+
+                Up.gameObject.SetActive(false);
+                Down.gameObject.SetActive(false);
+                Left.gameObject.SetActive(false);
+                Right.gameObject.SetActive(false);
+                UpGlow.gameObject.SetActive(false);
+                DownGlow.gameObject.SetActive(false);
+                LeftGlow.gameObject.SetActive(false);
+                RightGlow.gameObject.SetActive(false);
+                switch (reminder) {
+                    case 0:
+                        Up.gameObject.SetActive(true);
+                        UpGlow.gameObject.SetActive(true);
+                        break;
+                    case 1:
+                        Down.gameObject.SetActive(true);
+                        DownGlow.gameObject.SetActive(true);
+                        break;
+                    case 2:
+                        Right.gameObject.SetActive(true);
+                        RightGlow.gameObject.SetActive(true);
+                        break;
+                    case 3:
+                        Left.gameObject.SetActive(true);
+                        LeftGlow.gameObject.SetActive(true);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
 
             float opacity = SmoothOpacity(t);
             Color color = new Color(1, 1, 1, opacity);
-            Up.color = color;
-            Down.color = color;
-            Left.color = color;
-            Right.color = color;
-            UpGlow.color = color;
-            DownGlow.color = color;
-            LeftGlow.color = color;
-            RightGlow.color = color;
+            switch (reminder) {
+                case 0:
+                    upTrans.position = new Vector3(0, motion, 0);
+                    upGlowTrans.position = new Vector3(0, motion, 0);
+
+                    Up.color = color;
+                    UpGlow.color = color;
+                    break;
+                case 1:
+                    downTrans.position = new Vector3(0, -motion, 0);
+                    downGlowTrans.position = new Vector3(0, -motion, 0);
+
+                    Down.color = color;
+                    DownGlow.color = color;
+                    break;
+                case 2:
+                    rightTrans.position = new Vector3(motion, 0, 0);
+                    rightGlowTrans.position = new Vector3(motion, 0, 0);
+
+                    Right.color = color;
+                    RightGlow.color = color;
+                    break;
+                case 3:
+                    leftTrans.position = new Vector3(-motion, 0, 0);
+                    leftGlowTrans.position = new Vector3(-motion, 0, 0);
+
+                    Left.color = color;
+                    LeftGlow.color = color;
+                    break;
+                default:
+                    break;
+            }
+
+
+            //upTrans.position = new Vector3(0, motion, 0);
+            //downTrans.position = new Vector3(0, -motion, 0);
+            //rightTrans.position = new Vector3(motion, 0, 0);
+            //leftTrans.position = new Vector3(-motion, 0, 0);
+
+            //upGlowTrans.position = new Vector3(0, motion, 0);
+            //downGlowTrans.position = new Vector3(0, -motion, 0);
+            //rightGlowTrans.position = new Vector3(motion, 0, 0);
+            //leftGlowTrans.position = new Vector3(-motion, 0, 0);
+
+            //Up.color = color;
+            //Down.color = color;
+            //Left.color = color;
+            //Right.color = color;
+            //UpGlow.color = color;
+            //DownGlow.color = color;
+            //LeftGlow.color = color;
+            //RightGlow.color = color;
         }
 
 
         private bool lightEnabled = false;
         private void UpdateLightAndGlow() {
+
+            if (Game.I.Map == null) return;
 
             if (Game.I.Map.Def.Theme is PlanetMapThemeDef theme && theme.ActivateLight) {
                 lightEnabled = true;
@@ -148,7 +224,7 @@ namespace W
                 light2D.intensity = intensity;
 
 
-                float glow = M.InverseLerp(minIntensity + 0.125f, minIntensity, intensity);
+                float glow = M.InverseLerp(minIntensity + 1/32f, minIntensity, intensity);
                 glow = M.Clamp(0, 1, glow);
                 if (glow > 0) {
                     GlowDayNight.enabled = true;
@@ -211,6 +287,11 @@ namespace W
             Vector3Int pos = new Vector3Int(x, y, 0);
             Glow.SetTile(pos, TileOf(glow));
         }
+        public void SetGlowSpritesAt(int x, int y, Sprite[] sprites, float duration) {
+            Vector3Int pos = new Vector3Int(x, y, 0);
+            Glow.SetTile(pos, TileOf(sprites, duration, Color.white));
+        }
+
 
         public void SetIndexSpriteAt(int x, int y, int index) {
             Vector3Int pos = new Vector3Int(x, y, 0);
@@ -365,7 +446,13 @@ namespace W
             AnimatedTile.color = color;
             return AnimatedTile;
         }
-
+        public TileBase TileOf(Sprite[] sprites, float speed) {
+            if (sprites == null) return null;
+            AnimatedTile.sprites = sprites;
+            AnimatedTile.speed = speed;
+            AnimatedTile.color = Color.white;
+            return AnimatedTile;
+        }
 
 
         public void EnterMap(MapDef mapDef) {

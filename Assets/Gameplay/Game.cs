@@ -95,6 +95,8 @@ namespace W
         [JsonProperty]
         private Settings settings;
         public Settings Settings => settings;
+
+
         [JsonProperty]
         private Dictionary<uint, int> techs;
         // public Dictionary<uint, int> Techs => techs;

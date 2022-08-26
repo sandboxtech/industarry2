@@ -5,7 +5,7 @@ using UnityEngine;
 namespace W
 {
     [CreateAssetMenu(fileName = "__TechDef__", menuName = "创建 TechDef 科技定义", order = 1)]
-    public class TechDef : ID
+    public class TechDef : ResDef
 	{
         [SerializeField]
         private List<ResDefValue> upgrade;

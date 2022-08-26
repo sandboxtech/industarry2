@@ -104,7 +104,7 @@ namespace W
         public bool Empty => Value <= 0;
         public bool Maxed => Value >= Max;
 
-        public float Progress => Maxed ? 1 : Inc == 0 ? (float)(progress) : (float)((double)(Now - time) * inc / del) % 1;
+        public float Progress => Inc == 0 ? (float)(progress) : (float)((double)(Now - time) * inc / del) % 1;
         public float TotalProgress {
             get {
                 return Max == 0 ? 0 : Clamp(0, 1, (float)((double)(Value + Progress) / Max));

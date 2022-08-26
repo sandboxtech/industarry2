@@ -157,9 +157,14 @@ namespace W
         private List<TileDef> constructables;
         public IReadOnlyList<TileDef> Constructables => constructables;
 
+
+        // 周边可造建筑。自动生成属性
+        public IReadOnlyCollection<TileDef> ConditionsSubmapReverse { get; private set; } = new HashSet<TileDef>();
+
+
+
         public virtual void ProcessMapTerrain(Map map) {
 
         }
-
     }
 }

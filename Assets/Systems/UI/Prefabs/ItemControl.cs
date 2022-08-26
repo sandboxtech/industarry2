@@ -34,8 +34,9 @@ namespace W
 
         public void EnableSpace(ref Item item) {
             Text.gameObject.SetActive(false);
+            rect.sizeDelta = new Vector2(textRect.sizeDelta.x, stardardHeight);
         }
-
+        private const float stardardHeight = 40;
 
         private const float textMarginX = 16;
         private const float textMargetY = 16;
@@ -71,6 +72,7 @@ namespace W
                 Text.text = text;
                 if (textDynamic == null) {
                     float preferredHeight = Mathf.Floor(Text.preferredHeight / 2) * 2;
+                    preferredHeight = Mathf.Max(stardardHeight-textMargetY, preferredHeight);
                     textRect.sizeDelta = new Vector2(textRect.sizeDelta.x, preferredHeight);
                     rect.sizeDelta = new Vector2(textRect.sizeDelta.x + textMarginX, textRect.sizeDelta.y + textMargetY);
                 }

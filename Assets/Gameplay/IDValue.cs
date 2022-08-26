@@ -33,6 +33,24 @@ namespace W
         private long value;
         public long Value => value;
 
+        public void AddItem() {
+            ID id = Key;
+            long v = Value;
+            bool positive = v > 0;
+
+            UI.IconGlowButton($"{id.CN} {(positive ? "+" : "-")}{(v > 0 ? v : -v)}",
+                positive ? UI.ColorPositive : UI.ColorNegative,
+                id.Icon, id.Color, id.Glow, () => Game.I.Map.InspectResPage(Key));
+        }
+        public void CannotChangeUIItem(long multiplier) {
+            ID id = Key;
+            long v = Value;
+            long product = v * multiplier;
+            bool positive = product > 0;
+            UI.IconGlowText($"{id.CN} {(positive ? "+" : "-")}{(v > 0 ? v : -v)}{(multiplier == 1 ? "" : $"*{(multiplier > 0 ? multiplier : -multiplier)}")}",
+                UI.ColorNegative,
+                id.Icon, id.Color, id.Glow);
+        }
     }
 
 

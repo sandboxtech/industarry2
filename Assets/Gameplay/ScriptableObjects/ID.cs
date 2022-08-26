@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,6 +21,18 @@ namespace W
         void __ID.SetID(uint id) {
             this.id = id;
         }
+
+        public void IconText() => UI.IconGlowText(CN, Icon, Color, Glow);
+        public void IconButton(Action action) => UI.IconGlowButton(CN, Icon, Color, Glow, action);
+        public void IconTextWithLevel(int level) => UI.IconGlowText(NameAndLevel(level), Icon, Color, Glow);
+        public void IconTextWithNumber(long number) => UI.IconGlowText(number > 0 ? $"{CN} +{number}" : $"{CN} {number}", number > 0 ? UI.ColorPositive : UI.ColorNegative, Icon, Color, Glow);
+
+        public void IconButtonWithLevel(int level, Color textColor, Action action)
+            => UI.IconGlowButton(NameAndLevel(level), textColor, Icon, Color, Glow, action);
+        private string NameAndLevel(int level) => level <= 1 ? CN : $"{CN} * {level}";
+
+
+
 
         [Header("中文")]
         [SerializeField]

@@ -10,7 +10,7 @@ namespace W
 
 
         [SerializeField]
-        private float dayDuration = 12f;
+        private float dayDuration = 600f;
         public float DayDuration => dayDuration;
 
         [SerializeField]

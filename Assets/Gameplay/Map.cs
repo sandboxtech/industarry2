@@ -167,6 +167,8 @@ namespace W
         private void Init() {
             A.Assert(resources == null);
             resources = new Dictionary<uint, Idle>();
+            tileDefCountOnThisMap = new Dictionary<uint, int>();
+            tileDefCountOnSubmap = new Dictionary<uint, int>();
 
             if (mapDef == null) {
                 mapDef = MapDefName.CalcMapDef(seed, mapLevel);
@@ -349,7 +351,7 @@ namespace W
             int height = mapDef.Height;
             int square = width * height;
 
-            info.PlayerBuildOrAutoBuild = false;
+            info.PlayerBuild_OrAutoBuild = false;
 
             foreach (TileDefValue pair in mapDef.InitialRandomStructures) {
 
@@ -368,8 +370,7 @@ namespace W
                             MapUI.CalcLevel(info);
                             if (MapUI.TryConstruct(info)) {
                                 times_success++;
-                            }
-                            else {
+                            } else {
                             }
                         }
 
@@ -453,11 +454,38 @@ namespace W
         #endregion
 
 
-        #region resources
+        #region resources_and_counts
 
         [JsonProperty]
         private Dictionary<uint, Idle> resources; // 地图的资源
-        public Dictionary<uint, Idle> Resources => resources;
+        public IDictionary<uint, Idle> Resources => resources;
+
+
+        [JsonProperty]
+        private Dictionary<uint, int> tileDefCountOnThisMap; // 地图的建筑数量
+        [JsonProperty]
+        private Dictionary<uint, int> tileDefCountOnSubmap; // 下级地图的建筑数量
+
+        public void ChangeTileDefCount(uint tileDefID, int count) => AddDict(tileDefCountOnThisMap, tileDefID, count);
+
+        public void ChangeTileDefCountOnSubmap(uint tileDefID, int count) => AddDict(tileDefCountOnSubmap, tileDefID, count);
+
+        private static void AddDict(Dictionary<uint, int> dict, uint tileDefID, int count) {
+            if (dict.TryGetValue(tileDefID, out int sum)) {
+                int newCount = sum + count;
+                if (newCount > 0) {
+                    dict[tileDefID] = newCount;
+                } else if (newCount == 0) {
+                    dict.Remove(tileDefID);
+                } else {
+                    A.Assert(false);
+                }
+            } else if (count > 0) {
+                dict.Add(tileDefID, count);
+            } else {
+                A.Assert(false);
+            }
+        }
 
 
         public bool CanChange(ResDefValue idValue, long multiplier, IdleReference i) {
@@ -524,85 +552,235 @@ namespace W
             }
         }
 
-        private readonly static HashSet<ResDef> existingRes = new HashSet<ResDef>();
-        public void AddRelatedResDefValue(TileDef tileDef) {
-            existingRes.Clear();
+        private void AllSubmapsPage() {
+            UI.IconText("下级地图", SpriteUI.IconOf(SpriteUI.MapDef));
+            UI.Space();
+            foreach (var pair in SubMaps) {
+                ID id = GameConfig.I.ID2Obj[pair.Value];
+                MapDef mapDef = id as MapDef;
+                A.Assert(mapDef != null);
+                UI.IconGlowText(mapDef.CN, mapDef.Icon, mapDef.Color, mapDef.Glow);
+            }
+            UI.Space();
+        }
+
+        private void AllTilesPage(Dictionary<uint, int> dict) {
+            UI.Prepare();
+            AddIcon();
+            UI.Space();
+
+            if (dict.Count == 0) {
+                UI.Text("暂无地块");
+                UI.Show();
+                return;
+            }
+
+            UI.IconText("地块数量", SpriteUI.IconOf(SpriteUI.TileDef));
+            UI.Space();
+            foreach (var pair in dict) {
+                ID id = GameConfig.I.ID2Obj[pair.Key];
+                TileDef tileDef = id as TileDef;
+                A.Assert(tileDef != null);
+                UI.IconGlowButton($"{tileDef.CN} {pair.Value}", tileDef.Icon, tileDef.Color, tileDef.Glow, tileDef.ShowPage);
+            }
+            UI.Show();
+        }
+
+        private readonly static Dictionary<ResDef, ResDefValue> inc = new Dictionary<ResDef, ResDefValue>();
+        private readonly static Dictionary<ResDef, ResDefValue> max = new Dictionary<ResDef, ResDefValue>();
+        private readonly static Dictionary<ResDef, ResDefValue> inc_or_max = new Dictionary<ResDef, ResDefValue>();
+        private readonly static Dictionary<ResDef, System.ValueTuple<bool, ResDefValue>> existingRes = new Dictionary<ResDef, System.ValueTuple<bool, ResDefValue>>();
+        public void AllLocalRelatedResourcesPage(TileDef tileDef) {
+            UI.Prepare();
+
+            AddButton();
+            tileDef.AddButton();
+
+
+            inc.Clear();
+            max.Clear();
+            inc_or_max.Clear();
             foreach (ResDefValue idValue in tileDef.Inc) {
-                if (!existingRes.Contains(idValue.Key)) {
-                    existingRes.Add(idValue.Key);
-                }
+                inc.Add(idValue.Key, idValue);
+                inc_or_max.Add(idValue.Key, idValue);
             }
             foreach (ResDefValue idValue in tileDef.Max) {
-                if (!existingRes.Contains(idValue.Key)) {
-                    existingRes.Add(idValue.Key);
+                max.Add(idValue.Key, idValue);
+                if (!inc_or_max.ContainsKey(idValue.Key)) {
+                    inc_or_max.Add(idValue.Key, idValue);
                 }
             }
 
-            foreach (ID key in existingRes) {
+            foreach (var pair in inc_or_max) {
+                ResDef key = pair.Key;
+                ResDefValue idValue = pair.Value;
+
                 if (!Resources.TryGetValue(key.id, out Idle idle)) {
                     continue;
                 }
                 UI.Space();
-                UI.IconGlowText(key.CN, key.Icon, key.Color, key.Glow);
-
+                UI.IconGlowButton(key.CN, key.Icon, key.Color, key.Glow, () => InspectResPage(key));
                 UI.Progress(() => $"{idle.Value}/{idle.Max}  +{idle.Inc}/{idle.DelSecond}s", () => idle.Progress);
+                if (inc.ContainsKey(key)) {
+                    SpriteUI.IconText($"{SpriteUI.CNOf(SpriteUI.Inc)} {(idValue.Value > 0 ? "+" : null)}{idValue.Value}", idValue.Value > 0 ? UI.ColorPositive : UI.ColorNegative, SpriteUI.Inc);
+                }
+                if (max.ContainsKey(key)) {
+                    SpriteUI.IconText($"{SpriteUI.CNOf(SpriteUI.Max)} {(idValue.Value > 0 ? "+" : null)}{idValue.Value}", idValue.Value > 0 ? UI.ColorPositive : UI.ColorNegative, SpriteUI.Max);
+                }
             }
+            inc.Clear();
+            max.Clear();
+            inc_or_max.Clear();
+            UI.Show();
 
-            existingRes.Clear();
         }
 
-        public void AddAllResDefValue() {
+
+        public void AllLocalResourcesPage() {
+            UI.Prepare();
+
+            AddButton();
             if (Resources.Count == 0) {
+                UI.Space();
                 UI.Text("暂无资源");
+                UI.Show();
                 return;
             }
             foreach (var pair in Resources) {
                 ID key = GameConfig.I.ID2Obj[pair.Key];
-                Idle idle = pair.Value;
-                UI.IconGlowText(key.CN, key.Icon, key.Color, key.Glow);
-                UI.Progress(() => $"{idle.Value}/{idle.Max}  +{idle.Inc}/{idle.DelSecond}s", () => idle.Progress);
+                UI.Space();
+                key.IconButton(() => InspectResPage(key as ResDef));
+                IdleProgress(pair.Value);
             }
+            UI.Show();
         }
 
-        public void AddInfoButton() {
-            UI.IconButton(Def.CN, Def.Icon, ShowMapPage);
+        private void IdleProgress(Idle idle) {
+            UI.Progress(() => $"{idle.Value}/{idle.Max}  +{idle.Inc}/{idle.DelSecond}s", () => idle.Progress);
         }
 
-        private void ShowMapPage() {
+        /// <summary>
+        /// 效率略低，查询本土所有建筑，并且考察对此资源有无影响
+        /// </summary>
+        public void InspectResPage(ResDef resDef) {
+            if (resDef == null) return; // ?
+            UI.Prepare();
+            Def.IconText();
+            UI.Space();
+
+            resDef.IconText();
+            Idle idle = resources[resDef.id];
+            IdleProgress(idle);
+
+            bool title;
+
+            title = false;
+            foreach (var pair in tileDefCountOnThisMap) {
+                TileDef tileDef = GameConfig.I.ID2Obj[pair.Key] as TileDef;
+                foreach (ResDefValue resDefValue in tileDef.Inc) {
+                    if (resDefValue.Key == resDef) {
+                        if (!title) {
+                            UI.Space();
+                            SpriteUI.IconText(SpriteUI.Inc);
+                            title = true;
+                        }
+                        tileDef.IconTextWithNumber(resDefValue.Value * pair.Value);
+                    }
+                }
+            }
+
+            title = false;
+            foreach (var pair in tileDefCountOnThisMap) {
+                TileDef tileDef = GameConfig.I.ID2Obj[pair.Key] as TileDef;
+                foreach (ResDefValue resDefValue in tileDef.Max) {
+                    if (resDefValue.Key == resDef) {
+                        if (!title) {
+                            UI.Space();
+                            SpriteUI.IconText(SpriteUI.Max);
+                            title = true;
+                        }
+                        tileDef.IconTextWithNumber(resDefValue.Value * pair.Value);
+                    }
+                }
+            }
+
+            title = false;
+            foreach (var pair in tileDefCountOnSubmap) {
+                TileDef tileDef = GameConfig.I.ID2Obj[pair.Key] as TileDef;
+                foreach (ResDefValue resDefValue in tileDef.IncSuper) {
+                    if (resDefValue.Key == resDef) {
+                        if (!title) {
+                            UI.Space();
+                            SpriteUI.IconText(SpriteUI.IncSuper);
+                            title = true;
+                        }
+                        tileDef.IconTextWithNumber(resDefValue.Value * pair.Value);
+                    }
+                }
+            }
+
+            title = false;
+            foreach (var pair in tileDefCountOnSubmap) {
+                TileDef tileDef = GameConfig.I.ID2Obj[pair.Key] as TileDef;
+                foreach (ResDefValue resDefValue in tileDef.MaxSuper) {
+                    if (resDefValue.Key == resDef) {
+                        if (!title) {
+                            UI.Space();
+                            SpriteUI.IconText(SpriteUI.MaxSuper);
+                            title = true;
+                        }
+                        tileDef.IconTextWithNumber(resDefValue.Value * pair.Value);
+                    }
+                }
+            }
+            UI.Show();
+        }
+
+        public void AddButton() {
+            UI.IconButton(Def.CN, Def.Icon, ShowPage);
+        }
+        public void AddIcon() {
+            UI.IconText(Def.CN, Def.Icon);
+        }
+
+        public void ShowPage() {
             UI.Prepare();
 
-            UI.IconText(Def.CN, Def.Icon);
+            Def.IconText();
             UI.Space();
-
-            UI.Button("资源", () => {
-                UI.Prepare();
-                AddInfoButton();
-                UI.Space();
-                AddAllResDefValue();
-                UI.Show();
-            });
-            UI.Space();
-
             bool canEnter = Game.I.Settings.Cheat || Game.I.SuperMap.CanEnter();
-            UI.IconButton("离开", canEnter ? UI.ColorNormal : UI.ColorNegative, Sprites.IconOf(canEnter ? Sprites.Success : Sprites.Failure), () => {
+            UI.IconButton("航天离开", SpriteUI.IconOf(SpriteUI.MapDef), canEnter ? UI.ColorNormal : UI.ColorDisable, () => {
                 if (canEnter) {
                     Game.I.EnterSuperMap();
                 } else {
                     FailGotoSuperMapPage();
                 }
             });
+            UI.Space();
+
+            UI.IconButton("资源", SpriteUI.IconOf(SpriteUI.ResDef), AllLocalResourcesPage);
+            UI.IconButton("地块", SpriteUI.IconOf(SpriteUI.TileDef), () => AllTilesPage(tileDefCountOnThisMap));
+            if (tileDefCountOnSubmap.Count > 0) UI.IconButton("下级地块", SpriteUI.IconOf(SpriteUI.TileDef), () => AllTilesPage(tileDefCountOnSubmap));
+            if (SubMaps != null && SubMaps.Count > 0) UI.IconButton("下级地图", SpriteUI.IconOf(SpriteUI.MapDef), AllSubmapsPage);
+
+            UI.Space();
+
+
+
 
             //if (Game.I.Map.PreviousSeed != Map.NullSeed && Game.I.Map.PreviousMapLevel <= Game.I.Map.MapLevel) {
             //    UI.Button("返回", () => Game.I.EnterPreviousMap());
             //}
             UI.Space();
 
-            UI.Text("地图种子");
-            UI.Text(Seed.ToString());
+            if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.WindowsEditor) {
+                UI.Text("地图种子");
+                UI.Text(Seed.ToString());
 
-            UI.Space();
-            UI.Text("钟慢效应");
-            UI.Text(Def.TimeScale.ToString());
+                UI.Space();
+                UI.Text("钟慢效应");
+                UI.Text(Def.TimeScale.ToString());
+            }
 
             UI.Show();
         }
@@ -610,7 +788,7 @@ namespace W
         private void FailGotoSuperMapPage() {
             UI.Prepare();
 
-            Sprites.IconText(Sprites.Failure);
+            SpriteUI.IconText(SpriteUI.Failure);
 
             foreach (TechDef techDef in Game.I.SuperMap.Def.TechRequirementForEntrence) {
                 Game.I.TechLevel(techDef.id, out int level);
@@ -618,7 +796,8 @@ namespace W
                     // return false;
                     UI.Space();
 
-                    UI.IconText($"需要科技", Sprites.IconOf(Sprites.Failure));
+                    Audio.I.Clip = Audio.I.NegativeSound;
+                    UI.IconText($"需要科技", SpriteUI.IconOf(SpriteUI.Failure));
                     UI.IconGlowText(techDef.CN, techDef.Icon, techDef.Color, techDef.Glow);
                 }
             }

@@ -15,10 +15,12 @@ namespace W
             CameraControl.I.Area = new Rect(0, 0, map.Width, map.Height);
             MapView.I.EnterMap(map.Def);
 
-            UI.Prepare();
-            map.AddInfoButton();
-            // UI.Text("进入地图");
-            UI.Show();
+            UI.I.ScrollVisible = false;
+            UI.Hide();
+            //UI.Prepare();
+            //map.AddIcon();
+            //// UI.Text("进入地图");
+            //UI.Show();
 
             // 地形
             if (map.Def.Theme.Tileset != null && map.Def.Theme.Tileset.Length != 0) {
@@ -62,6 +64,7 @@ namespace W
                         TileDef tileDef = GameConfig.I.ID2Obj[id] as TileDef;
                         A.Assert(tileDef != null);
                         int level = map.Level(i, j);
+
                         ShowTile(i, j, tileDef, level, false);
                     }
                 }
@@ -70,6 +73,7 @@ namespace W
 
 
         public static void ShowSubMapPortal(int x, int y, MapDef id) {
+            MapView.I.PlayParticleEffect = false;
 
             if (id == null) {
                 MapView.I.ClearFrontSpriteAt(x, y);
@@ -86,7 +90,7 @@ namespace W
         }
 
 
-        public static void ShowTile(int x, int y, TileDef id, int level, bool effect = false) {
+        public static void ShowTile(int x, int y, TileDef id, int level, bool effect) {
             MapView.I.PlayParticleEffect = effect;
 
             if (id == null) {
@@ -99,7 +103,17 @@ namespace W
                 MapView.I.ClearFrontSpriteAt(x, y);
             }
 
-            MapView.I.SetGlowSpriteAt(x, y, id == null ? null : id.Glow);
+            if (id == null) {
+                MapView.I.SetGlowSpriteAt(x, y, null);
+            }
+            else if (id.SpritesGlow != null && id.SpritesGlow.Length > 0) {
+                MapView.I.SetGlowSpritesAt(x, y, id.SpritesGlow, id.SpritesGlowDuration);
+            }
+            else {
+                MapView.I.SetGlowSpriteAt(x, y, id.Glow);
+            }
+
+
             MapView.I.SetGlowDayNightSpriteAt(x, y, id == null ? null : id.GlowDayNight);
 
             MapView.I.SetIndexSpriteAt(x, y, level);
@@ -145,6 +159,8 @@ namespace W
             uint id = map.ID_Safe(dx, dy);
             if (ID.IsInvalid(id)) return;
             TileDef neighbor = GameConfig.I.ID2Obj[id] as TileDef;
+
+
             foreach (TileDef bonus in self.Bonus) {
                 if (bonus == neighbor) {
                     foreach (ResDefValue input in self.Inc) {
@@ -159,12 +175,54 @@ namespace W
                     }
                 }
             }
-            //foreach (TileDef bonus in self.Bonus) {
-            //    if (bonus == neighbor) {
+
+            foreach (TileDef condition in self.Conditions) {
+                if (condition == neighbor) {
+                    foreach (ResDefValue input in self.Inc) {
+                        if (input.Value > 0) continue;
+                        foreach (ResDefValue output in neighbor.Inc) {
+                            if (output.Value < 0) continue;
+                            if (input.Key == output.Key) {
+                                MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (ResDefValue input in self.Inc) {
+                if (input.Value > 0) continue;
+                foreach (ResDefValue output in neighbor.Inc) {
+                    if (output.Value < 0) continue;
+                    if (input.Key == output.Key) {
+                        MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
+                        return;
+                    }
+                }
+            }
+
+            foreach (TileDef bonus in self.Bonus) {
+                if (bonus == neighbor) {
+                    foreach (ResDefValue input in self.Inc) {
+                        if (input.Value < 0) continue;
+                        MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
+                        return;
+                    }
+                }
+            }
+
+            //foreach (TileDef condition in self.Conditions) {
+            //    if (condition == neighbor) {
             //        foreach (ResDefValue input in self.Inc) {
-            //            if (input.Value < 0) continue;
-            //            MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
-            //            return;
+            //            if (input.Value > 0) continue;
+            //            foreach (ResDefValue output in neighbor.Inc) {
+            //                if (output.Value < 0) continue;
+            //                if (input.Key == output.Key) {
+            //                    MapView.I.SetAnimSpriteAt(x, y, input.Key.Sprite, input.Key.Color, input.Key.Glow, dir);
+            //                    return;
+            //                }
+            //            }
             //        }
             //    }
             //}

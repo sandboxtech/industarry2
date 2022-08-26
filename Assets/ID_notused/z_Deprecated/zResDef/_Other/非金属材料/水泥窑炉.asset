@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
+  m_Name: "\u6C34\u6CE5\u7A91\u7089"
+  m_EditorClassIdentifier: 
+  cn: 
+  sprite: {fileID: 0}
+  glow: {fileID: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  sprites:
+  - {fileID: 1865212195, guid: c075bb6a0460bbb4796be6203ce2069f, type: 3}
+  - {fileID: 1717081656, guid: c075bb6a0460bbb4796be6203ce2069f, type: 3}
+  - {fileID: 964447847, guid: c075bb6a0460bbb4796be6203ce2069f, type: 3}
+  - {fileID: 2138751843, guid: c075bb6a0460bbb4796be6203ce2069f, type: 3}
+  - {fileID: -1054845394, guid: c075bb6a0460bbb4796be6203ce2069f, type: 3}
+  spritesDuration: 4
+  spritesGlow:
+  - {fileID: 729639084, guid: 90af82be7d3884b4098171c5b4c6550a, type: 3}
+  - {fileID: 1149681408, guid: 90af82be7d3884b4098171c5b4c6550a, type: 3}
+  - {fileID: 324483327, guid: 90af82be7d3884b4098171c5b4c6550a, type: 3}
+  - {fileID: 1802752206, guid: 90af82be7d3884b4098171c5b4c6550a, type: 3}
+  - {fileID: -1852856403, guid: 90af82be7d3884b4098171c5b4c6550a, type: 3}
+  spritesGlowDuration: 4
+  ruleTile44: []
+  ruleTile86: []
+  glowDayNight: {fileID: 0}
+  construction:
+  - key: {fileID: 11400000, guid: f33cee97f620bb14a90c43ef65b0d137, type: 2}
+    value: -10
+  destruction: []
+  notDestructable: 0
+  inc:
+  - key: {fileID: 11400000, guid: 72c30b48289ada24a9da1afb056e9ab9, type: 2}
+    value: -1
+  - key: {fileID: 11400000, guid: bfe063ad4c315dc448c76fc5ca05819d, type: 2}
+    value: -1
+  - key: {fileID: 11400000, guid: 5e3293d154c609242865cfe626d76af4, type: 2}
+    value: 1
+  max: []
+  bonus:
+  - {fileID: 11400000, guid: dd69d7ae17256e4489e8137285a8cd14, type: 2}
+  conditions: []
+  repels: []
+  techRequirementForConstruction: {fileID: 0}
+  techs: []
+  techsRelavant: []
+  constructionSuper: []
+  destructionSuper: []
+  incSuper: []
+  maxSuper: []

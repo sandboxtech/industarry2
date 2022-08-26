@@ -65,14 +65,21 @@ namespace W
 
         public static void Update() {
             SaveDelayed();
+            QuitDelayed();
         }
 
-        public static void Quit() {
+        private static bool doQuit = false;
+        private static void QuitDelayed() {
+            if (!doQuit) { return; }
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
             UnityEngine.Application.Quit();
 #endif
+        }
+
+        public static void Quit() {
+            doQuit = true;
         }
     }
 }

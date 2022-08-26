@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -22,7 +23,8 @@ namespace W
                 PointerEventReceiver.transform.SetAsLastSibling();
             };
             PointerEventReceiver.Up += (PointerEventData data) => {
-                scroll.SetAsLastSibling();
+                // scroll.SetAsLastSibling();
+                PointerEventReceiver.transform.SetAsFirstSibling();
             };
         }
 
@@ -42,11 +44,41 @@ namespace W
         private ItemControl itemControl;
 
         [SerializeField]
-        private Transform scroll;
+        private RectTransform scroll;
         [SerializeField]
-        private Transform content;
+        private RectTransform content;
 
 
+        public bool ScrollVisible {
+            set {
+                StopAllCoroutines();
+                StartCoroutine(TweenScroll(!value));
+            }
+        }
+        private const float hiddenPosition = -160f;
+        private const float shownPosition = 0f;
+        private const float tweenDuration = 0.125f;
+        private IEnumerator TweenScroll(bool hide) {
+            if (!hide) scroll.gameObject.SetActive(true);
+            float startTime = Time.time;
+            float startPosition = scroll.anchoredPosition.x;
+            float targetPosition = hide ? hiddenPosition : shownPosition;
+            if (targetPosition == startPosition) {
+                yield break;
+            }
+            yield return null;
+            while (true) {
+                float t = (Time.time - startTime) / tweenDuration;
+                if (t >= 1) {
+                    scroll.anchoredPosition = new Vector2(targetPosition, 0);
+                    break;
+                }
+                t = - (t - 1) * (t - 1) + 1;
+                scroll.anchoredPosition = new Vector2(M.Lerp(startPosition, targetPosition, t), 0);
+                yield return null;
+            }
+            if (hide) scroll.gameObject.SetActive(false);
+        }
 
         private void Clear() {
             ClearTransform();
@@ -83,6 +115,10 @@ namespace W
         }
 
 
+        public static void Hide() {
+            i.ScrollVisible = false;
+        }
+
         public static List<Item> Items { get => items; set => items = value; }
         private static List<Item> items;
 
@@ -103,6 +139,8 @@ namespace W
 
         public static void Show(List<Item> items) {
             i.Clear();
+            i.ScrollVisible = true;
+
             if (items == null) return;
             UI.items = items;
 
@@ -113,5 +151,13 @@ namespace W
             UI.items = null;
         }
 
+
+        [Header("Buttons")]
+        [SerializeField]
+        public Button Button0;
+        [SerializeField]
+        public Button Button1;
+        [SerializeField]
+        public Button Button2;
     }
 }

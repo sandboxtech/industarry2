@@ -24,9 +24,8 @@ namespace W
         internal void OnDeserializedMethod(StreamingContext context) {
         }
 
-        public bool SkipConfirmation = true;
-
         public bool Cheat = false;
+        public bool LevelOne = false;
 
     }
 }
