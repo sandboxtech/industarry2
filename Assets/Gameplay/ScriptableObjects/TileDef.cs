@@ -16,11 +16,11 @@ namespace W
     [CreateAssetMenu(fileName = "__TileDef__", menuName = "创建 TileDef 建筑定义", order = 1)]
     public class TileDef : ID
     {
-        public void AddButton() {
+        public void TileIconButton() {
             UI.IconButton(CN, Icon, Color, ShowPage);
         }
-        public void AddIcon() {
-            UI.IconText(CN, Icon);
+        public void TileIconText() {
+            UI.IconText(CN, Icon, Color);
         }
 
         private void AddTileInformationIncMax() {
@@ -29,7 +29,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.Inc);
                 foreach (ResDefValue idValue in Inc) {
-                    idValue.AddItem();
+                    idValue.AddButton();
                 }
             }
 
@@ -37,7 +37,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.Max);
                 foreach (ResDefValue idValue in Max) {
-                    idValue.AddItem();
+                    idValue.AddButton();
                 }
             }
 
@@ -45,7 +45,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.IncSuper);
                 foreach (ResDefValue idValue in IncSuper) {
-                    idValue.AddItem();
+                    idValue.AddButton();
                 }
             }
 
@@ -53,7 +53,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.MaxSuper);
                 foreach (ResDefValue idValue in MaxSuper) {
-                    idValue.AddItem();
+                    idValue.AddButton();
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.Construction);
                 foreach (ResDefValue idValue in Construction) {
-                    idValue.AddItem();
+                    idValue.AddButton();
                 }
             }
 
@@ -78,7 +78,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.Destruction);
                 foreach (ResDefValue idValue in Destruction) {
-                    idValue.AddItem();
+                    idValue.AddButton();
                 }
             }
 
@@ -86,7 +86,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.ConstructionSuper);
                 foreach (ResDefValue idValue in ConstructionSuper) {
-                    idValue.AddItem();
+                    idValue.AddButton();
                 }
             }
 
@@ -94,7 +94,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.DestructionSuper);
                 foreach (ResDefValue idValue in DestructionSuper) {
-                    idValue.AddItem();
+                    idValue.AddButton();
                 }
             }
 
@@ -163,6 +163,121 @@ namespace W
 
             UI.Show();
         }
+
+
+
+
+        public void TapTechs(Map map) {
+            UI.Prepare();
+
+            IconText();
+            SpriteUI.IconText(SpriteUI.TechDef);
+
+            foreach (TechDef tech in Techs) {
+                AddTapTech(map, tech);
+            }
+            foreach (TechDef tech in TechsRelavant) {
+                AddTapTech(map, tech);
+            }
+            UI.Show();
+        }
+
+        private static void AddTapTech(Map map, TechDef techDef) {
+            Game.I.TechLevel(techDef.id, out int techLevel);
+
+            UI.Space();
+
+            techDef.IconTextWithLevel(techLevel);
+
+            if (techLevel == techDef.MaxLevel) {
+                UI.IconButton(techDef.MaxLevel == 1 ? "已研究" : "已满级", UI.ColorDisable, techDef.Icon, null);
+            } else {
+                bool canAfford = CanAffordTechCosts(map, techDef);
+
+                UI.IconButton(LevelText(techLevel), canAfford ? UI.ColorNormal : UI.ColorDisable, SpriteUI.IconOf(SpriteUI.TechDef), !canAfford ? null : () => TryUpgradeTech(map, techDef));
+
+                AddTechCosts(map, techDef);
+            }
+        }
+        private static string LevelText(int level) => level == 0 ? "研发" : "升级";
+
+        private static bool CanAffordTechCosts(Map map, TechDef techDef) {
+            Game.I.TechLevel(techDef.id, out int techLevel);
+            foreach (ResDefValue idValue in techDef.Upgrade) {
+
+                long costMultiplier = CostMultiplierOf(techDef.Multiplier, techLevel);
+                bool canChange = map.CanChange(idValue, -costMultiplier, IdleReference.Val);
+
+                if (!canChange) return false;
+            }
+            return true;
+        }
+        private static void AddTechCosts(Map map, TechDef techDef) {
+            Game.I.TechLevel(techDef.id, out int techLevel);
+            foreach (ResDefValue idValue in techDef.Upgrade) {
+                long costMultiplier = CostMultiplierOf(techDef.Multiplier, techLevel);
+                bool canChange = map.CanChange(idValue, -costMultiplier, IdleReference.Val);
+                UI.IconText($"{idValue.Key.CN} {idValue.Value * costMultiplier}", canChange ? UI.ColorNormal : UI.ColorWarning,
+                    idValue.Key.Icon, idValue.Key.Color);
+            }
+        }
+
+        private static long CostMultiplierOf(long multiplier, int techLevel) {
+            long cost = 1;
+            techLevel = M.Clamp(0, 30, techLevel);
+            for (int i = 0; i < techLevel; i++) {
+                cost *= multiplier;
+            }
+            return cost;
+        }
+
+        private static void TryUpgradeTech(Map map, TechDef techDef) {
+            Game.I.TechLevel(techDef.id, out int techLevel);
+
+            if (!CanAffordTechCosts(map, techDef)) {
+                FailUpgrade(techDef);
+                return;
+            }
+
+            Game.I.TechLevel(techDef.id, techLevel + 1);
+            foreach (ResDefValue idValue in techDef.Upgrade) {
+                long costMultiplier = CostMultiplierOf(techDef.Multiplier, techLevel);
+                map.DoChange(idValue, -costMultiplier, IdleReference.Val);
+            }
+
+            SucceedUpgrade(techDef);
+        }
+
+        private static void SucceedUpgrade(TechDef techDef) {
+            UI.Prepare();
+            techDef.IconText();
+            Game.I.TechLevel(techDef.id, out int techLevel);
+            Audio.I.Clip = Audio.I.PositiveSound;
+            if (techLevel == 1) {
+                UI.IconText($"研究成功", SpriteUI.IconOf(SpriteUI.Success));
+            } else {
+                UI.IconText($"升级 {techLevel} 成功", SpriteUI.IconOf(SpriteUI.Success));
+            }
+            UI.Show();
+        }
+        private static void FailUpgrade(TechDef techDef) {
+            UI.Prepare();
+            techDef.IconText();
+            Game.I.TechLevel(techDef.id, out int techLevel);
+            Audio.I.Clip = Audio.I.NegativeSound;
+            if (techLevel == 0) {
+                UI.IconText($"研究失败", SpriteUI.IconOf(SpriteUI.Success));
+            } else {
+                UI.IconText($"升级 {techLevel + 1} 失败", SpriteUI.IconOf(SpriteUI.Failure));
+            }
+            UI.Show();
+        }
+
+
+
+
+
+
 
 
 

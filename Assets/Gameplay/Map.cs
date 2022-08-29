@@ -575,8 +575,6 @@ namespace W
                 return;
             }
 
-            UI.IconText("地块数量", SpriteUI.IconOf(SpriteUI.TileDef));
-            UI.Space();
             foreach (var pair in dict) {
                 ID id = GameConfig.I.ID2Obj[pair.Key];
                 TileDef tileDef = id as TileDef;
@@ -586,77 +584,72 @@ namespace W
             UI.Show();
         }
 
-        private readonly static Dictionary<ResDef, ResDefValue> inc = new Dictionary<ResDef, ResDefValue>();
-        private readonly static Dictionary<ResDef, ResDefValue> max = new Dictionary<ResDef, ResDefValue>();
-        private readonly static Dictionary<ResDef, ResDefValue> inc_or_max = new Dictionary<ResDef, ResDefValue>();
-        private readonly static Dictionary<ResDef, System.ValueTuple<bool, ResDefValue>> existingRes = new Dictionary<ResDef, System.ValueTuple<bool, ResDefValue>>();
-        public void AllLocalRelatedResourcesPage(TileDef tileDef) {
+        //private readonly static Dictionary<ResDef, ResDefValue> inc = new Dictionary<ResDef, ResDefValue>();
+        //private readonly static Dictionary<ResDef, ResDefValue> max = new Dictionary<ResDef, ResDefValue>();
+        //private readonly static Dictionary<ResDef, ResDefValue> inc_or_max = new Dictionary<ResDef, ResDefValue>();
+        //public void AllLocalRelatedResourcesPage(TileDef tileDef) {
+        //    UI.Prepare();
+
+        //    tileDef.TileIconText();
+
+        //    inc.Clear();
+        //    max.Clear();
+        //    inc_or_max.Clear();
+        //    foreach (ResDefValue idValue in tileDef.Inc) {
+        //        inc.Add(idValue.Key, idValue);
+        //        inc_or_max.Add(idValue.Key, idValue);
+        //    }
+        //    foreach (ResDefValue idValue in tileDef.Max) {
+        //        max.Add(idValue.Key, idValue);
+        //        if (!inc_or_max.ContainsKey(idValue.Key)) {
+        //            inc_or_max.Add(idValue.Key, idValue);
+        //        }
+        //    }
+
+        //    foreach (var pair in inc_or_max) {
+        //        ResDef key = pair.Key;
+        //        ResDefValue idValue = pair.Value;
+
+        //        if (!Resources.TryGetValue(key.id, out Idle idle)) {
+        //            continue;
+        //        }
+        //        UI.Space();
+
+        //        idValue.Key.IconText();
+
+        //        UI.Progress(idle);
+        //        if (inc.ContainsKey(key)) {
+        //            SpriteUI.IconText($"{SpriteUI.CNOf(SpriteUI.Inc)} {(idValue.Value > 0 ? "+" : null)}{idValue.Value}", idValue.Value > 0 ? UI.ColorPositive : UI.ColorNegative, SpriteUI.Inc);
+        //        }
+        //        if (max.ContainsKey(key)) {
+        //            SpriteUI.IconText($"{SpriteUI.CNOf(SpriteUI.Max)} {(idValue.Value > 0 ? "+" : null)}{idValue.Value}", idValue.Value > 0 ? UI.ColorPositive : UI.ColorNegative, SpriteUI.Max);
+        //        }
+        //    }
+        //    inc.Clear();
+        //    max.Clear();
+        //    inc_or_max.Clear();
+        //    UI.Show();
+        //}
+
+
+        public void AllResourcesPage() {
             UI.Prepare();
-
-            AddButton();
-            tileDef.AddButton();
-
-
-            inc.Clear();
-            max.Clear();
-            inc_or_max.Clear();
-            foreach (ResDefValue idValue in tileDef.Inc) {
-                inc.Add(idValue.Key, idValue);
-                inc_or_max.Add(idValue.Key, idValue);
-            }
-            foreach (ResDefValue idValue in tileDef.Max) {
-                max.Add(idValue.Key, idValue);
-                if (!inc_or_max.ContainsKey(idValue.Key)) {
-                    inc_or_max.Add(idValue.Key, idValue);
-                }
-            }
-
-            foreach (var pair in inc_or_max) {
-                ResDef key = pair.Key;
-                ResDefValue idValue = pair.Value;
-
-                if (!Resources.TryGetValue(key.id, out Idle idle)) {
-                    continue;
-                }
-                UI.Space();
-                UI.IconGlowButton(key.CN, key.Icon, key.Color, key.Glow, () => InspectResPage(key));
-                UI.Progress(() => $"{idle.Value}/{idle.Max}  +{idle.Inc}/{idle.DelSecond}s", () => idle.Progress);
-                if (inc.ContainsKey(key)) {
-                    SpriteUI.IconText($"{SpriteUI.CNOf(SpriteUI.Inc)} {(idValue.Value > 0 ? "+" : null)}{idValue.Value}", idValue.Value > 0 ? UI.ColorPositive : UI.ColorNegative, SpriteUI.Inc);
-                }
-                if (max.ContainsKey(key)) {
-                    SpriteUI.IconText($"{SpriteUI.CNOf(SpriteUI.Max)} {(idValue.Value > 0 ? "+" : null)}{idValue.Value}", idValue.Value > 0 ? UI.ColorPositive : UI.ColorNegative, SpriteUI.Max);
-                }
-            }
-            inc.Clear();
-            max.Clear();
-            inc_or_max.Clear();
-            UI.Show();
-
-        }
-
-
-        public void AllLocalResourcesPage() {
-            UI.Prepare();
-
-            AddButton();
+            Def.IconText();
+            UI.Space();
             if (Resources.Count == 0) {
-                UI.Space();
                 UI.Text("暂无资源");
                 UI.Show();
                 return;
             }
             foreach (var pair in Resources) {
-                ID key = GameConfig.I.ID2Obj[pair.Key];
+                if (pair.Value.Inc == 0) continue;
+
+                ResDef key = GameConfig.I.ID2Obj[pair.Key] as ResDef;
+                key.IconButton(key.Inspect);
+                UI.Progress(pair.Value);
                 UI.Space();
-                key.IconButton(() => InspectResPage(key as ResDef));
-                IdleProgress(pair.Value);
             }
             UI.Show();
-        }
-
-        private void IdleProgress(Idle idle) {
-            UI.Progress(() => $"{idle.Value}/{idle.Max}  +{idle.Inc}/{idle.DelSecond}s", () => idle.Progress);
         }
 
         /// <summary>
@@ -664,13 +657,18 @@ namespace W
         /// </summary>
         public void InspectResPage(ResDef resDef) {
             if (resDef == null) return; // ?
+
+            if (!resources.TryGetValue(resDef.id, out Idle idle)) {
+                return;
+            }
+
             UI.Prepare();
-            Def.IconText();
-            UI.Space();
 
             resDef.IconText();
-            Idle idle = resources[resDef.id];
-            IdleProgress(idle);
+            UI.Progress(idle);
+            if (idle.Inc > 0 && idle.Max > 0) {
+                UI.Text($"生产速度 {idle.DelSecond} 秒");
+            }
 
             bool title;
 
@@ -758,7 +756,7 @@ namespace W
             });
             UI.Space();
 
-            UI.IconButton("资源", SpriteUI.IconOf(SpriteUI.ResDef), AllLocalResourcesPage);
+            UI.IconButton("资源", SpriteUI.IconOf(SpriteUI.ResDef), AllResourcesPage);
             UI.IconButton("地块", SpriteUI.IconOf(SpriteUI.TileDef), () => AllTilesPage(tileDefCountOnThisMap));
             if (tileDefCountOnSubmap.Count > 0) UI.IconButton("下级地块", SpriteUI.IconOf(SpriteUI.TileDef), () => AllTilesPage(tileDefCountOnSubmap));
             if (SubMaps != null && SubMaps.Count > 0) UI.IconButton("下级地图", SpriteUI.IconOf(SpriteUI.MapDef), AllSubmapsPage);

@@ -13,5 +13,9 @@ namespace W
         public long del;
         public long DeltaSecond => del == 0 ? 100 : del;
         public long DeltaTicks => DeltaSecond * Constants.Second;
+
+        public void Inspect() {
+            Game.I.Map.InspectResPage(this);
+        }
     }
 }

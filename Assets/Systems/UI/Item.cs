@@ -40,10 +40,11 @@ namespace W
 
     public partial class UI
     {
+        private const float magic = 3/4f;
         /// <summary>
         /// 禁用按钮颜色
         /// </summary>
-        public static Color ColorDisable => new Color(0.5f, 0.5f, 0.5f, 0.5f);
+        public static Color ColorDisable => new Color(magic, magic, magic, magic);
         /// <summary>
         /// 可用按钮颜色
         /// </summary>
@@ -55,67 +56,63 @@ namespace W
         /// <summary>
         /// 正面按钮颜色
         /// </summary>
-        public static Color ColorPositive => new Color(0.5f, 1f, 0.5f, 1f);
+        public static Color ColorPositive => new Color(1f, 1f, 1f, 1f);
         /// <summary>
         /// 负面按钮颜色
         /// </summary>
-        public static Color ColorNegative => new Color(1f, 0.5f, 0.5f, 1f);
+        public static Color ColorNegative => new Color(1f, magic, magic, 1f);
 
-        public static Item Space() {
+        public static void Space() {
             Item item = new Item {
                 Type = ItemType.Space,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
         }
-        public static Item Text(string text) {
+        public static void Text(string text) {
             Item item = new Item {
                 Type = ItemType.Text,
                 Text = text,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
         }
-        public static Item Text(Func<string> textDynamic) {
+        public static void Text(Func<string> textDynamic) {
             Item item = new Item {
                 Type = ItemType.Text,
                 TextDynamic = textDynamic,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
         }
-        public static Item Text(string text, Func<string> textDynamic) {
+        public static void Text(string text, Func<string> textDynamic) {
             Item item = new Item {
                 Type = ItemType.Text,
                 Text = text,
                 TextDynamic = textDynamic,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
         }
 
-        public static Item Text(string text, Color color) {
+        public static void Text(string text, Color color) {
             Item item = new Item {
                 Type = ItemType.Text,
                 Text = text,
                 TextColorDefined = true,
                 TextColor = color,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
-        public static Item IconText(string text, Sprite icon) {
+        public static void IconText(string text, Sprite icon) {
             Item item = new Item {
                 Type = ItemType.Text,
                 Text = text,
                 Icon = icon,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
-        public static Item IconText(string text, Color textColor, Sprite icon) {
+        public static void IconText(string text, Color textColor, Sprite icon) {
             Item item = new Item {
                 Type = ItemType.Text,
                 Text = text,
@@ -124,11 +121,11 @@ namespace W
                 TextColorDefined = true,
                 TextColor = textColor,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
-        public static Item IconText(string text, Sprite icon, Color spriteColor) {
+        public static void IconText(string text, Sprite icon, Color spriteColor) {
             Item item = new Item {
                 Type = ItemType.Text,
                 Text = text,
@@ -137,11 +134,11 @@ namespace W
                 IconColorDefined = true,
                 IconColor = spriteColor,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
-        public static Item IconGlowText(string text, Sprite icon, Color spriteColor, Sprite glow) {
+        public static void IconGlowText(string text, Sprite icon, Color spriteColor, Sprite glow) {
             Item item = new Item {
                 Type = ItemType.Text,
                 Text = text,
@@ -150,11 +147,11 @@ namespace W
                 IconColorDefined = true,
                 IconColor = spriteColor,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
-        public static Item IconText(string text, Color textColor, Sprite icon, Color spriteColor) {
+        public static void IconText(string text, Color textColor, Sprite icon, Color spriteColor) {
             Item item = new Item {
                 Type = ItemType.Text,
                 Text = text,
@@ -166,10 +163,10 @@ namespace W
                 IconColorDefined = true,
                 IconColor = spriteColor,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
-        public static Item IconGlowText(string text, Color textColor, Sprite icon, Color spriteColor, Sprite glow) {
+        public static void IconGlowText(string text, Color textColor, Sprite icon, Color spriteColor, Sprite glow) {
             Item item = new Item {
                 Type = ItemType.Text,
                 Text = text,
@@ -182,20 +179,20 @@ namespace W
                 IconColorDefined = true,
                 IconColor = spriteColor,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
-        public static Item Button(string text, Action button) {
+        public static void Button(string text, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,
                 Text = text,
                 Button = button,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
-        public static Item IconButton(string text, Sprite icon, Action button) {
+        public static void IconButton(string text, Sprite icon, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,
                 Text = text,
@@ -203,11 +200,11 @@ namespace W
 
                 Icon = icon,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
-        public static Item Button(string text, Color color, Action button) {
+        public static void Button(string text, Color color, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,
                 Text = text,
@@ -216,10 +213,10 @@ namespace W
                 TextColorDefined = true,
                 TextColor = color,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
-        public static Item IconButton(string text, Color color, Sprite icon, Action button) {
+        public static void IconButton(string text, Color color, Sprite icon, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,
                 Text = text,
@@ -230,11 +227,11 @@ namespace W
                 TextColorDefined = true,
                 TextColor = color,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
-        public static Item IconButton(string text, Sprite icon, Color iconColor, Action button) {
+        public static void IconButton(string text, Sprite icon, Color iconColor, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,
                 Text = text,
@@ -245,11 +242,11 @@ namespace W
                 IconColorDefined = true,
                 IconColor = iconColor,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
-        public static Item IconButton(string text, Color color, Sprite icon, Color iconColor, Action button) {
+        public static void IconButton(string text, Color color, Sprite icon, Color iconColor, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,
                 Text = text,
@@ -263,10 +260,10 @@ namespace W
                 IconColorDefined = true,
                 IconColor = iconColor,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
-        public static Item IconGlowButton(string text, Sprite icon, Color iconColor, Sprite glow, Action button) {
+        public static void IconGlowButton(string text, Sprite icon, Color iconColor, Sprite glow, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,
                 Text = text,
@@ -278,11 +275,11 @@ namespace W
                 IconColorDefined = true,
                 IconColor = iconColor,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
-        public static Item IconGlowButton(string text, Color color, Sprite icon, Color iconColor, Sprite glow, Action button) {
+        public static void IconGlowButton(string text, Color color, Sprite icon, Color iconColor, Sprite glow, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,
                 Text = text,
@@ -297,59 +294,69 @@ namespace W
                 IconColorDefined = true,
                 IconColor = iconColor,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
 
-        public static Item Button(Func<string> textDynamic, Action button) {
+        public static void Button(Func<string> textDynamic, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,
                 TextDynamic = textDynamic,
                 Button = button,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
-        public static Item Button(string text, Func<string> textDynamic, Action button) {
+        public static void Button(string text, Func<string> textDynamic, Action button) {
             Item item = new Item {
                 Type = ItemType.Button,
                 Text = text,
                 TextDynamic = textDynamic,
                 Button = button,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
 
 
-        public static Item Progress(string text, Func<float> progress) {
+        public static void Progress(string text, Func<float> progress) {
             Item item = new Item {
                 Type = ItemType.Progress,
                 Text = text,
                 Progress = progress,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
-        public static Item Progress(Func<string> textDynamic, Func<float> progress) {
+        public static void Progress(Func<string> textDynamic, Func<float> progress) {
             Item item = new Item {
                 Type = ItemType.Progress,
                 TextDynamic = textDynamic,
                 Progress = progress,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
-        public static Item Progress(string text, Func<string> textDynamic, Func<float> progress) {
+        public static void Progress(Idle idle) {
+            if (idle == null) {
+                return; // Button(" 0", null);
+            } else if (idle.Max == 0) {
+                Progress(() => $" +{idle.Inc}", () => idle.Progress);
+            }
+            else {
+                Progress(() => $" +{idle.Inc}  {idle.Value}/{idle.Max}", () => idle.Progress);
+            }
+        }
+        public static void Progress(string text, Func<string> textDynamic, Func<float> progress) {
             Item item = new Item {
                 Type = ItemType.Progress,
                 Text = text,
                 TextDynamic = textDynamic,
                 Progress = progress,
             };
-            if (items != null) items.Add(item);
-            return item;
+            items.Add(item);
+            
         }
     }
 }
