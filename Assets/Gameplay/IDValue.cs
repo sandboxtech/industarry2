@@ -33,31 +33,45 @@ namespace W
         private long value;
         public long Value => value;
 
-        public void AddButton() {
+
+        public void AddValButton(long multiplier = 1) {
             ID id = Key;
             long v = Value;
-            bool positive = v > 0;
+            long product = v * multiplier;
+            bool positive = v >= 0;
 
-            UI.IconGlowButton($"{id.CN} {(positive ? "+" : "-")}{(v > 0 ? v : -v)}",
-                positive ? UI.ColorPositive : UI.ColorNegative,
+            UI.IconGlowButton(positive ? $"{id.CN} {product}" : $"{id.CN} +{-product}",
+                UI.ColorNormal,
                 id.Icon, id.Color, id.Glow, key.Inspect);
         }
-        public void AddText(long multiplier) {
+        public void AddMaxButton(long multiplier = 1) {
             ID id = Key;
             long v = Value;
             long product = v * multiplier;
-            bool positive = product > 0;
-            UI.IconGlowText($"{id.CN} {(positive ? "+" : "-")}{(v > 0 ? v : -v)}{(multiplier == 1 ? "" : $"*{(multiplier > 0 ? multiplier : -multiplier)}")}",
-                UI.ColorNegative,
-                id.Icon, id.Color, id.Glow);
+            bool positive = v >= 0;
+
+            UI.IconGlowButton((positive ? $"{id.CN} {product}" : $"{id.CN} -{-product}"),
+                UI.ColorNormal,
+                id.Icon, id.Color, id.Glow, key.Inspect);
         }
-        public void AddButton(long multiplier) {
+        public void AddIncButton(long multiplier = 1) {
             ID id = Key;
             long v = Value;
             long product = v * multiplier;
-            bool positive = product > 0;
-            UI.IconGlowButton($"{id.CN} {(positive ? "+" : "-")}{(v > 0 ? v : -v)}{(multiplier == 1 ? "" : $"*{(multiplier > 0 ? multiplier : -multiplier)}")}",
-                UI.ColorNegative,
+            bool positive = v >= 0;
+
+            UI.IconGlowButton($"{id.CN} {(positive ? "+" : "-")}{(product > 0 ? product : -product)}",
+                UI.ColorNormal,
+                id.Icon, id.Color, id.Glow, key.Inspect);
+        }
+        public void AddIncRequirmentButton(long multiplier = 1) {
+            ID id = Key;
+            long v = Value;
+            long product = v * multiplier;
+            bool positive = v >= 0;
+
+            UI.IconGlowButton($"{id.CN} {(positive ? "-" : "+")}{(product > 0 ? product : -product)}",
+                UI.ColorNormal,
                 id.Icon, id.Color, id.Glow, key.Inspect);
         }
     }

@@ -642,7 +642,7 @@ namespace W
                 return;
             }
             foreach (var pair in Resources) {
-                if (pair.Value.Inc == 0) continue;
+                // if (pair.Value.Inc == 0) continue;
 
                 ResDef key = GameConfig.I.ID2Obj[pair.Key] as ResDef;
                 key.IconButton(key.Inspect);

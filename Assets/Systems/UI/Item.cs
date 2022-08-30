@@ -50,10 +50,6 @@ namespace W
         /// </summary>
         public static Color ColorNormal => new Color(1f, 1f, 1f, 1f);
         /// <summary>
-        /// 警告按钮颜色
-        /// </summary>
-        public static Color ColorWarning => new Color(1f, 0, 0, 1f);
-        /// <summary>
         /// 正面按钮颜色
         /// </summary>
         public static Color ColorPositive => new Color(1f, 1f, 1f, 1f);
@@ -356,7 +352,23 @@ namespace W
                 Progress = progress,
             };
             items.Add(item);
-            
+        }
+
+        public static void Slider(string text, Action<float> slider) {
+            Item item = new Item {
+                Type = ItemType.Slider,
+                Text = text,
+                Slider = slider,
+            };
+            items.Add(item);
+        }
+        public static void Slider(Func<string> textDynamic, Action<float> slider) {
+            Item item = new Item {
+                Type = ItemType.Slider,
+                TextDynamic = textDynamic,
+                Slider = slider,
+            };
+            items.Add(item);
         }
     }
 }

@@ -15,7 +15,7 @@ MonoBehaviour:
   cn: 
   sprite: {fileID: 21300000, guid: fed48fedee747884ca038f292f014523, type: 3}
   glow: {fileID: 0}
-  color: {r: 1, g: 1, b: 1, a: 1}
+  color: {r: 0.47058824, g: 0.47058824, b: 0.47058824, a: 1}
   sprites: []
   spritesDuration: 1
   spritesGlow: []
@@ -26,17 +26,15 @@ MonoBehaviour:
   construction: []
   destruction: []
   notDestructable: 1
-  inc:
-  - key: {fileID: 11400000, guid: 0fdb028efc1a5c341b0949be5f9898da, type: 2}
-    value: 1
+  inc: []
   max: []
   bonus: []
-  conditions:
-  - {fileID: 11400000, guid: e205c82352f54a840bea6ded4c482c64, type: 2}
+  conditions: []
   repels: []
   conditionsSubmap: []
   techRequirementForConstruction: {fileID: 0}
   techs: []
+  techsBonus: []
   techsRelavant: []
   constructionSuper: []
   destructionSuper: []

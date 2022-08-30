@@ -91,6 +91,8 @@ MonoBehaviour:
   superMapDef: {fileID: 11400000, guid: ff36f06d568acfa4088b9f82b3132ed9, type: 2}
   previousMapOrbitRadius: 0
   mapDefOrbits: []
-  initialRandomStructures: []
+  initialRandomStructures:
+  - key: {fileID: 11400000, guid: 7f3995363262a0f459e49a354e0ed0e4, type: 2}
+    value: 5
   constructables:
   - {fileID: 11400000, guid: cb30db9d6f1ae7c4fb30a4da8a8af322, type: 2}

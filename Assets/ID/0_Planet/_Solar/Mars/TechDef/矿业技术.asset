@@ -17,6 +17,8 @@ MonoBehaviour:
   glow: {fileID: 0}
   color: {r: 1, g: 1, b: 1, a: 1}
   del: 0
-  upgrade: []
-  multiplier: 10
-  max_level: 1
+  upgrade:
+  - key: {fileID: 11400000, guid: ce5870388c9750c47974366af13f6df8, type: 2}
+    value: 10
+  multiplier: 13
+  max_level: 10

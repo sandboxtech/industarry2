@@ -92,9 +92,11 @@ namespace W
         void IGameConfig.Init() {
             id2name = new Dictionary<uint, string>();
             uint i = 1;
+
+            bool doCheck = UnityEngine.Application.platform == UnityEngine.RuntimePlatform.WindowsEditor;
             foreach (var pair in name2obj) {
 
-                if (!IsValid(pair.Value)) {
+                if (doCheck && !IsValid(pair.Value)) {
                     A.Error($"not valid : {pair.Value.name} {pair.Value.CN}");
                 }
 
@@ -111,7 +113,7 @@ namespace W
                     }
                 }
             } else if (id is TileDef tileDef) {
-                foreach (var pair in tileDef.Techs) {
+                foreach (var pair in tileDef.TechsBonus) {
                     if (pair == null) {
                         return false;
                     }

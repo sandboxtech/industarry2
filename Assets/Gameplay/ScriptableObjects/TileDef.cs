@@ -17,10 +17,10 @@ namespace W
     public class TileDef : ID
     {
         public void TileIconButton() {
-            UI.IconButton(CN, Icon, Color, ShowPage);
+            UI.IconGlowButton(CN, Icon, Color, Glow, ShowPage);
         }
         public void TileIconText() {
-            UI.IconText(CN, Icon, Color);
+            UI.IconGlowText(CN, Icon, Color, Glow);
         }
 
         private void AddTileInformationIncMax() {
@@ -29,7 +29,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.Inc);
                 foreach (ResDefValue idValue in Inc) {
-                    idValue.AddButton();
+                    idValue.AddIncButton();
                 }
             }
 
@@ -37,7 +37,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.Max);
                 foreach (ResDefValue idValue in Max) {
-                    idValue.AddButton();
+                    idValue.AddMaxButton();
                 }
             }
 
@@ -45,7 +45,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.IncSuper);
                 foreach (ResDefValue idValue in IncSuper) {
-                    idValue.AddButton();
+                    idValue.AddIncButton();
                 }
             }
 
@@ -53,8 +53,48 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.MaxSuper);
                 foreach (ResDefValue idValue in MaxSuper) {
-                    idValue.AddButton();
+                    idValue.AddMaxButton();
                 }
+            }
+        }
+
+        private void AddTileInformationConstructDestruct() {
+            if (Construction.Count > 0) {
+                UI.Space();
+                SpriteUI.IconText(SpriteUI.Construction);
+                foreach (ResDefValue idValue in Construction) {
+                    idValue.AddValButton();
+                }
+            }
+
+            if (Destruction.Count > 0) {
+                UI.Space();
+                SpriteUI.IconText(SpriteUI.Destruction);
+                foreach (ResDefValue idValue in Destruction) {
+                    idValue.AddValButton();
+                }
+            }
+
+            if (ConstructionSuper.Count > 0) {
+                UI.Space();
+                SpriteUI.IconText(SpriteUI.ConstructionSuper);
+                foreach (ResDefValue idValue in ConstructionSuper) {
+                    idValue.AddValButton();
+                }
+            }
+
+            if (DestructionSuper.Count > 0) {
+                UI.Space();
+                SpriteUI.IconText(SpriteUI.DestructionSuper);
+                foreach (ResDefValue idValue in DestructionSuper) {
+                    idValue.AddValButton();
+                }
+            }
+
+
+            if (NotDestructable) {
+                UI.Space();
+                SpriteUI.IconText("无法拆除", SpriteUI.Failure);
             }
         }
 
@@ -64,55 +104,19 @@ namespace W
 
             IconText();
 
+            if (TechsBonus.Count == 0) {
+                // UI.Space();
+            } 
+            else if (techsBonus.Count == 1) {
+                AddTapTech(Game.I.Map, techsBonus[0]);
+            } else {
+                SpriteUI.IconButton(SpriteUI.TechDef, () => TapTechs(Game.I.Map));
+            }
+
             AddTileInformationIncMax();
 
-            if (Construction.Count > 0) {
-                UI.Space();
-                SpriteUI.IconText(SpriteUI.Construction);
-                foreach (ResDefValue idValue in Construction) {
-                    idValue.AddButton();
-                }
-            }
+            AddTileInformationConstructDestruct();
 
-            if (Destruction.Count > 0) {
-                UI.Space();
-                SpriteUI.IconText(SpriteUI.Destruction);
-                foreach (ResDefValue idValue in Destruction) {
-                    idValue.AddButton();
-                }
-            }
-
-            if (ConstructionSuper.Count > 0) {
-                UI.Space();
-                SpriteUI.IconText(SpriteUI.ConstructionSuper);
-                foreach (ResDefValue idValue in ConstructionSuper) {
-                    idValue.AddButton();
-                }
-            }
-
-            if (DestructionSuper.Count > 0) {
-                UI.Space();
-                SpriteUI.IconText(SpriteUI.DestructionSuper);
-                foreach (ResDefValue idValue in DestructionSuper) {
-                    idValue.AddButton();
-                }
-            }
-
-
-            if (NotDestructable) {
-                UI.Space();
-                SpriteUI.IconText("无法拆除", SpriteUI.Failure);
-            }
-
-
-            if (Techs.Count > 0) {
-                UI.Space();
-                SpriteUI.IconText(SpriteUI.TechDef);
-                foreach (TechDef tech in Techs) {
-                    tech.IconText();
-                }
-            }
-             
 
             if (BonusReverse.Count > 0) {
                 UI.Space();
@@ -138,7 +142,7 @@ namespace W
                 }
             }
 
-            if (Conditions.Count > 0 || ConditionsSubmap.Count > 0) {
+            if (Conditions.Count > 0) {
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.Conditions);
                 foreach (TileDef tile in Conditions) {
@@ -173,10 +177,7 @@ namespace W
             IconText();
             SpriteUI.IconText(SpriteUI.TechDef);
 
-            foreach (TechDef tech in Techs) {
-                AddTapTech(map, tech);
-            }
-            foreach (TechDef tech in TechsRelavant) {
+            foreach (TechDef tech in TechsBonus) {
                 AddTapTech(map, tech);
             }
             UI.Show();
@@ -217,7 +218,7 @@ namespace W
             foreach (ResDefValue idValue in techDef.Upgrade) {
                 long costMultiplier = CostMultiplierOf(techDef.Multiplier, techLevel);
                 bool canChange = map.CanChange(idValue, -costMultiplier, IdleReference.Val);
-                UI.IconText($"{idValue.Key.CN} {idValue.Value * costMultiplier}", canChange ? UI.ColorNormal : UI.ColorWarning,
+                UI.IconText($"{idValue.Key.CN} {idValue.Value * costMultiplier}", canChange ? UI.ColorPositive : UI.ColorNegative,
                     idValue.Key.Icon, idValue.Key.Color);
             }
         }
@@ -361,6 +362,12 @@ namespace W
         public IReadOnlyCollection<TileDef> BonusReverse { get; private set; } = new HashSet<TileDef>();
 
 
+        //[Header("解锁自己")]
+        //[SerializeField]
+        //private bool selfCondition = false;
+        //public bool SelfCondition => selfCondition;
+
+
         [Header("相邻解锁")]
         [SerializeField]
         private List<TileDef> conditions;
@@ -391,14 +398,13 @@ namespace W
 
         [Header("加成科技")]
         [SerializeField]
-        private List<TechDef> techs;
-        public List<TechDef> Techs => techs;
+        private List<TechDef> techsBonus;
+        public List<TechDef> TechsBonus => techsBonus;
 
-
-        [Header("研究科技")]
-        [SerializeField]
-        private List<TechDef> techsRelavant;
-        public List<TechDef> TechsRelavant => techsRelavant;
+        //[Header("研究科技")]
+        //[SerializeField]
+        //private List<TechDef> techsRelavant;
+        //public List<TechDef> TechsRelavant => techsRelavant;
 
 
 

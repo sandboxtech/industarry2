@@ -154,6 +154,11 @@ namespace W
             back.gameObject.SetActive(true);
             front.gameObject.SetActive(true);
             slider.gameObject.SetActive(true);
+
+            if (!item.TextColorDefined) {
+                back.color = UI.ColorDisable;
+                front.color = UI.ColorDisable;
+            }
         }
 
         private Func<float> ProgressDynamic;

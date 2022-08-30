@@ -178,20 +178,8 @@ namespace W
 
             info.TileDef.IconButton(info.TileDef.ShowPage);
 
-
-            if (info.TileDef.Techs.Count == 0 && info.TileDef.TechsRelavant.Count == 0) {
-                UI.Space();
-                UI.Space();
-            } else {
-                UI.Space();
-                SpriteUI.IconButton(SpriteUI.TechDef, () => info.TileDef.TapTechs(info.Map));
-            }
-
             UI.Show();
         }
-
-
-
 
 
 
@@ -225,12 +213,13 @@ namespace W
             if (info.TileDef == null) {
                 A.Error($"建设的物体不能为空");
             }
-            if (Game.I.Settings.LevelOne) {
+            if (Game.I.Settings.MaxLevel == 1) {
                 info.Level = 1;
             } else if (info.PlayerBuild_OrAutoBuild) {
                 int bonus = CalcBonus(info);
                 int tech = CalcTech(info.TileDef);
                 info.Level = bonus * tech;
+                info.Level = info.Level > Game.I.Settings.MaxLevel ? Game.I.Settings.MaxLevel : info.Level;
             } else {
                 info.Level = 1;
             }
@@ -325,7 +314,7 @@ namespace W
 
         private static int CalcTech(TileDef tileDef) {
             int result = 1;
-            foreach (TechDef tech in tileDef.Techs) {
+            foreach (TechDef tech in tileDef.TechsBonus) {
                 Game.I.TechLevel(tech.id, out int level);
                 result += level;
             }
@@ -573,17 +562,18 @@ namespace W
                     switch (i) {
                         case IdleReference.Val:
                             SpriteUI.IconText(isMapSuper ? SpriteUI.ValSuper : SpriteUI.Val);
+                            idValue.AddValButton(level);
                             break;
                         case IdleReference.Inc:
                             SpriteUI.IconText(isMapSuper ? SpriteUI.IncSuper : SpriteUI.Inc);
+                            idValue.AddIncRequirmentButton(level);
                             break;
                         case IdleReference.Max:
                             SpriteUI.IconText(isMapSuper ? SpriteUI.MaxSuper : SpriteUI.Max);
+                            idValue.AddMaxButton(level);
                             break;
                     }
                 }
-                // idValue.Key.IconButton(() => Game.I.Map.InspectResPage(idValue.Key));
-                idValue.AddButton(level);
             }
         }
 
@@ -755,19 +745,21 @@ namespace W
                     switch (i) {
                         case IdleReference.Val:
                             SpriteUI.IconText(isMapSuper ? SpriteUI.ValSuper : SpriteUI.Val);
+                            idValue.AddValButton(level);
                             break;
                         case IdleReference.Inc:
                             SpriteUI.IconText(isMapSuper ? SpriteUI.IncSuper : SpriteUI.Inc);
+                            idValue.AddIncRequirmentButton(level);
                             break;
                         case IdleReference.Max:
                             SpriteUI.IconText(isMapSuper ? SpriteUI.MaxSuper : SpriteUI.Max);
+                            idValue.AddMaxButton(level);
                             break;
                         default:
                             A.Assert(false);
                             break;
                     }
                 }
-                idValue.AddButton(level);
             }
         }
     }

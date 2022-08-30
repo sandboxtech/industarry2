@@ -25,7 +25,6 @@ namespace W
         }
 
         public bool Cheat = false;
-        public bool LevelOne = false;
-
+        public int MaxLevel = int.MaxValue;
     }
 }
