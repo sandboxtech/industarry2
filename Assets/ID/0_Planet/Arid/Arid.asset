@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cn: "\u5E72\u65F1\u661F\u7403"
   sprite: {fileID: 0}
+  glow: {fileID: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
   sprites:
   - {fileID: -137143160, guid: 8e4c5946be4dde644979d9f097eb2e57, type: 3}
   - {fileID: -929603090, guid: 8e4c5946be4dde644979d9f097eb2e57, type: 3}
@@ -80,9 +82,6 @@ MonoBehaviour:
   - {fileID: 245075546, guid: 8e4c5946be4dde644979d9f097eb2e57, type: 3}
   - {fileID: 163736936, guid: 8e4c5946be4dde644979d9f097eb2e57, type: 3}
   spritesDuration: 8
-  glow: {fileID: 0}
-  glowDayNight: {fileID: 0}
-  color: {r: 1, g: 1, b: 1, a: 1}
   notAccessible: 0
   relativityTimeScale: 1
   mapThemeDef: {fileID: 11400000, guid: d681b64649efab94293e8ed1c61bc89e, type: 2}
@@ -90,9 +89,9 @@ MonoBehaviour:
   height: 31
   techRequirementForEntrence: []
   superMapDef: {fileID: 0}
+  previousMapOrbitRadius: 0
   mapDefOrbits: []
   initialRandomStructures:
   - key: {fileID: 11400000, guid: 1e6aa5faa9e49724f901c3dc29888fbd, type: 2}
     value: 10
-  constructables:
-  - {fileID: 11400000, guid: a10021eb8dad755439bf17cdafa4f13c, type: 2}
+  constructables: []

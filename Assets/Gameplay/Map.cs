@@ -268,7 +268,7 @@ namespace W
         public const int MysteriousRadius = 8;
         private void TryConstructPreviousMapIndex() {
             if (previousMapLevel > mapLevel) return;
-            RandomOrbitPosition((int)mapDef.PreviousMapOrbitRadius, mapDef.Width / 2, mapDef.Height / 2, out int x, out int y);
+            RandomOrbitPositionType1((int)mapDef.PreviousMapOrbitRadius, mapDef.Width / 2, mapDef.Height / 2, out int x, out int y);
             uint index = IndexOf(x, y);
             previousMapIndex = index;
         }
@@ -288,30 +288,33 @@ namespace W
             int centerY = height / 2;
 
             foreach (MapDefOrbit orbit in mapDef.MapDefOrbits) {
-                bool hasOrbit = orbit.Possibility == 1 || TemporaryRandomGenerator.NextDouble() < orbit.Possibility;
-                if (!hasOrbit) return;
+                for (int i = 0; i < orbit.Repeat; i++) {
+                    bool hasOrbit = orbit.Possibility == 1 || TemporaryRandomGenerator.NextDouble() < orbit.Possibility;
+                    if (!hasOrbit) return;
 
-                if (subMaps == null) subMaps = new Dictionary<uint, uint>();
+                    if (subMaps == null) subMaps = new Dictionary<uint, uint>();
 
-                int radius = orbit.Radius;
-                A.Assert(radius < centerX && radius < centerY);
+                    int radius = orbit.Radius;
+                    A.Assert(radius < centerX && radius < centerY);
 
-                RandomOrbitPosition(radius, centerX, centerY, out int x, out int y);
-                uint index = IndexOf(x, y);
-                if (index == previousMapIndex) return;
+                    RandomOrbitPositionRound(radius, centerX, centerY, out int x, out int y);
+                    uint index = IndexOf(x, y);
+                    if (index == previousMapIndex) return;
 
-                subMaps.Add(index, orbit.Key.id);
+                    if (subMaps.ContainsKey(index)) continue;
+                    subMaps.Add(index, orbit.Key.id);
 
-                if (orbit.Satellite != null && TemporaryRandomGenerator.NextDouble() < orbit.SatellitePossibility) {
-                    uint satellite = RandomSatellitePosition(x, y);
-                    if (!subMaps.ContainsKey(satellite)) {
-                        subMaps.Add(satellite, orbit.Satellite.id);
+                    if (orbit.Satellite != null && (TemporaryRandomGenerator.NextDouble()) < orbit.SatellitePossibility) {
+                        uint satellite = RandomSatellitePosition(x, y);
+                        if (!subMaps.ContainsKey(satellite)) {
+                            subMaps.Add(satellite, orbit.Satellite.id);
+                        }
                     }
                 }
             }
         }
 
-        private void RandomOrbitPosition(int radius, int centerX, int centerY, out int x, out int y) {
+        private void RandomOrbitPositionType1(int radius, int centerX, int centerY, out int x, out int y) {
             int randomX = TemporaryRandomGenerator.Next(radius + 1);
             int randomY = radius - randomX;
             int sign = TemporaryRandomGenerator.Next(0, 3);
@@ -320,9 +323,15 @@ namespace W
 
             x = centerX + randomX;
             y = centerY + randomY;
-            // uint index = IndexOf(centerX + randomX, centerY + randomY);
-            // return index;
         }
+        private void RandomOrbitPositionRound(int radius, int centerX, int centerY, out int x, out int y) {
+            double angle = TemporaryRandomGenerator.NextDouble() * 2 * System.Math.PI;
+            int randomX = (int)(radius * System.Math.Cos(angle));
+            int randomY = (int)(radius * System.Math.Sin(angle));
+            x = centerX + randomX;
+            y = centerY + randomY;
+        }
+
         private uint RandomSatellitePosition(int x, int y) {
             switch (TemporaryRandomGenerator.Next(0, 4)) {
                 case 0:
@@ -487,6 +496,23 @@ namespace W
             }
         }
 
+        public bool CanChangeValue(ResDef resDef, long value) {
+            if (Game.I.Settings.Cheat) return true;
+
+            A.Assert(resDef != null);
+            uint resDefID = resDef.id;
+            if (value == 0) {
+                return true;
+            } else if (Resources.TryGetValue(resDefID, out Idle idle)) {
+                if (idle.Value + value < 0) {
+                    // 建造资源不够
+                    return false;
+                }
+                return true;
+            } else {
+                return value > 0;
+            }
+        }
 
         public bool CanChange(ResDefValue idValue, long multiplier, IdleReference i) {
             if (i == IdleReference.Val && Game.I.Settings.Cheat) return true;
@@ -520,6 +546,22 @@ namespace W
                 return multiplier * idValue.Value > 0;
             }
         }
+
+        public void DoChangeValue(ResDef resDef, long value) {
+            if (Game.I.Settings.Cheat) return;
+
+            uint resDefID = resDef.id;
+            if (value == 0) {
+            } else {
+                if (!Resources.TryGetValue(resDefID, out Idle idle)) {
+                    long del = resDef.DeltaTicks / Def.TimeScale;
+                    idle = new Idle(0, 0, del, 0);
+                    Resources.Add(resDefID, idle);
+                }
+                idle.Value += value;
+            }
+        }
+
         public void DoChange(ResDefValue idValue, long multiplier, IdleReference i) {
             if (i == IdleReference.Val && Game.I.Settings.Cheat) return;
 
@@ -553,6 +595,7 @@ namespace W
         }
 
         private void AllSubmapsPage() {
+            UI.Prepare();
             UI.IconText("下级地图", SpriteUI.IconOf(SpriteUI.MapDef));
             UI.Space();
             foreach (var pair in SubMaps) {
@@ -562,6 +605,7 @@ namespace W
                 UI.IconGlowText(mapDef.CN, mapDef.Icon, mapDef.Color, mapDef.Glow);
             }
             UI.Space();
+            UI.Show();
         }
 
         private void AllTilesPage(Dictionary<uint, int> dict) {
@@ -667,7 +711,8 @@ namespace W
             resDef.IconText();
             UI.Progress(idle);
             if (idle.Inc > 0 && idle.Max > 0) {
-                UI.Text($"生产速度 {idle.DelSecond} 秒");
+                // UI.Text($"+ {((double)idle.Inc / idle.DelSecond)} 每秒");
+                resDef.AddIncText(idle.Inc);
             }
 
             bool title;
@@ -683,6 +728,7 @@ namespace W
                             title = true;
                         }
                         tileDef.IconTextWithNumber(resDefValue.Value * pair.Value);
+                        // resDefValue.Key.AddMaxText(resDefValue.Value * pair.Value);
                     }
                 }
             }
@@ -698,6 +744,7 @@ namespace W
                             title = true;
                         }
                         tileDef.IconTextWithNumber(resDefValue.Value * pair.Value);
+                        // resDefValue.Key.AddMaxButton(resDefValue.Value * pair.Value);
                     }
                 }
             }
@@ -713,6 +760,7 @@ namespace W
                             title = true;
                         }
                         tileDef.IconTextWithNumber(resDefValue.Value * pair.Value);
+                        // resDefValue.Key.AddMaxText(resDefValue.Value * pair.Value);
                     }
                 }
             }
@@ -728,6 +776,7 @@ namespace W
                             title = true;
                         }
                         tileDef.IconTextWithNumber(resDefValue.Value * pair.Value);
+                        // resDefValue.Key.AddMaxButton(resDefValue.Value * pair.Value);
                     }
                 }
             }
@@ -747,7 +796,7 @@ namespace W
             Def.IconText();
             UI.Space();
             bool canEnter = Game.I.Settings.Cheat || Game.I.SuperMap.CanEnter();
-            UI.IconButton("航天离开", SpriteUI.IconOf(SpriteUI.MapDef), canEnter ? UI.ColorNormal : UI.ColorDisable, () => {
+            UI.IconButton("离开地图", SpriteUI.IconOf(SpriteUI.MapDef), canEnter ? UI.ColorNormal : UI.ColorDisable, () => {
                 if (canEnter) {
                     Game.I.EnterSuperMap();
                 } else {
@@ -756,20 +805,17 @@ namespace W
             });
             UI.Space();
 
-            UI.IconButton("资源", SpriteUI.IconOf(SpriteUI.ResDef), AllResourcesPage);
-            UI.IconButton("地块", SpriteUI.IconOf(SpriteUI.TileDef), () => AllTilesPage(tileDefCountOnThisMap));
+            UI.IconButton("已有地块", SpriteUI.IconOf(SpriteUI.TileDef), () => AllTilesPage(tileDefCountOnThisMap));
+            UI.IconButton("已有资源", SpriteUI.IconOf(SpriteUI.ResDef), AllResourcesPage);
             if (tileDefCountOnSubmap.Count > 0) UI.IconButton("下级地块", SpriteUI.IconOf(SpriteUI.TileDef), () => AllTilesPage(tileDefCountOnSubmap));
             if (SubMaps != null && SubMaps.Count > 0) UI.IconButton("下级地图", SpriteUI.IconOf(SpriteUI.MapDef), AllSubmapsPage);
 
             UI.Space();
 
-
-
-
             //if (Game.I.Map.PreviousSeed != Map.NullSeed && Game.I.Map.PreviousMapLevel <= Game.I.Map.MapLevel) {
             //    UI.Button("返回", () => Game.I.EnterPreviousMap());
             //}
-            UI.Space();
+            UI.IconButton("地块百科", SpriteUI.IconOf(SpriteUI.TileDef), AllConstructablePage);
 
             if (UnityEngine.Application.platform == UnityEngine.RuntimePlatform.WindowsEditor) {
                 UI.Text("地图种子");
@@ -780,6 +826,16 @@ namespace W
                 UI.Text(Def.TimeScale.ToString());
             }
 
+            UI.Show();
+        }
+
+        private void AllConstructablePage() {
+            UI.Prepare();
+            AddIcon();
+            UI.Space();
+            foreach (TileDef tileDef in Def.Constructables) {
+                UI.IconGlowButton(tileDef.CN, tileDef.Icon, tileDef.Color, tileDef.Glow, tileDef.ShowPage);
+            }
             UI.Show();
         }
 

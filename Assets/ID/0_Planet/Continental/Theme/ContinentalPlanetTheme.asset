@@ -65,10 +65,10 @@ MonoBehaviour:
   - {fileID: 1531966266, guid: 34fc00258abb82947bef7805ade7ed6b, type: 3}
   - {fileID: -595899760, guid: 34fc00258abb82947bef7805ade7ed6b, type: 3}
   - {fileID: 1715810325, guid: 34fc00258abb82947bef7805ade7ed6b, type: 3}
-  backgroundColor: {r: 0.23921569, g: 0.30980393, b: 0.3529412, a: 1}
+  backgroundColor: {r: 0.38995194, g: 0.5514287, b: 0.6509434, a: 1}
   background: {fileID: 21300000, guid: f806dbcb71ac5f44698405c9cb98569f, type: 3}
   backgroundMaterial: {fileID: 2100000, guid: a092da5ebaaddc74caa089f715268802, type: 2}
-  groundColor: {r: 0.654902, g: 0.7372549, b: 0.5137255, a: 1}
+  groundColor: {r: 0.6334855, g: 0.7830189, b: 0.380429, a: 1}
   ground: {fileID: 21300000, guid: 0d894e19eb119d74d9a94b53c57ffa23, type: 3}
   groundMaterial: {fileID: 2100000, guid: 0ff3c412ac79b704288c921ddd3059b6, type: 2}
   dayDuration: 600

@@ -100,7 +100,7 @@ namespace W
                 ParticlePlayer.I.FrameAnimation(ParticlePlayer.I.Destruct, info.X, info.Y);
 
             } else {
-                MapView.I.ScaleTileAt(info.X, info.Y);
+                if (!info.TileDef.NotDestructable) MapView.I.ScaleTileAt(info.X, info.Y);
                 TapExisting(info);
             }
         }
@@ -229,21 +229,80 @@ namespace W
         private static readonly HashSet<TileDef> constructables = new HashSet<TileDef>();
         private static HashSet<TileDef> AddUnlockeds(MapTileInfo info) {
             constructables.Clear();
-            AddUnlocked(info, 0, +1);
-            AddUnlocked(info, 0, -1);
-            AddUnlocked(info, +1, 0);
-            AddUnlocked(info, -1, 0);
+
+            AddUnlockedForSubmap(info, 0, +1);
+            AddUnlockedForSubmap(info, 0, -1);
+            AddUnlockedForSubmap(info, +1, 0);
+            AddUnlockedForSubmap(info, -1, 0);
+
+            AddUnlocked(info);
+
             if (constructables.Count == 0) {
-                foreach (TileDef unlocked in info.Map.Def.Constructables) {
-                    A.Assert(unlocked != null);
-                    if (!constructables.Contains(unlocked)) {
-                        constructables.Add(unlocked);
-                    }
+                foreach (TileDef unlocked in info.Map.Def.ConstructablesFree) {
+                    TryAdd(info, unlocked);
                 }
             }
             return constructables;
         }
-        private static void AddUnlocked(MapTileInfo info, int dx, int dy) {
+
+        [System.NonSerialized]
+        private static List<TileDef> tempNeighbors = new List<TileDef>();
+        private static void AddUnlocked(MapTileInfo info) {
+            tempNeighbors.Clear();
+            AddTempNeighbors(info, 0, +1);
+            AddTempNeighbors(info, 0, -1);
+            AddTempNeighbors(info, +1, 0);
+            AddTempNeighbors(info, -1, 0);
+
+            if (tempNeighbors.Count == 0) return;
+
+            foreach (TileDef constructable in info.Map.Def.ConstructablesPaid) {
+                if (constructable.ConstructtionCondition != null && !tempNeighbors.Contains(constructable.ConstructtionCondition)) {
+                    return;
+                } 
+
+                // 对于每个可能要造的建筑
+                bool allSatisfied = true;
+                foreach (var input in constructable.Inc) {
+                    if (input.Value > 0) continue;
+                    // 对于这个建筑的每种需求
+                    if (input.Key == null) A.Assert(false, $"null in inc : {constructable}");
+                    bool satisfied = false;
+                    foreach (var neighbor in tempNeighbors) { // max count 4;
+                        foreach (var output in neighbor.Inc) {
+                            if (output.Value < 0) continue;
+                            if (output.Key == input.Key) {
+                                satisfied = true;
+                                break;
+                            }
+                        }
+                        if (satisfied) break;
+                    }
+                    if (!satisfied) {
+                        allSatisfied = false;
+                        break;
+                    }
+                }
+                if (allSatisfied) {
+                    TryAdd(info, constructable);
+                }
+            }
+            tempNeighbors.Clear();
+        }
+        private static void AddTempNeighbors(MapTileInfo info, int dx, int dy) {
+            int posX = info.X + dx;
+            int posY = info.Y + dy;
+            if (!info.Map.HasPosition(posX, posY)) {
+                return;
+            }
+            uint neighborID = info.Map.ID(posX, posY);
+            if (!ID.IsInvalid(neighborID)) {
+                tempNeighbors.Add(GameConfig.I.ID2Obj[neighborID] as TileDef);
+            }
+        }
+
+
+        private static void AddUnlockedForSubmap(MapTileInfo info, int dx, int dy) {
             int posX = info.X + dx;
             int posY = info.Y + dy;
             if (!info.Map.HasPosition(posX, posY)) {
@@ -275,42 +334,82 @@ namespace W
                 return;
             }
             else {
-                // 查询普通解锁
-                TileDef neighbor = GameConfig.I.ID2Obj[neighborID] as TileDef;
-                foreach (TileDef unlocked in neighbor.BonusReverse) {
-                    if (!constructables.Contains(unlocked)) {
-                        constructables.Add(unlocked);
-                    }
-                }
-                foreach (TileDef unlocked in neighbor.ConditionsReverse) {
-                    if (!constructables.Contains(unlocked)) {
-                        constructables.Add(unlocked);
-                    }
-                }
+                return;
+
+                //// 查询普通解锁
+                //TileDef neighbor = GameConfig.I.ID2Obj[neighborID] as TileDef;
+
+                //foreach (var constructable in info.Map.Def.ConstructablesPaid) {
+                //    foreach (var output in neighbor.Inc) {
+                //        if (output.Value <= 0) continue;
+                //        foreach (var input in constructable.Inc) {
+                //            if (input.Value >= 0) continue;
+                //            TryAdd(info, constructable);
+                //        }
+                //    }
+                //}
+
+                ////foreach (TileDef unlocked in neighbor.BonusReverse) {
+                ////    if (!constructables.Contains(unlocked)) {
+                ////        // constructables.Add(unlocked);
+                ////        TryAdd(info, unlocked);
+                ////    }
+                ////}
+                ////foreach (TileDef unlocked in neighbor.ConditionsReverse) {
+                ////    if (!constructables.Contains(unlocked)) {
+                ////        // constructables.Add(unlocked);
+                ////        TryAdd(info, unlocked);
+                ////    }
+                ////}
             }
         }
+        private static void TryAdd(MapTileInfo info, TileDef unlocked) {
+            A.Assert(unlocked != null);
+            if (!constructables.Contains(unlocked)) {
+                // 没资源的建筑，完全不显示
+                foreach (ResDefValue input in unlocked.Construction) {
+                    if (info.Map.Resources.TryGetValue(input.Key.id, out Idle idle)) {
+                        if (idle.Inc == 0 && idle.Max == 0) return;
+                    } else {
+                        return;
+                    }
+                }
+                //foreach (ResDefValue input in unlocked.Inc) {
+                //    if (input.Value < 0) {
+                //        if (info.Map.Resources.TryGetValue(input.Key.id, out Idle idle)) {
+                //            if (idle.Inc == 0 && idle.Max == 0) return;
+                //        } else {
+                //            return;
+                //        }
+                //    }
+                //}
+                constructables.Add(unlocked);
+            }
+        }
+
 
         private static int CalcBonus(MapTileInfo info) {
-            int bonus = 0;
-            bonus += AddBonus(info, 0, 0 + 1);
-            bonus += AddBonus(info, 0, 0 - 1);
-            bonus += AddBonus(info, 0 + 1, 0);
-            bonus += AddBonus(info, 0 - 1, 0);
-            if (bonus < 1) bonus = 1;
-            return bonus;
+            return 1;
+            //int bonus = 0;
+            //bonus += AddBonus(info, 0, 0 + 1);
+            //bonus += AddBonus(info, 0, 0 - 1);
+            //bonus += AddBonus(info, 0 + 1, 0);
+            //bonus += AddBonus(info, 0 - 1, 0);
+            //if (bonus < 1) bonus = 1;
+            //return bonus;
         }
 
-        private static int AddBonus(MapTileInfo info, int dx, int dy) {
-            uint bonusID = info.Map.ID_Safe(info.X + dx, info.Y + dy);
-            if (ID.IsInvalid(bonusID)) return 0;
-            TileDef neighbor = GameConfig.I.ID2Obj[bonusID] as TileDef;
-            A.Assert(neighbor != null);
-            foreach (var bonus in info.TileDef.Bonus) {
-                if (bonus == neighbor) return 1;
-            }
-            return 0;
-            // return replacement.Bonus.Contains(neighbor) ? 1 : 0;
-        }
+        //private static int AddBonus(MapTileInfo info, int dx, int dy) {
+        //    uint bonusID = info.Map.ID_Safe(info.X + dx, info.Y + dy);
+        //    if (ID.IsInvalid(bonusID)) return 0;
+        //    TileDef neighbor = GameConfig.I.ID2Obj[bonusID] as TileDef;
+        //    A.Assert(neighbor != null);
+        //    foreach (var bonus in info.TileDef.Bonus) {
+        //        if (bonus == neighbor) return 1;
+        //    }
+        //    return 0;
+        //    // return replacement.Bonus.Contains(neighbor) ? 1 : 0;
+        //}
 
         private static int CalcTech(TileDef tileDef) {
             int result = 1;
@@ -406,12 +505,12 @@ namespace W
         private static bool CanConstructByNeighbor(MapTileInfo info, int dx, int dy) {
             TileDef neighbor = NeighborOf(info, dx, dy);
             if (neighbor == null) return true;
-            foreach (TileDef repel in info.TileDef.Repels) {
-                if (repel == neighbor) return false;
-            }
-            foreach (TileDef repel in neighbor.Repels) {
-                if (repel == info.TileDef) return false;
-            }
+            //foreach (TileDef repel in info.TileDef.Repels) {
+            //    if (repel == neighbor) return false;
+            //}
+            //foreach (TileDef repel in neighbor.Repels) {
+            //    if (repel == info.TileDef) return false;
+            //}
             return true;
         }
         private static TileDef NeighborOf(MapTileInfo info, int dx, int dy) {
@@ -481,7 +580,6 @@ namespace W
             UI.Show();
         }
 
-        private static readonly HashSet<TileDef> neighbors = new HashSet<TileDef>();
         private static void FailConstruct(MapTileInfo info) {
             if (!info.PlayerBuild_OrAutoBuild) return;
             Audio.I.Clip = Audio.I.NegativeSound;
@@ -500,24 +598,24 @@ namespace W
                 return;
             }
 
-            neighbors.Clear();
-            FailConstructRepelText(info, 0, +1);
-            FailConstructRepelText(info, 0, -1);
-            FailConstructRepelText(info, +1, 0);
-            FailConstructRepelText(info, -1, 0);
-            if (neighbors.Count > 0) {
-                SpriteUI.IconText("不能相邻", SpriteUI.Failure);
+            //neighbors.Clear();
+            //FailConstructRepelText(info, 0, +1);
+            //FailConstructRepelText(info, 0, -1);
+            //FailConstructRepelText(info, +1, 0);
+            //FailConstructRepelText(info, -1, 0);
+            //if (neighbors.Count > 0) {
+            //    SpriteUI.IconText("不能相邻", SpriteUI.Failure);
 
-                UI.Space();
-                SpriteUI.IconText(SpriteUI.Repel);
-                foreach (TileDef neighbor in neighbors) {
-                    neighbor.IconText();
-                }
-            } else {
-                SpriteUI.IconText("缺少资源", SpriteUI.Failure);
-            }
-            neighbors.Clear();
+            //    UI.Space();
+            //    SpriteUI.IconText(SpriteUI.Repel);
+            //    foreach (TileDef neighbor in neighbors) {
+            //        neighbor.IconText();
+            //    }
+            //} else {
+            //    SpriteUI.IconText("缺少资源", SpriteUI.Failure);
+            //}
 
+            SpriteUI.IconText("缺少资源", SpriteUI.Failure);
 
 
             bool title;
@@ -566,7 +664,7 @@ namespace W
                             break;
                         case IdleReference.Inc:
                             SpriteUI.IconText(isMapSuper ? SpriteUI.IncSuper : SpriteUI.Inc);
-                            idValue.AddIncRequirmentButton(level);
+                            idValue.AddIncButton(level);
                             break;
                         case IdleReference.Max:
                             SpriteUI.IconText(isMapSuper ? SpriteUI.MaxSuper : SpriteUI.Max);
@@ -577,23 +675,23 @@ namespace W
             }
         }
 
-        private static void FailConstructRepelText(MapTileInfo info, int dx, int dy) {
-            TileDef neighbor = NeighborOf(info, dx, dy);
-            if (neighbor == null) return;
+        //private static void FailConstructRepelText(MapTileInfo info, int dx, int dy) {
+        //    TileDef neighbor = NeighborOf(info, dx, dy);
+        //    if (neighbor == null) return;
 
-            if (neighbors.Contains(neighbor)) return;
-            foreach (TileDef repel in info.TileDef.Repels) {
-                if (repel == neighbor) {
-                    neighbors.Add(neighbor);
-                }
-            }
-            if (neighbors.Contains(neighbor)) return;
-            foreach (TileDef repel in neighbor.Repels) {
-                if (repel == info.TileDef) {
-                    neighbors.Add(neighbor);
-                }
-            }
-        }
+        //    if (neighbors.Contains(neighbor)) return;
+        //    foreach (TileDef repel in info.TileDef.Repels) {
+        //        if (repel == neighbor) {
+        //            neighbors.Add(neighbor);
+        //        }
+        //    }
+        //    if (neighbors.Contains(neighbor)) return;
+        //    foreach (TileDef repel in neighbor.Repels) {
+        //        if (repel == info.TileDef) {
+        //            neighbors.Add(neighbor);
+        //        }
+        //    }
+        //}
 
 
 
@@ -745,15 +843,15 @@ namespace W
                     switch (i) {
                         case IdleReference.Val:
                             SpriteUI.IconText(isMapSuper ? SpriteUI.ValSuper : SpriteUI.Val);
-                            idValue.AddValButton(level);
+                            idValue.AddValButton(-level);
                             break;
                         case IdleReference.Inc:
                             SpriteUI.IconText(isMapSuper ? SpriteUI.IncSuper : SpriteUI.Inc);
-                            idValue.AddIncRequirmentButton(level);
+                            idValue.AddIncButton(-level);
                             break;
                         case IdleReference.Max:
                             SpriteUI.IconText(isMapSuper ? SpriteUI.MaxSuper : SpriteUI.Max);
-                            idValue.AddMaxButton(level);
+                            idValue.AddMaxButton(-level);
                             break;
                         default:
                             A.Assert(false);

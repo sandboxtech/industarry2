@@ -54,11 +54,16 @@ namespace W
             UI.Text(() => $"地块最大数目 {(Game.I.Settings.MaxLevel == int.MaxValue ? "max" : Game.I.Settings.MaxLevel)}");
             UI.Space();
 
-            const int small = 1000;
+            const int tiny = 10;
+            UI.Slider(tiny.ToString(), (float x) => {
+                Game.I.Settings.MaxLevel = (int)((M.Pow(2f, x) - 1) * tiny);
+            });
+
+            const int small = 100;
             UI.Slider(small.ToString(), (float x) => {
                 Game.I.Settings.MaxLevel = (int)((M.Pow(2f, x) - 1) * small);
             });
-            const int large = 100000;
+            const int large = 1000;
             UI.Slider(large.ToString(), (float x) => {
                 Game.I.Settings.MaxLevel = (int)((M.Pow(2f, x) - 1) * large);
             });

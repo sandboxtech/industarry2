@@ -13,30 +13,65 @@ MonoBehaviour:
   m_Name: "\u592A\u9633\u7CFB"
   m_EditorClassIdentifier: 
   cn: 
-  sprite: {fileID: 21300000, guid: 5fa9902421969cb459e4758233be8a91, type: 3}
-  glow: {fileID: 0}
+  sprite: {fileID: -815431101, guid: 348616863142d024daf978fe140d77f1, type: 3}
+  glow: {fileID: 21300000, guid: 7386f9bf0c3f5fd4fa692f3d09af827e, type: 3}
   color: {r: 1, g: 1, b: 1, a: 1}
   sprites: []
   spritesDuration: 1
   notAccessible: 0
   relativityTimeScale: 1
   mapThemeDef: {fileID: 11400000, guid: 4b127e4f6994504498c75331b3d711e6, type: 2}
-  width: 31
-  height: 31
-  techRequirementForEntrence:
-  - {fileID: 11400000, guid: 04c824281b1593a44b2c8eb3adc92df0, type: 2}
+  width: 64
+  height: 64
+  techRequirementForEntrence: []
   superMapDef: {fileID: 11400000, guid: cc26447a90557dd4e918691b8a9bdcc7, type: 2}
   previousMapOrbitRadius: 7
   mapDefOrbits:
   - key: {fileID: 11400000, guid: 5ad421dcd33207346b66f9cbbd6254d3, type: 2}
     radius: 0
     possiblity: 1
+    repeat: 0
     satellite: {fileID: 0}
     satellitePossibility: 0
   - key: {fileID: 11400000, guid: 74c0c13a55c05084b841e80f89944f99, type: 2}
     radius: 5
     possiblity: 1
+    repeat: 0
     satellite: {fileID: 11400000, guid: 98c8fdf1c70157b479e5473df2d64315, type: 2}
     satellitePossibility: 0
+  - key: {fileID: 11400000, guid: 43d52825de73d8f4c8eea0849800fb27, type: 2}
+    radius: 11
+    possiblity: 1
+    repeat: 0
+    satellite: {fileID: 11400000, guid: fb3c4063f3f179a4589e877ec46e9b84, type: 2}
+    satellitePossibility: 0
+  - key: {fileID: 11400000, guid: 43d52825de73d8f4c8eea0849800fb27, type: 2}
+    radius: 14
+    possiblity: 1
+    repeat: 0
+    satellite: {fileID: 11400000, guid: fb3c4063f3f179a4589e877ec46e9b84, type: 2}
+    satellitePossibility: 0
+  - key: {fileID: 11400000, guid: 633600f1f1de67f4787950f2847d77b8, type: 2}
+    radius: 17
+    possiblity: 1
+    repeat: 0
+    satellite: {fileID: 11400000, guid: 42c7afb2354dbfb42841c1cc87e11d76, type: 2}
+    satellitePossibility: 0
+  - key: {fileID: 11400000, guid: 633600f1f1de67f4787950f2847d77b8, type: 2}
+    radius: 20
+    possiblity: 1
+    repeat: 0
+    satellite: {fileID: 11400000, guid: 42c7afb2354dbfb42841c1cc87e11d76, type: 2}
+    satellitePossibility: 0
+  - key: {fileID: 11400000, guid: b74dae5b23da5a24aaab85d4357a810b, type: 2}
+    radius: 9
+    possiblity: 1
+    repeat: 30
+    satellite: {fileID: 0}
+    satellitePossibility: 0
   initialRandomStructures: []
-  constructables: []
+  constructables:
+  - {fileID: 11400000, guid: 7c5e1afdd08f96448a8bc20de1c7000f, type: 2}
+  - {fileID: 11400000, guid: 436da45ec295c1d4fa1af6c2d80d6890, type: 2}
+  - {fileID: 11400000, guid: 1c48c5b4208b1e143b2dca7f6adbe8d0, type: 2}
+  - {fileID: 11400000, guid: 69ccf3169ca28cc4f807c94e99b9c17c, type: 2}

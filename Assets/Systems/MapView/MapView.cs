@@ -91,7 +91,7 @@ namespace W
             glowDayNightTilemapRenderer.material = Instantiate(glowDayNightTilemapRenderer.material); // yes
         }
 
-        private const long deltaT = 6 * Constants.Second;
+        private const long deltaT = 2 * Constants.Second;
         private const float stayT = 0.375f;
         private const float fadeT = 0.0625f;
 
@@ -100,8 +100,26 @@ namespace W
             UpdateLightAndGlow();
         }
 
-        private long lastReminder = -1;
         private void UpdateTranslates() {
+            float t = (float)(G.now % deltaT) / deltaT;
+            t = SmoothPosition(t);
+            float motion = 1 - t;
+
+            upTrans.position = new Vector3(0, motion, 0);
+            upGlowTrans.position = new Vector3(0, motion, 0);
+
+            downTrans.position = new Vector3(0, -motion, 0);
+            downGlowTrans.position = new Vector3(0, -motion, 0);
+
+            rightTrans.position = new Vector3(motion, 0, 0);
+            rightGlowTrans.position = new Vector3(motion, 0, 0);
+
+            leftTrans.position = new Vector3(-motion, 0, 0);
+            leftGlowTrans.position = new Vector3(-motion, 0, 0);
+        }
+
+        private long lastReminder = -1;
+        private void UpdateTranslatesBad() {
             float t = (float)(G.now % deltaT) / deltaT;
             t = SmoothPosition(t);
             float motion = 1 - t;
@@ -259,14 +277,16 @@ namespace W
         }
 
         private float SmoothPosition(float t) {
-            if (t < stayT) {
-                return 0;
-            } else if (t > 1 - stayT) {
-                return 1;
-            } else {
-                float t2 = (t - stayT) / (1 - 2 * stayT);
-                return (-Mathf.Cos(t2 * Mathf.PI) + 1) / 2;
-            }
+            return t;
+
+            //if (t < stayT) {
+            //    return 0;
+            //} else if (t > 1 - stayT) {
+            //    return 1;
+            //} else {
+            //    float t2 = (t - stayT) / (1 - 2 * stayT);
+            //    return (-Mathf.Cos(t2 * Mathf.PI) + 1) / 2;
+            //}
         }
         private float SmoothOpacity(float t) {
             if (t < fadeT) {

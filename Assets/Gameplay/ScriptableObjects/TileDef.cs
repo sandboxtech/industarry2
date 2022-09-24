@@ -29,7 +29,7 @@ namespace W
                 UI.Space();
                 SpriteUI.IconText(SpriteUI.Inc);
                 foreach (ResDefValue idValue in Inc) {
-                    idValue.AddIncButton();
+                    idValue.Key.AddIncButton(idValue.Value);
                 }
             }
 
@@ -91,11 +91,10 @@ namespace W
                 }
             }
 
-
-            if (NotDestructable) {
-                UI.Space();
-                SpriteUI.IconText("无法拆除", SpriteUI.Failure);
-            }
+            //if (NotDestructable) {
+            //    UI.Space();
+            //    SpriteUI.IconText("无法拆除", SpriteUI.Failure);
+            //}
         }
 
         public void ShowPage() {
@@ -103,60 +102,59 @@ namespace W
             UI.Prepare();
 
             IconText();
-
-            if (TechsBonus.Count == 0) {
-                // UI.Space();
-            } 
-            else if (techsBonus.Count == 1) {
-                AddTapTech(Game.I.Map, techsBonus[0]);
-            } else {
-                SpriteUI.IconButton(SpriteUI.TechDef, () => TapTechs(Game.I.Map));
-            }
+            UI.Text("百科");
 
             AddTileInformationIncMax();
 
             AddTileInformationConstructDestruct();
 
-
-            if (BonusReverse.Count > 0) {
-                UI.Space();
-                SpriteUI.IconText(SpriteUI.BonusReverse);
-                foreach (TileDef tile in BonusReverse) {
-                    tile.IconButton(tile == this ? null : tile.ShowPage);
-                }
+            if (TechsBonus.Count == 0) {
+                // UI.Space();
+            } else if (techsBonus.Count == 1) {
+                AddTapTech(Game.I.Map, techsBonus[0]);
+            } else {
+                SpriteUI.IconButton(SpriteUI.TechDef, () => TapTechs(Game.I.Map));
             }
 
-            if (ConditionsReverse.Count > 0) {
-                UI.Space();
-                SpriteUI.IconText(SpriteUI.ConditionsReverse);
-                foreach (TileDef tile in ConditionsReverse) {
-                    tile.IconButton(tile == this ? null : tile.ShowPage);
-                }
-            }
+            //if (BonusReverse.Count > 0) {
+            //    UI.Space();
+            //    SpriteUI.IconText(SpriteUI.BonusReverse);
+            //    foreach (TileDef tile in BonusReverse) {
+            //        tile.IconButton(tile == this ? null : tile.ShowPage);
+            //    }
+            //}
 
-            if (Bonus.Count > 0) {
-                UI.Space();
-                SpriteUI.IconText(SpriteUI.Bonus);
-                foreach (TileDef tile in Bonus) {
-                    tile.IconButton(tile == this ? null : tile.ShowPage);
-                }
-            }
+            //if (ConditionsReverse.Count > 0) {
+            //    UI.Space();
+            //    SpriteUI.IconText(SpriteUI.ConditionsReverse);
+            //    foreach (TileDef tile in ConditionsReverse) {
+            //        tile.IconButton(tile == this ? null : tile.ShowPage);
+            //    }
+            //}
 
-            if (Conditions.Count > 0) {
-                UI.Space();
-                SpriteUI.IconText(SpriteUI.Conditions);
-                foreach (TileDef tile in Conditions) {
-                    tile.IconButton(tile == this ? null : tile.ShowPage);
-                }
-            }
+            //if (Bonus.Count > 0) {
+            //    UI.Space();
+            //    SpriteUI.IconText(SpriteUI.Bonus);
+            //    foreach (TileDef tile in Bonus) {
+            //        tile.IconButton(tile == this ? null : tile.ShowPage);
+            //    }
+            //}
 
-            if (Repels.Count > 0) {
-                UI.Space();
-                SpriteUI.IconText(SpriteUI.Repel);
-                foreach (TileDef tile in Repels) {
-                    tile.IconButton(tile == this ? null : tile.ShowPage);
-                }
-            }
+            //if (Conditions.Count > 0) {
+            //    UI.Space();
+            //    SpriteUI.IconText(SpriteUI.Conditions);
+            //    foreach (TileDef tile in Conditions) {
+            //        tile.IconButton(tile == this ? null : tile.ShowPage);
+            //    }
+            //}
+
+            //if (Repels.Count > 0) {
+            //    UI.Space();
+            //    SpriteUI.IconText(SpriteUI.Repel);
+            //    foreach (TileDef tile in Repels) {
+            //        tile.IconButton(tile == this ? null : tile.ShowPage);
+            //    }
+            //}
 
             if (ConditionsSubmap.Count > 0) {
                 UI.Space();
@@ -188,7 +186,7 @@ namespace W
 
             UI.Space();
 
-            techDef.IconTextWithLevel(techLevel);
+            techDef.IconTextOfTech(techLevel);
 
             if (techLevel == techDef.MaxLevel) {
                 UI.IconButton(techDef.MaxLevel == 1 ? "已研究" : "已满级", UI.ColorDisable, techDef.Icon, null);
@@ -206,8 +204,8 @@ namespace W
             Game.I.TechLevel(techDef.id, out int techLevel);
             foreach (ResDefValue idValue in techDef.Upgrade) {
 
-                long costMultiplier = CostMultiplierOf(techDef.Multiplier, techLevel);
-                bool canChange = map.CanChange(idValue, -costMultiplier, IdleReference.Val);
+                long cost = CostOf(techDef, idValue.Value, techLevel);
+                bool canChange = map.CanChangeValue(idValue.Key, -cost);
 
                 if (!canChange) return false;
             }
@@ -216,20 +214,31 @@ namespace W
         private static void AddTechCosts(Map map, TechDef techDef) {
             Game.I.TechLevel(techDef.id, out int techLevel);
             foreach (ResDefValue idValue in techDef.Upgrade) {
-                long costMultiplier = CostMultiplierOf(techDef.Multiplier, techLevel);
-                bool canChange = map.CanChange(idValue, -costMultiplier, IdleReference.Val);
-                UI.IconText($"{idValue.Key.CN} {idValue.Value * costMultiplier}", canChange ? UI.ColorPositive : UI.ColorNegative,
+                long cost = CostOf(techDef, idValue.Value, techLevel);
+                bool canChange = map.CanChangeValue(idValue.Key, -cost);
+                UI.IconText($"{idValue.Key.CN} {cost}", canChange ? UI.ColorPositive : UI.ColorNegative,
                     idValue.Key.Icon, idValue.Key.Color);
             }
         }
 
-        private static long CostMultiplierOf(long multiplier, int techLevel) {
-            long cost = 1;
-            techLevel = M.Clamp(0, 30, techLevel);
-            for (int i = 0; i < techLevel; i++) {
-                cost *= multiplier;
-            }
-            return cost;
+        private const long maxCost = 100000000000000000;
+        private static long CostOf(TechDef tech, long costBase, int techLevel) {
+            if (techLevel == 0) return costBase;
+            double cost = System.Math.Pow(tech.Multiplier, techLevel) * costBase;
+
+            if (cost > maxCost || cost < 0) return maxCost;
+
+            double logCost = System.Math.Log(cost, 10);
+
+            double dividerFirst = System.Math.Pow(10, (int)(logCost));
+            double dividerSecond = dividerFirst / 10;
+
+            int first = (int)(cost / dividerFirst);
+            int second = (int)(cost / dividerSecond) % 10;
+
+            if (second % 2 == 1) { second++; } else if (second == 4) { second = 5; }
+            long sum = (long)dividerFirst * first + (long)dividerSecond * second;
+            return sum;
         }
 
         private static void TryUpgradeTech(Map map, TechDef techDef) {
@@ -242,8 +251,8 @@ namespace W
 
             Game.I.TechLevel(techDef.id, techLevel + 1);
             foreach (ResDefValue idValue in techDef.Upgrade) {
-                long costMultiplier = CostMultiplierOf(techDef.Multiplier, techLevel);
-                map.DoChange(idValue, -costMultiplier, IdleReference.Val);
+                long cost = CostOf(techDef, idValue.Value, techLevel);
+                map.DoChangeValue(idValue.Key, cost);
             }
 
             SucceedUpgrade(techDef);
@@ -347,38 +356,64 @@ namespace W
         private List<ResDefValue> max; // max
         public IReadOnlyList<ResDefValue> Max => max;
 
+        public bool IsFreeOrPaid {
+            get {
+                if (hasNoInput_) return hasNoInput;
+                hasNoInput_ = true;
 
-        //[Header("相邻动画")]
+                foreach (var item in Inc) {
+                    // if (item.Value == 0) A.Assert(false);
+                    if (item.Value < 0) {
+                        hasNoInput = false;
+                        return hasNoInput;
+                    }
+                }
+                hasNoInput = true;
+                return hasNoInput;
+            }
+        }
+        [System.NonSerialized]
+        private bool hasNoInput_ = false;
+        [System.NonSerialized]
+        private bool hasNoInput = false;
+
+
+        [Header("建造必须的条件")]
+        [SerializeField]
+        private TileDef constructionCondition;
+        public TileDef ConstructtionCondition => constructionCondition;
+
+        ////[Header("相邻动画")]
+        ////[SerializeField]
+        ////private ID bonusAnim;
+        ////public ID BonusAnim => bonusAnim;
+
+        //[Space]
+
+        //[Header("相邻奖励")]
         //[SerializeField]
-        //private ID bonusAnim;
-        //public ID BonusAnim => bonusAnim;
-
-        [Space]
-
-        [Header("相邻奖励")]
-        [SerializeField]
-        private List<TileDef> bonus;
-        public IReadOnlyList<TileDef> Bonus => bonus;
-        public IReadOnlyCollection<TileDef> BonusReverse { get; private set; } = new HashSet<TileDef>();
+        //private List<TileDef> bonus;
+        //public IReadOnlyList<TileDef> Bonus => bonus;
+        //public IReadOnlyCollection<TileDef> BonusReverse { get; private set; } = new HashSet<TileDef>();
 
 
-        //[Header("解锁自己")]
+        ////[Header("解锁自己")]
+        ////[SerializeField]
+        ////private bool selfCondition = false;
+        ////public bool SelfCondition => selfCondition;
+
+
+        //[Header("相邻解锁")]
         //[SerializeField]
-        //private bool selfCondition = false;
-        //public bool SelfCondition => selfCondition;
+        //private List<TileDef> conditions;
+        //public IReadOnlyList<TileDef> Conditions => conditions;
+        //public IReadOnlyCollection<TileDef> ConditionsReverse { get; private set; } = new HashSet<TileDef>();
 
 
-        [Header("相邻解锁")]
-        [SerializeField]
-        private List<TileDef> conditions;
-        public IReadOnlyList<TileDef> Conditions => conditions;
-        public IReadOnlyCollection<TileDef> ConditionsReverse { get; private set; } = new HashSet<TileDef>();
-
-
-        [Header("相邻禁止")]
-        [SerializeField]
-        private List<TileDef> repels;
-        public IReadOnlyList<TileDef> Repels => repels;
+        //[Header("相邻禁止")]
+        //[SerializeField]
+        //private List<TileDef> repels;
+        //public IReadOnlyList<TileDef> Repels => repels;
 
 
 

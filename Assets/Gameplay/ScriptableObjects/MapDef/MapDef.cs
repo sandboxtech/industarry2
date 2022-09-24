@@ -63,6 +63,11 @@ namespace W
         private double possiblity;
         public double Possibility => possiblity == 0 ? 1 : possiblity;
 
+        [Header("重复次数")]
+        [SerializeField]
+        private long repeat;
+        public long Repeat => repeat == 0 ? 1 : repeat;
+
         [Header("卫星")]
         [SerializeField]
         private MapDef satellite;
@@ -72,6 +77,7 @@ namespace W
         [SerializeField]
         private double satellitePossibility;
         public double SatellitePossibility => satellitePossibility == 0 ? 1 : possiblity;
+
 
     }
 
@@ -156,6 +162,38 @@ namespace W
         [SerializeField]
         private List<TileDef> constructables;
         public IReadOnlyList<TileDef> Constructables => constructables;
+
+        [System.NonSerialized]
+        private List<TileDef> paidConstructables;
+        [System.NonSerialized]
+        private List<TileDef> freeConstructables;
+        [System.NonSerialized]
+        private bool bothConstructablesClassified = false;
+        public IReadOnlyList<TileDef> ConstructablesPaid {
+            get {
+                if (!bothConstructablesClassified) Classify();
+                return paidConstructables;
+            }
+        }
+        public IReadOnlyList<TileDef> ConstructablesFree {
+            get {
+                if (!bothConstructablesClassified) Classify();
+                return freeConstructables;
+            }
+        }
+        private void Classify() {
+            paidConstructables = new List<TileDef>();
+            freeConstructables = new List<TileDef>();
+            foreach (var item in Constructables) {
+                if (!item.IsFreeOrPaid) {
+                    paidConstructables.Add(item);
+                }
+                else {
+                    freeConstructables.Add(item);
+                }
+            }
+            bothConstructablesClassified = true;
+        }
 
 
         // 周边可造建筑。自动生成属性

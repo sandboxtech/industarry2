@@ -12,8 +12,7 @@ namespace W
 
 
     [CreateAssetMenu(fileName = "__ID__", menuName = "创建 ID 定义", order = 1)]
-    public class ID : ScriptableObject, __ID
-    {
+    public class ID : ScriptableObject, __ID {
         public static bool IsInvalid(uint id) => id == Empty || id == Invalid;
         public const uint Invalid = uint.MaxValue;
         public const uint Empty = 0;
@@ -22,22 +21,32 @@ namespace W
             this.id = id;
         }
 
+        public void IconTextWithNumber(long number) => UI.IconGlowText($"{CN} {(number >= 0 ? $"+{number}" : $"{number}")}", Icon, Color, Glow);
         public void IconText() => UI.IconGlowText(CN, Icon, Color, Glow);
         public void IconButton(Action action) => UI.IconGlowButton(CN, Icon, Color, Glow, action);
         public void IconTextWithLevel(int level) => UI.IconGlowText(NameAndLevel(level), Icon, Color, Glow);
-        public void IconTextWithNumber(long number) => UI.IconGlowText(number > 0 ? $"{CN} +{number}" : $"{CN} {number}", number >= 0 ? UI.ColorPositive : UI.ColorNegative, Icon, Color, Glow);
+        public void IconTextOfTech(int level) => UI.IconGlowText(NameAndLevelOfTech(level), Icon, Color, Glow);
 
         public void IconButtonWithLevel(int level, Color textColor, Action action)
             => UI.IconGlowButton(NameAndLevel(level), textColor, Icon, Color, Glow, action);
         private string NameAndLevel(int level) => level <= 1 ? CN : $"{CN} * {level}";
-
+        private string NameAndLevelOfTech(int level) => level == 0 ? CN : $"{CN} {level}";
 
 
 
         [Header("中文")]
         [SerializeField]
         private string cn;
-        public string CN => string.IsNullOrEmpty(cn) ? name : cn;
+        public string CN {
+            get {
+                try {
+                    return string.IsNullOrEmpty(cn) ? name : cn;
+                } catch {
+                    Debug.Log(name);
+                }
+                return null;
+            }
+        }
 
         //[Header("描述")]
         //[SerializeField]

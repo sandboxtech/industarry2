@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1898ed7875a846146ac7d763caace9a9, type: 3}
+  m_Name: "\u8F93\u51FA\uFF1A\u6C34"
+  m_EditorClassIdentifier: 
+  cn: 
+  sprite: {fileID: 21300000, guid: 98ca3ff1495292d4aacb0d27dbf997ae, type: 3}
+  glow: {fileID: 0}
+  color: {r: 1, g: 1, b: 1, a: 1}
+  sprites: []
+  spritesDuration: 1
+  spritesGlow: []
+  spritesGlowDuration: 1
+  ruleTile44: []
+  ruleTile86: []
+  glowDayNight: {fileID: 0}
+  construction: []
+  destruction: []
+  notDestructable: 0
+  inc:
+  - key: {fileID: 11400000, guid: be892ef74ea23b44ab71d87f7634b58b, type: 2}
+    value: -1
+  - key: {fileID: 11400000, guid: ace8fdbc669a3944fb55f79aaa2576fa, type: 2}
+    value: -1
+  max: []
+  bonus: []
+  conditions:
+  - {fileID: 11400000, guid: e7a0a0b9d47f5f74b98fc6850e5adb7c, type: 2}
+  repels: []
+  conditionsSubmap: []
+  techRequirementForConstruction: {fileID: 0}
+  techsBonus: []
+  constructionSuper: []
+  destructionSuper: []
+  incSuper:
+  - key: {fileID: 11400000, guid: ace8fdbc669a3944fb55f79aaa2576fa, type: 2}
+    value: 1
+  maxSuper: []

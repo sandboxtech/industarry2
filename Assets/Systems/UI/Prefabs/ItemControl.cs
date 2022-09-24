@@ -133,6 +133,7 @@ namespace W
             sliderAction?.Invoke(slider.value);
         }
 
+        private Color sliderColor = new Color(0.5f, 0.5f, 0.5f, 0.75f);
         public void EnableSlider(ref Item item) {
             Action<float> sliderAction = item.Slider;
             this.sliderAction = sliderAction;
@@ -141,6 +142,8 @@ namespace W
             Slider.interactable = true;
             back.gameObject.SetActive(true);
             front.gameObject.SetActive(true);
+            back.color = sliderColor;
+            front.color = sliderColor;
             slider.gameObject.SetActive(true);
         }
 
