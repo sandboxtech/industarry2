@@ -257,32 +257,49 @@ namespace W
             if (tempNeighbors.Count == 0) return;
 
             foreach (TileDef constructable in info.Map.Def.ConstructablesPaid) {
-                if (constructable.ConstructtionCondition != null && !tempNeighbors.Contains(constructable.ConstructtionCondition)) {
-                    return;
-                } 
+                if (constructable.ConstructionCondition != null && !tempNeighbors.Contains(constructable.ConstructionCondition)) {
+                    continue;
+                }
 
                 // 对于每个可能要造的建筑
                 bool allSatisfied = true;
-                foreach (var input in constructable.Inc) {
-                    if (input.Value > 0) continue;
-                    // 对于这个建筑的每种需求
-                    if (input.Key == null) A.Assert(false, $"null in inc : {constructable}");
-                    bool satisfied = false;
-                    foreach (var neighbor in tempNeighbors) { // max count 4;
-                        foreach (var output in neighbor.Inc) {
-                            if (output.Value < 0) continue;
-                            if (output.Key == input.Key) {
-                                satisfied = true;
-                                break;
+
+                if (info.Map.MapLevel > MapDefName.PlanetLevel) {
+                    foreach (var input in constructable.Inc) {
+                        if (input.Value > 0) continue;
+                        // 如果已经满足需求，可以建造
+                        if (info.Map.Resources.TryGetValue(input.Key.id, out Idle idle)) {
+                            if (idle.Inc + input.Value >= 0) {
+                                continue;
                             }
                         }
-                        if (satisfied) break;
-                    }
-                    if (!satisfied) {
-                        allSatisfied = false;
-                        break;
                     }
                 }
+                else {
+                    foreach (var input in constructable.Inc) {
+                        if (input.Value > 0) continue;
+                        // 如果已经满足需求，可以建造
+
+                        // 对于这个建筑的每种需求
+                        if (input.Key == null) A.Assert(false, $"null in inc : {constructable}");
+                        bool satisfied = false;
+                        foreach (var neighbor in tempNeighbors) { // max count 4;
+                            foreach (var output in neighbor.Inc) {
+                                if (output.Value < 0) continue;
+                                if (output.Key == input.Key) {
+                                    satisfied = true;
+                                    break;
+                                }
+                            }
+                            if (satisfied) break;
+                        }
+                        if (!satisfied) {
+                            allSatisfied = false;
+                            break;
+                        }
+                    }
+                }
+
                 if (allSatisfied) {
                     TryAdd(info, constructable);
                 }
@@ -335,7 +352,6 @@ namespace W
             }
             else {
                 return;
-
                 //// 查询普通解锁
                 //TileDef neighbor = GameConfig.I.ID2Obj[neighborID] as TileDef;
 

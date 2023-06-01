@@ -185,7 +185,11 @@ namespace W
             paidConstructables = new List<TileDef>();
             freeConstructables = new List<TileDef>();
             foreach (var item in Constructables) {
-                if (!item.IsFreeOrPaid) {
+                if (item == null) A.Assert(false);
+                if (item.ConditionsSubmap.Count > 0) {
+                    continue;
+                }
+                else if (!item.IsFreeOrPaid) {
                     paidConstructables.Add(item);
                 }
                 else {

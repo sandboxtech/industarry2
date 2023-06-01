@@ -381,7 +381,8 @@ namespace W
         [Header("建造必须的条件")]
         [SerializeField]
         private TileDef constructionCondition;
-        public TileDef ConstructtionCondition => constructionCondition;
+        public TileDef ConstructionCondition => constructionCondition;
+
 
         ////[Header("相邻动画")]
         ////[SerializeField]

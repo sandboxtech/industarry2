@@ -71,7 +71,21 @@ MonoBehaviour:
     satellitePossibility: 0
   initialRandomStructures: []
   constructables:
-  - {fileID: 11400000, guid: 7c5e1afdd08f96448a8bc20de1c7000f, type: 2}
-  - {fileID: 11400000, guid: 436da45ec295c1d4fa1af6c2d80d6890, type: 2}
+  - {fileID: 11400000, guid: d5ef671a3e28ad8448b0e37aa7d4c7e1, type: 2}
   - {fileID: 11400000, guid: 1c48c5b4208b1e143b2dca7f6adbe8d0, type: 2}
-  - {fileID: 11400000, guid: 69ccf3169ca28cc4f807c94e99b9c17c, type: 2}
+  - {fileID: 11400000, guid: 0d3017e06d2f7dc4aa98b787d5616684, type: 2}
+  - {fileID: 11400000, guid: b39e28eb9ba33ef40ad69850b9d3855f, type: 2}
+  - {fileID: 11400000, guid: b71eac64f80317e4697889938d1bc96a, type: 2}
+  - {fileID: 11400000, guid: 7c5e1afdd08f96448a8bc20de1c7000f, type: 2}
+  - {fileID: 11400000, guid: 872483721ee3cda479ca213151cf5bfe, type: 2}
+  - {fileID: 11400000, guid: 9b019048cdce542439fb5abbfb7ca557, type: 2}
+  - {fileID: 11400000, guid: 96032fcfcb9e7f242aecff2d103e1637, type: 2}
+  - {fileID: 11400000, guid: e12398bec6fcdd145b07527e2d6cea95, type: 2}
+  - {fileID: 11400000, guid: 7c8db0204eb623d46866d42116804ddd, type: 2}
+  - {fileID: 11400000, guid: fdbb34d572a41ca4caa48ba13a6b7134, type: 2}
+  - {fileID: 11400000, guid: 3ebb7e373b300ad4e8089d007cb72fb5, type: 2}
+  - {fileID: 11400000, guid: b8b308ade77aba54cb477155cc7a0202, type: 2}
+  - {fileID: 11400000, guid: 8d96bcaa37234cd4aac90636910b9fc0, type: 2}
+  - {fileID: 11400000, guid: efb6da4636998b94db179ef3fa04256c, type: 2}
+  - {fileID: 11400000, guid: f9f1274e9bd386a43873cc57f1cecbd9, type: 2}
+  - {fileID: 11400000, guid: 42e6d6d5ccadade47ad3e8e7da61433a, type: 2}

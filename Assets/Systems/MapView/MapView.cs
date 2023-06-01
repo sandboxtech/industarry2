@@ -105,17 +105,37 @@ namespace W
             t = SmoothPosition(t);
             float motion = 1 - t;
 
+            //upTrans.position = new Vector3(0, motion, 0);
+            //upGlowTrans.position = new Vector3(0, motion, 0);
+
+            //downTrans.position = new Vector3(0, -motion, 0);
+            //downGlowTrans.position = new Vector3(0, -motion, 0);
+
+            //rightTrans.position = new Vector3(motion, 0, 0);
+            //rightGlowTrans.position = new Vector3(motion, 0, 0);
+
+            //leftTrans.position = new Vector3(-motion, 0, 0);
+            //leftGlowTrans.position = new Vector3(-motion, 0, 0);
+
+            float opacity = SmoothOpacity(t);
+            Color color = new Color(1, 1, 1, opacity);
+
             upTrans.position = new Vector3(0, motion, 0);
             upGlowTrans.position = new Vector3(0, motion, 0);
-
+            Up.color = color;
+            UpGlow.color = color;
             downTrans.position = new Vector3(0, -motion, 0);
             downGlowTrans.position = new Vector3(0, -motion, 0);
-
+            Down.color = color;
+            DownGlow.color = color;
             rightTrans.position = new Vector3(motion, 0, 0);
             rightGlowTrans.position = new Vector3(motion, 0, 0);
-
+            Right.color = color;
+            RightGlow.color = color;
             leftTrans.position = new Vector3(-motion, 0, 0);
             leftGlowTrans.position = new Vector3(-motion, 0, 0);
+            Left.color = color;
+            LeftGlow.color = color;
         }
 
         private long lastReminder = -1;

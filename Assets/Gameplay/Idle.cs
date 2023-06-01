@@ -104,7 +104,10 @@ namespace W
         public bool Empty => Value <= 0;
         public bool Maxed => Value >= Max;
 
-        public bool FastSlider => Inc * Constants.Second >= 10 * Del;
+        private const long OverSpeedThreshold = 10;
+        public bool OverSpeed => Inc * Constants.Second > Del * OverSpeedThreshold;
+        public float Speed => (float)(Inc * Constants.Second) / Del;
+        public float SpeedProgress => !OverSpeed ? Progress : ((float)((double)(Now - time) * inc / del) * OverSpeedThreshold / Speed) % 1;
 
         public float Progress => Max == 0 ? 0 : Value >= max ? 1 : Inc == 0 ? (float)(progress) : (float)((double)(Now - time) * inc / del) % 1;
         public float TotalProgress {

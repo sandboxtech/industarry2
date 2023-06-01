@@ -337,10 +337,10 @@ namespace W
             if (idle == null) {
                 return; // Button(" 0", null);
             } else if (idle.Max == 0) {
-                Progress(() => $" +{idle.Inc}", () => idle.FastSlider ? 0 : idle.Progress);
+                Progress(() => $" +{idle.Inc}", () => idle.SpeedProgress);
             }
             else {
-                Progress(() => $" +{idle.Inc}  {idle.Value}/{idle.Max}", () => idle.FastSlider ? 0 : idle.Progress);
+                Progress(() => $" +{idle.Inc}  {idle.Value}/{idle.Max}", () => idle.SpeedProgress);
             }
         }
         public static void Progress(string text, Func<string> textDynamic, Func<float> progress) {

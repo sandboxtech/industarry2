@@ -11,7 +11,7 @@ namespace W
 
         [Header("生产间隔")]
         public long del;
-        public long DeltaSecond => del == 0 ? 100 : del;
+        public long DeltaSecond => del == 0 ? 10 : del;
         public long DeltaTicks => DeltaSecond * Constants.Second;
         public long DeltaMinutes => DeltaTicks / Constants.Minute;
         public long DeltaHours => DeltaTicks / Constants.Hour;
@@ -37,16 +37,16 @@ namespace W
         }
 
         public void AddIncText(long number) {
-            // UI.Text(GetSpeedDescriptionString(number));
-            UI.IconGlowText(number > 0 ? $"{CN} +{number}" : $"{CN} -{-number}",
-                UI.ColorNormal,
-                Icon, Color, Glow);
+            UI.Text(GetSpeedDescriptionString(number));
+            //UI.IconGlowText(number > 0 ? $"{CN} +{number}" : $"{CN} -{-number}",
+            //    UI.ColorNormal,
+            //    Icon, Color, Glow);
         }
         public void AddMaxText(long number) {
-            // UI.Text(GetSpeedDescriptionString(number));
-            UI.IconGlowText(number > 0 ? $"{CN} +{number}" : $"{CN} -{-number}",
-                UI.ColorNormal,
-                Icon, Color, Glow);
+            UI.Text(GetSpeedDescriptionString(number));
+            //UI.IconGlowText(number > 0 ? $"{CN} +{number}" : $"{CN} -{-number}",
+            //    UI.ColorNormal,
+            //    Icon, Color, Glow);
         }
         public void AddIncButton(long number) {
             UI.IconGlowButton(number > 0 ? $"{CN} +{number}" : $"{CN} -{-number}",
